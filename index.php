@@ -9,15 +9,20 @@
 * 有的注释不是很完整，见谅~
 *
 * @author Yuan_Tuo <yuantuo666@gmail.com>
-* @version 1.0
+* @version 1.1
 * @link https://imwcr.cn/
 * @link https://space.bilibili.com/88197958
 */
-
-define("BDUSS", "你的BDUSS");
-define("STOKEN", "你的STOKEN");
-$setpassword="首页密码";
-
+define('init', true);
+if (file_exists('config.php')) {
+	require('config.php');
+} else {
+    http_response_code(503);
+    header('Content-Type: text/plain; charset=utf-8');
+    die('缺少配置文件！无法正常运行程序！
+请重新 Clone 项目并配置！');
+}
+// 相关配置请在 config.php 中查看或修改
 function post($url, $data, array $headerArray)
 {
     $curl = curl_init();
@@ -108,6 +113,22 @@ function formatSize($b, $times = 0)
                 $unit = '单位未知';
         }
         return sprintf('%.2f', $b) . $unit;
+    }
+}
+// 检查密码
+function CheckPassword(){
+    if (IsCheckPassword) {
+        global $setpassword;
+        if (empty($_POST["password"]) or $_POST["password"] != $setpassword) {
+            exit('<div class="row justify-content-center">
+            <div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
+            <h5 class="alert-heading">错误</h5>
+            <hr>
+            <p class="card-text">密码错误</p>
+            </div></div></div></div></body></html>');
+        } else {
+            echo '<script>sweetAlert("重要提示","请勿将密码告诉他人，目前仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
+        }
     }
 }
 ?>
@@ -334,22 +355,13 @@ function formatSize($b, $times = 0)
                 </div>
             </div>
         <?php } elseif (isset($_POST["surl"])) {
-            if (empty($_POST["password"]) or $_POST["password"] != $setpassword) {
-                exit('<div class="row justify-content-center">
-                <div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-                <h5 class="alert-heading">错误</h5>
-                <hr>
-                <p class="card-text">密码错误</p>
-                </div></div></div>');
-            } else {
-                echo '<script>sweetAlert("tips","请勿将密码告诉他人，目前仅供测试使用\r\n——Yuan_Tuo","info")</script>';
-            }
+            CheckPassword();
             $surl = $_POST["surl"];
             $pwd = $_POST["pwd"];
             $surl_1 = substr($surl, 1);
 
             function verifyPwd($surl_1, $pwd)
-            { //验证密码 
+            { //验证密码
                 $url = 'https://pan.baidu.com/share/verify?channel=chunlei&clienttype=0&web=1&app_id=250528&surl=' . $surl_1;
                 $data = "pwd=$pwd";
                 $headerArray = array("user-agent:netdisk", "Referer:https://pan.baidu.com/disk/home");
@@ -561,11 +573,12 @@ function formatSize($b, $times = 0)
                             <div class="form-group my-4">
                                 <input type="text" class="form-control" name="pwd" placeholder="提取码">
                             </div>
+                            <?php if (IsCheckPassword) { ?>
                             <!-- 控制使用 -->
                             <div class="form-group my-4">
                                 <input type="text" class="form-control" name="password" placeholder="密码">
                             </div>
-
+                            <?php } ?>
                             <button type="submit" class="mt-4 mb-3 form-control btn btn-success btn-block">打开</button>
                         </form>
                     </div>
@@ -574,5 +587,4 @@ function formatSize($b, $times = 0)
         <?php } ?>
     </div>
 </body>
-
 </html>
