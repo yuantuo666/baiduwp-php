@@ -7,8 +7,13 @@
 * 若你要向公网开启服务，务必要启用密码验证功能！！！否则后果自负！！！
 * 若只在局域网开放，则可根据个人喜好开启或关闭密码。
 *
+* @version 1.1.1
+*
+* @author Yuan_Tuo <yuantuo666@gmail.com>
+* @link https://imwcr.cn/
+* @link https://space.bilibili.com/88197958
+*
 * @author LC <lc@lcwebsite.cn>
-* @version 1.0
 * @link https://lcwebsite.cn/
 * @link https://space.bilibili.com/52618445
 */

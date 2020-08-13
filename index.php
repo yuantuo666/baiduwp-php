@@ -8,10 +8,15 @@
 *
 * 有的注释不是很完整，见谅~
 *
+* @version 1.1.1
+*
 * @author Yuan_Tuo <yuantuo666@gmail.com>
-* @version 1.1
 * @link https://imwcr.cn/
 * @link https://space.bilibili.com/88197958
+*
+* @author LC <lc@lcwebsite.cn>
+* @link https://lcwebsite.cn/
+* @link https://space.bilibili.com/52618445
 */
 define('init', true);
 if (file_exists('config.php')) {
@@ -120,102 +125,66 @@ function CheckPassword(){
     if (IsCheckPassword) {
         global $setpassword;
         if (empty($_POST["password"]) or $_POST["password"] != $setpassword) {
-            exit('<div class="row justify-content-center">
+            die('<div class="row justify-content-center">
             <div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
             <h5 class="alert-heading">错误</h5>
             <hr>
             <p class="card-text">密码错误</p>
             </div></div></div></div></body></html>');
         } else {
-            echo '<script>sweetAlert("重要提示","请勿将密码告诉他人，目前仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
+            echo '<script>sweetAlert("重要提示","请勿将密码告诉他人，此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
         }
     }
 }
+// 通用响应头
+header('Content-Type: text/html; charset=utf-8');
+header('X-UA-Compatible: IE=edge,chrome=1');
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Yuan_Tuo" />
-    <meta name="description" content="PanDownload网页版,百度网盘分享链接在线解析工具" />
+    <meta name="author" content="LC" />
+    <meta name="description" content="PanDownload 网页版，百度网盘分享链接在线解析工具。" />
     <meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
-    <link rel="icon" href="https://pandownload.com/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
+    <link rel="icon" href="https://pandownload.com/favicon.ico" />
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
     <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
-
     <!-- 可以异步 -->
-    <link href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.css" />
     <script src="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.js"></script>
-    <link href="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.css" rel="stylesheet">
-
     <style>
-        body {
-            background-image: url("https://pandownload.com/img/baiduwp/bg.png");
-        }
-
-        .logo-img {
-            width: 1.1em;
-            position: relative;
-            top: -3px;
-        }
+        body { background: url("https://pandownload.com/img/baiduwp/bg.png"); }
+        .logo-img { width: 1.1em; position: relative; top: -3px; }
     </style>
-    <title>PanDownload复刻版</title>
+    <title>PanDownload 复刻版</title>
     <style>
-        .form-inline input {
-            width: 500px;
-        }
-
-        .input-card {
-            position: relative;
-            top: 7.0em;
-        }
-
-        .card-header {
-            height: 3.2em;
-            font-size: 20px;
-            line-height: 2.0em;
-        }
-
-        form input,
-        form button {
-            height: 3em;
-        }
-
-        .alert {
-            position: relative;
-            top: 5em;
-        }
-
-        .alert-heading {
-            height: 0.8em;
-        }
+        .form-inline input { width: 500px; }
+        .input-card { position: relative; top: 7.0em; }
+        .card-header { height: 3.2em; font-size: 20px; line-height: 2.0em; }
+        form input, form button { height: 3em; }
+        .alert { position: relative; top: 5em; }
+        .alert-heading { height: 0.8em; }
     </style>
     <script>
         function validateForm() {
             var link = document.forms["form1"]["surl"].value;
-            if (link == null || link == "") {
-                document.forms["form1"]["surl"].focus();
-                return false;
-            }
-            var uk = link.match(/uk=(\d+)/);
-            var shareid = link.match(/shareid=(\d+)/);
+            if (link == null || link === "") { document.forms["form1"]["surl"].focus(); return false; }
+            var uk = link.match(/uk=(\d+)/), shareid = link.match(/shareid=(\d+)/);
             if (uk != null && shareid != null) {
                 document.forms["form1"]["surl"].value = "";
-                $("form").append('<input type="hidden" name="uk" value="' + uk[1] + '">');
-                $("form").append('<input type="hidden" name="shareid" value="' + shareid[1] + '">');
+                $("form").append(`<input type="hidden" name="uk" value="${uk[1]}"/><input type="hidden" name="shareid" value="${shareid[1]}"/>`);
                 return true;
             }
             var surl = link.match(/surl=([A-Za-z0-9-_]+)/);
             if (surl == null) {
                 surl = link.match(/1[A-Za-z0-9-_]+/);
                 if (surl == null) {
-                    document.forms["form1"]["surl"].focus();
-                    return false;
+                    document.forms["form1"]["surl"].focus(); return false;
                 } else {
                     surl = surl[0];
                 }
@@ -225,45 +194,39 @@ function CheckPassword(){
             document.forms["form1"]["surl"].value = surl;
             return true;
         }
-
         function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
-            var form = $('<form method="post" action="./?download" target="_blank"></form>');
-            form.append('<input type="hidden" name="fs_id" value="' + fs_id + '">');
-            form.append('<input type="hidden" name="time" value="' + timestamp + '">');
-            form.append('<input type="hidden" name="sign" value="' + sign + '">');
-            form.append('<input type="hidden" name="randsk" value="' + randsk + '">');
-            form.append('<input type="hidden" name="share_id" value="' + share_id + '">');
-            form.append('<input type="hidden" name="uk" value="' + uk + '">');
+            var form = $('<form method="post" action="?download" target="_blank"></form>');
+            form.append(`<input type="hidden" name="fs_id" value="${fs_id}"/>
+                <input type="hidden" name="time" value="${timestamp}"/>
+                <input type="hidden" name="sign" value="${sign}"/>
+                <input type="hidden" name="randsk" value="${randsk}"/>
+                <input type="hidden" name="share_id" value="${share_id}"/>
+                <input type="hidden" name="uk" value="${uk}"/>`);
             $(document.body).append(form);
             form.submit();
         }
-
         function getIconClass(filename) {
             var filetype = {
                 file_video: ["wmv", "rmvb", "mpeg4", "mpeg2", "flv", "avi", "3gp", "mpga", "qt", "rm", "wmz", "wmd", "wvx", "wmx", "wm", "mpg", "mp4", "mkv", "mpeg", "mov", "asf", "m4v", "m3u8", "swf"],
                 file_audio: ["wma", "wav", "mp3", "aac", "ra", "ram", "mp2", "ogg", "aif", "mpega", "amr", "mid", "midi", "m4a", "flac"],
-                file_image: ["jpg", "jpeg", "gif", "bmp", "png", "jpe", "cur", "svgz", "ico"],
+                file_image: ["jpg", "jpeg", "gif", "bmp", "png", "jpe", "cur", "svg", "svgz", "ico"], // 是否需要增加 webp 格式？
                 file_archive: ["rar", "zip", "7z", "iso"],
                 windows: ["exe"],
                 apple: ["ipa"],
                 android: ["apk"],
                 file_alt: ["txt", "rtf"],
-                file_excel: ["xls", "xlsx"],
+                file_excel: ["xls", "xlsx"], // xlsm 等以及模板？
                 file_word: ["doc", "docx"],
                 file_powerpoint: ["ppt", "pptx"],
                 file_pdf: ["pdf"],
             };
             var point = filename.lastIndexOf(".");
             var t = filename.substr(point + 1);
-            if (t == "") {
-                return "";
-            }
+            if (t === "") return "";
             t = t.toLowerCase();
             for (var icon in filetype) {
                 for (var type in filetype[icon]) {
-                    if (t == filetype[icon][type]) {
-                        return "fa-" + icon.replace('_', '-');
-                    }
+                    if (t === filetype[icon][type]) return "fa-" + icon.replace('_', '-');
                 }
             }
             return "";
@@ -271,60 +234,44 @@ function CheckPassword(){
         $(document).ready(function() {
             $(".fa-file").each(function() {
                 var icon = getIconClass($(this).next().text());
-                if (icon != "") {
-                    if (icon == "fa-windows" || icon == "fa-android" || icon == "fa-apple") {
-                        $(this).removeClass("far").addClass("fab");
-                    }
+                if (icon !== "") {
+                    if ($.inArray(icon, ['fa-windows', 'fa-android', 'fa-apple']) >= 0) $(this).removeClass("far").addClass("fab");
                     $(this).removeClass("fa-file").addClass(icon);
                 }
             });
         });
     </script>
 </head>
-
 <body>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="./">
-                <img src="https://pandownload.com/img/baiduwp/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO">PanDownload
-            </a>
-            <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <a class="navbar-brand" href=""><img src="https://pandownload.com/img/baiduwp/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO"/>PanDownload</a>
+            <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="collpase-bar">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="./">主页</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://pandownload.com/" target="_blank">网盘下载器</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="">主页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://pandownload.com/" target="_blank">网盘下载器</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
                 </ul>
             </div>
         </div>
     </nav>
     <div class="container">
-
-        <?php
-        //开始判断
+        <?php //开始判断
         if (isset($_GET["help"])) { ?>
             <div class="row justify-content-center">
                 <div class="col-md-7 col-sm-8 col-11">
                     <div class="alert alert-primary" role="alert">
-                        <h5 class="alert-heading">提示</h5>
-                        <hr>
+                        <h5 class="alert-heading">提示</h5><hr/>
                         <p class="card-text">因百度限制，需修改浏览器UA后下载。<br>
                             <div class="page-inner">
                                 <section class="normal" id="section-">
-                                    <h4>IDM（推荐）</h4>
+                                    <div id="IDM"><h4><a class="anchor" href="#IDM"></a>IDM（推荐）</h4></div>
                                     <ol>
                                         <li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
                                         <li><b>右键复制下载链接</b>(直接点击 或 右键调用IDM 将传入浏览器的UA，将会导致下载失败)，在 IDM 新建任务，粘贴链接即可下载。</li>
                                     </ol>
-                                    <h4>Chrome浏览器</h4>
+                                    <div id="Chrome"><h4><a class="anchor" href="#Chrome"></a>Chrome 浏览器</h4></div>
                                     <ol>
                                         <li>安装浏览器扩展程序 <a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg" target="_blank">User-Agent Switcher for Chrome</a></li>
                                         <li>右键点击扩展图标 -> 选项</li>
@@ -336,19 +283,23 @@ function CheckPassword(){
                                         <li>保存后点击扩展图标，出现"百度网盘"，进入并选择"百度网盘分享下载"。</li>
                                     </ol>
                                     <blockquote>
-                                        <p>Chrome应用商店打不开或者其他Chromium内核的浏览器，<a href="http://pandownload.com/static/user_agent_switcher_1_0_43_0.crx" target="_blank">请点此下载</a></p>
+                                        <p>Chrome 应用商店打不开或者其他 Chromium 内核的浏览器，<a href="http://pandownload.com/static/user_agent_switcher_1_0_43_0.crx" target="_blank">请点此下载</a></p>
                                         <p><a href="https://appcenter.browser.qq.com/search/detail?key=User-Agent%20Switcher%20for%20Chrome&amp;id=djflhoibgkdhkhhcedjiklpkjnoahfmg%20&amp;title=User-Agent%20Switcher%20for%20Chrome" target="_blank">QQ浏览器插件下载</a></p>
                                     </blockquote>
-                                    <h4>Pure浏览器（Android）</h4>
+                                    <div id="Pure"><h4><a class="anchor" href="#Pure"></a>Pure 浏览器（Android）</h4></div>
                                     <ol>
                                         <li>设置 –&gt; 浏览设置 -&gt; 浏览器标识(UA)</li>
                                         <li>添加自定义UA：LogStatistic</li>
                                     </ol>
-                                    <h4>Alook浏览器（IOS）</h4>
+                                    <div id="Alook"><h4><a class="anchor" href="#$Alook"></a>Alook 浏览器（IOS）</h4></id>
                                     <ol>
-                                        <li>设置 -&gt; 通用设置 -&gt; 浏览器标识 -&gt; 移动版浏览器标识 -&gt; 自定义 -><br> 填入 <b>LogStatistic</b></li>
+                                        <li>设置 -&gt; 通用设置 -&gt; 浏览器标识 -&gt; 移动版浏览器标识 -&gt; 自定义 -><br/> 填入 <b>LogStatistic</b></li>
                                     </ol>
                                 </section>
+                                <script>
+                                    $('.anchor').attr('target', '_self').prepend(`<svg viewBox="0 0 16 16" version="1.1" width="16" height="16"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95
+                                    0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"/></svg>`);
+                                </script>
                             </div>
                         </p>
                     </div>
@@ -402,9 +353,9 @@ function CheckPassword(){
             {
                 $url = 'https://pan.baidu.com/share/list?app_id=250528&channel=chunlei&clienttype=0&desc=0&num=100&order=name&page=1&root=1&shareid=' . $shareid . '&showempty=0&uk=' . $uk . '&web=1';
                 $headerArray = array(
-                    "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-                    "Cookie:BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
-                    "Referer:https://pan.baidu.com/disk/home"
+                    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
+                    "Cookie: BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
+                    "Referer: https://pan.baidu.com/disk/home"
                 );
                 $json3 = get($url, $headerArray);
                 $json3 = json_decode($json3, true);
@@ -432,6 +383,14 @@ function CheckPassword(){
                     <h5 class="alert-heading">链接不存在</h5>
                     <hr>
                     <p class="card-text">此链接分享内容可能被取消或因涉及侵权、色情、反动、低俗等信息，无法访问！</p>
+                    </div></div></div>';
+                } else if ($filejson["errno"] != 0) {
+                    // 鬼知道发生了啥，比如说 -7
+                    echo '<div class="row justify-content-center">
+                    <div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
+                    <h5 class="alert-heading">链接存在问题</h5>
+                    <hr>
+                    <p class="card-text">此链接存在问题，无法访问！</p>
                     </div></div></div>';
                 } else {
                     //var_dump($filejson);
@@ -489,9 +448,9 @@ function CheckPassword(){
                 $url = 'https://pan.baidu.com/api/sharedownload?app_id=250528&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';
 
                 $headerArray = array(
-                    "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-                    "Cookie:BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
-                    "Referer:https://pan.baidu.com/disk/home"
+                    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
+                    "Cookie: BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
+                    "Referer: https://pan.baidu.com/disk/home"
                 );
 
                 $res3 = post($url, $postdata, $headerArray);
