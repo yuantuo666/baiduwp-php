@@ -9,12 +9,17 @@ PanDownload网页复刻版，PHP语言版
 [暂不开放](https://imwcr.cn/api/bdwp/)
 
 # Setting
+请在 `config.php` 中找：
 ```
-define("BDUSS", "你的BDUSS");
-define("STOKEN", "你的STOKEN");
-$setpassword="你的密码";
+define("BDUSS", "");
+define("STOKEN", "");
+define('IsCheckPassword', true);
+$setpassword='请在这里填写密码啦ヾ(≧▽≦*)o';
 ```
-替换成你自己的SVIP信息就行，获取cookie方法见视频[BV1Yh411d7Gd](https://www.bilibili.com/video/BV1Yh411d7Gd)
+- 前两项替换成你自己的SVIP信息就行，获取cookie方法见视频[BV1Yh411d7Gd](https://www.bilibili.com/video/BV1Yh411d7Gd)
+- 第三项是是否需要密码的选项，
+- 第四项是首页需要输入的密码，但是如果第三项为 false 则无效，
+- 详细信息可见 `config.php` 的注释。
 
 # Thanks
 
@@ -25,3 +30,8 @@ $setpassword="你的密码";
 [KinhDown](https://t.me/kinhdown): client type
 
 [PNL](https://www.lanzous.com/u/pnl): download method
+
+# 最新更改
+- 以下修改由 [LC](https://github.com/lc6464 "LC") 完成
+  - 新增自行选择是否需要密码功能
+  - 配置与程序分离
