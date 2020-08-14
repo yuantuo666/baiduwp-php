@@ -1,26 +1,28 @@
 <?php
 /**
-* Pandownload PHP 复刻版函数文件
-*
-* 务必要保证此文件存在，否则整个服务将会不可使用！
-*
-* 请勿随意修改此文件！如需更改相关配置请到 config.php ！
-*
-* @version 1.2.0
-*
-* @author Yuan_Tuo <yuantuo666@gmail.com>
-* @link https://imwcr.cn/
-* @link https://space.bilibili.com/88197958
-*
-* @author LC <lc@lcwebsite.cn>
-* @link https://lcwebsite.cn/
-* @link https://space.bilibili.com/52618445
-*/
+ * Pandownload PHP 复刻版函数文件
+ *
+ * 务必要保证此文件存在，否则整个服务将会不可使用！
+ *
+ * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
+ *
+ * @version 1.2.1
+ *
+ * @author Yuan_Tuo <yuantuo666@gmail.com>
+ * @link https://imwcr.cn/
+ * @link https://space.bilibili.com/88197958
+ *
+ * @author LC <lc@lcwebsite.cn>
+ * @link https://lcwebsite.cn/
+ * @link https://space.bilibili.com/52618445
+ */
+if (!defined('init')){ http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); die('想啥呢？访问这个文件？'); } // 直接访问处理程序
+
 // main
 function post($url, $data, array $headerArray) {
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE); //忽略ssl
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE); // 忽略ssl
 	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
 	curl_setopt($curl, CURLOPT_POST, 1);
 	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
@@ -33,7 +35,7 @@ function post($url, $data, array $headerArray) {
 function get($url, array $headerArray) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); //忽略ssl
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // 忽略ssl
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
@@ -41,11 +43,10 @@ function get($url, array $headerArray) {
 	curl_close($ch);
 	return $output;
 }
-function head($url, array $headerArray) {
-	// curl 获取响应头
+function head($url, array $headerArray) { // curl 获取响应头
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); //忽略ssl
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // 忽略ssl
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // TRUE 将curl_exec()获取的信息以字符串返回，而不是直接输出
 	curl_setopt($ch, CURLOPT_HEADER, true); // 返回 response header 默认 false 只会获得响应的正文
@@ -59,15 +60,12 @@ function head($url, array $headerArray) {
 	return $header;
 }
 function getSubstr($str, $leftStr, $rightStr) {
-	$left = strpos($str, $leftStr);
-	//echo '左边:'.$left;
-	$right = strpos($str, $rightStr, $left);
-	//echo '<br>右边:'.$right;
+	$left = strpos($str, $leftStr); // echo '左边:'.$left;
+	$right = strpos($str, $rightStr, $left); // echo '<br>右边:'.$right;
 	if ($left < 0 or $right < $left) return '';
 	return substr($str, $left + strlen($leftStr), $right - $left - strlen($leftStr));
 }
-//格式化size显示
-function formatSize($b, $times = 0) {
+function formatSize($b, $times = 0) { // 格式化size显示
 	if ($b > 1024) {
 		$temp = $b / 1024;
 		return formatSize($temp, $times + 1);
@@ -95,8 +93,7 @@ function formatSize($b, $times = 0) {
 		return sprintf('%.2f', $b) . $unit;
 	}
 }
-// 检查密码
-function CheckPassword() {
+function CheckPassword() { // 检查密码
 	if (IsCheckPassword) {
 		if ((!isset($_POST["password"])) || $_POST["password"] != Password) die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
 		<div class="alert alert-danger" role="alert"><h5 class="alert-heading">错误</h5><hr><p class="card-text">密码错误！</p></div></div>
@@ -111,8 +108,7 @@ function verifyPwd($surl_1, $pwd) { // 验证提取码
 	$data = "pwd=$pwd";
 	$headerArray = array("User-Agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
 	$json1 = post($url, $data, $headerArray);
-	$json1 = json_decode($json1, true);
-	// -12 提取码错误
+	$json1 = json_decode($json1, true); // -12 提取码错误
 	if ($json1["errno"] == 0) return $json1["randsk"];
 	else return 1;
 }
@@ -121,7 +117,7 @@ function getSign($surl, $randsk) {
 	$url = 'https://pan.baidu.com/s/1' . $surl;
 	$headerArray = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-		"Cookie: BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";"
+		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
 	);
 	$json2 = get($url, $headerArray);
 	$re = '/yunData.setData\(({.+)\);/';
@@ -137,12 +133,15 @@ function getFileList($shareid, $uk, $randsk) {
 	$url = 'https://pan.baidu.com/share/list?app_id=250528&channel=chunlei&clienttype=0&desc=0&num=100&order=name&page=1&root=1&shareid=' . $shareid . '&showempty=0&uk=' . $uk . '&web=1';
 	$headerArray = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-		"Cookie: BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
+		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";",
 		"Referer: https://pan.baidu.com/disk/home"
 	);
 	$json3 = get($url, $headerArray);
 	$json3 = json_decode($json3, true);
 	return $json3;
+}
+function fileInfo($filename, $size, $md5, $server_ctime) { // 输出 HTML 字符串
+	return '<p class="card-text">文件名：<b>' . $filename . '</b></p><p class="card-text">文件大小：<b>' . formatSize($size) . '</b></p><p class="card-text">文件MD5：<b>' . $md5 . '</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
 }
 
 // 获取下载链接
@@ -156,12 +155,11 @@ function getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk) {
 	$url = 'https://pan.baidu.com/api/sharedownload?app_id=250528&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';
 	$headerArray = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-		"Cookie: BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
+		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";",
 		"Referer: https://pan.baidu.com/disk/home"
 	);
 	$res3 = post($url, $postdata, $headerArray);
 	$res3 = json_decode($res3, true);
-	//var_dump($postdata, $res3);
 	//没有 referer 就 112 ，然后没有 sekey 参数就 118    -20？？？
 	// 		参数				类型		描述
 	// list					json array	文件信息列表
@@ -179,5 +177,3 @@ function getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk) {
 	// list[0]["date_taken"]	int		图片拍摄时间
 	return $res3;
 }
-
-if (!defined('init')){ http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); die('想啥呢？访问这个文件？'); } // 直接访问处理程序
