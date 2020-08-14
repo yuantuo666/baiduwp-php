@@ -12,7 +12,7 @@
  * 请不要使用弱密码！否则后果自负！
  * 若只在局域网开放，则可根据个人喜好开启或关闭密码。
  *
- * @version 1.2.1
+ * @version 1.2.2
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -22,7 +22,7 @@
  * @link https://lcwebsite.cn/
  * @link https://space.bilibili.com/52618445
  */
-if (!defined('init')){ http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); die('想啥呢？访问这个文件？'); } // 直接访问处理程序
+if (!defined('init')){ http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./'); die('想啥呢？直接访问这个文件？'); } // 直接访问处理程序
 
 define('BDUSS', ''); // 你的 SVIP BDUSS
 define('STOKEN', ''); // 你的 SVIP STOKEN

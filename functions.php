@@ -6,7 +6,7 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.2.1
+ * @version 1.2.2
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -16,7 +16,7 @@
  * @link https://lcwebsite.cn/
  * @link https://space.bilibili.com/52618445
  */
-if (!defined('init')){ http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); die('想啥呢？访问这个文件？'); } // 直接访问处理程序
+if (!defined('init')){ http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./'); die('想啥呢？直接访问这个文件？'); } // 直接访问处理程序
 
 // main
 function post($url, $data, array $headerArray) {
@@ -48,9 +48,9 @@ function head($url, array $headerArray) { // curl 获取响应头
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // 忽略ssl
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // TRUE 将curl_exec()获取的信息以字符串返回，而不是直接输出
-	curl_setopt($ch, CURLOPT_HEADER, true); // 返回 response header 默认 false 只会获得响应的正文
-	curl_setopt($ch, CURLOPT_NOBODY, true); // 有时候为了节省带宽及时间，只需要响应头
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // TRUE 将 curl_exec() 获取的信息以字符串返回，而不是直接输出
+	curl_setopt($ch, CURLOPT_HEADER, true); // 返回 response header
+	curl_setopt($ch, CURLOPT_NOBODY, true); // 为了节省带宽及时间，只需要响应头
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 	$response = curl_exec($ch);
@@ -68,7 +68,7 @@ function getSubstr($str, $leftStr, $rightStr) {
 function formatSize($b, $times = 0) { // 格式化size显示
 	if ($b > 1024) {
 		$temp = $b / 1024;
-		return formatSize($temp, $times + 1);
+		return formatSize($temp, $times + 1); // 递归处理
 	} else {
 		switch ($times) {
 			case '0':
