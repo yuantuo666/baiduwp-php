@@ -1,14 +1,14 @@
 <?php
 /**
-* Pandownload复刻版
+* Pandownload PHP 复刻版
 *
-* 功能描述：使用百度SVIP账号获取真实下载地址，与Pandownload原版无关
-*
-* 使用的时候请保留一下作者信息呀（就是菜单栏的Made by Yuan_Tuo），谢~
-*
+* 功能描述：使用百度 SVIP 账号获取真实下载地址，与 Pandownload 原版无关
+* 使用的时候请保留一下作者信息呀（就是菜单栏的 Made by Yuan_Tuo），谢~
 * 有的注释不是很完整，见谅~
 *
-* @version 1.1.1
+* 此项目 GitHub 地址：
+*
+* @version 1.1.2
 *
 * @author Yuan_Tuo <yuantuo666@gmail.com>
 * @link https://imwcr.cn/
@@ -88,32 +88,23 @@ function formatSize($b, $times = 0)
 		$temp = $b / 1024;
 		return formatSize($temp, $times + 1);
 	} else {
-		$unit = 'B';
 		switch ($times) {
 			case '0':
-				$unit = 'B';
-				break;
+				$unit = 'B'; break;
 			case '1':
-				$unit = 'KB';
-				break;
+				$unit = 'KB'; break;
 			case '2':
-				$unit = 'MB';
-				break;
+				$unit = 'MB'; break;
 			case '3':
-				$unit = 'GB';
-				break;
+				$unit = 'GB'; break;
 			case '4':
-				$unit = 'TB';
-				break;
+				$unit = 'TB'; break;
 			case '5':
-				$unit = 'PB';
-				break;
+				$unit = 'PB'; break;
 			case '6':
-				$unit = 'EB';
-				break;
+				$unit = 'EB'; break;
 			case '7':
-				$unit = 'ZB';
-				break;
+				$unit = 'ZB'; break;
 			default:
 				$unit = '单位未知';
 		}
@@ -124,16 +115,10 @@ function formatSize($b, $times = 0)
 function CheckPassword(){
 	if (IsCheckPassword) {
 		global $setpassword;
-		if (empty($_POST["password"]) or $_POST["password"] != $setpassword) {
-			die('<div class="row justify-content-center">
-			<div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-			<h5 class="alert-heading">错误</h5>
-			<hr>
-			<p class="card-text">密码错误</p>
-			</div></div></div></div></body></html>');
-		} else {
-			echo '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
-		}
+		if ((!isset($_POST["password"])) || $_POST["password"] != $setpassword) die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
+		<div class="alert alert-danger" role="alert"><h5 class="alert-heading">错误</h5><hr><p class="card-text">密码错误！</p></div></div>
+		</div></div><script>sweetAlert("错误","密码错误！","error");</script></body></html>');
+		else echo '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
 	}
 }
 // 通用响应头
@@ -164,6 +149,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 		.form-inline input { width: 500px; }
 		.input-card { position: relative; top: 7.0em; }
 		.card-header { height: 3.2em; font-size: 20px; line-height: 2.0em; }
+		.card-text { word-wrap: break-word; }
 		form input, form button { height: 3em; }
 		.alert { position: relative; top: 5em; }
 		.alert-heading { height: 0.8em; }
@@ -183,12 +169,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				surl = link.match(/1[A-Za-z0-9-_]+/);
 				if (surl == null) {
 					document.forms["form1"]["surl"].focus(); return false;
-				} else {
-					surl = surl[0];
-				}
-			} else {
-				surl = "1" + surl[1];
-			}
+				} else surl = surl[0];
+			} else surl = "1" + surl[1];
 			document.forms["form1"]["surl"].value = surl;
 			return true;
 		}
@@ -200,14 +182,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				<input type="hidden" name="randsk" value="${randsk}"/>
 				<input type="hidden" name="share_id" value="${share_id}"/>
 				<input type="hidden" name="uk" value="${uk}"/>`);
-			$(document.body).append(form);
-			form.submit();
+			$(document.body).append(form); form.submit();
 		}
 		function getIconClass(filename) {
 			var filetype = {
 				file_video: ["wmv", "rmvb", "mpeg4", "mpeg2", "flv", "avi", "3gp", "mpga", "qt", "rm", "wmz", "wmd", "wvx", "wmx", "wm", "mpg", "mp4", "mkv", "mpeg", "mov", "asf", "m4v", "m3u8", "swf"],
 				file_audio: ["wma", "wav", "mp3", "aac", "ra", "ram", "mp2", "ogg", "aif", "mpega", "amr", "mid", "midi", "m4a", "flac"],
-				file_image: ["jpg", "jpeg", "gif", "bmp", "png", "jpe", "cur", "svg", "svgz", "ico"], // 是否需要增加 webp 格式？
+				file_image: ["jpg", "jpeg", "gif", "bmp", "png", "jpe", "cur", "svg", "svgz", "ico", "webp", "tif", "tiff"],
 				file_archive: ["rar", "zip", "7z", "iso"],
 				windows: ["exe"],
 				apple: ["ipa"],
@@ -222,11 +203,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			var t = filename.substr(point + 1);
 			if (t === "") return "";
 			t = t.toLowerCase();
-			for (var icon in filetype) {
-				for (var type in filetype[icon]) {
-					if (t === filetype[icon][type]) return "fa-" + icon.replace('_', '-');
-				}
-			}
+			for (var icon in filetype) for (var type in filetype[icon]) if (t === filetype[icon][type]) return "fa-" + icon.replace('_', '-');
 			return "";
 		}
 		$(document).ready(function() {
@@ -255,8 +232,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 		</div>
 	</nav>
 	<div class="container">
-		<?php //开始判断
-		if (isset($_GET["help"])) { ?>
+		<?php if (isset($_GET["help"])) { ?>
 			<div class="row justify-content-center">
 				<div class="col-md-7 col-sm-8 col-11">
 					<div class="alert alert-primary" role="alert">
@@ -309,13 +285,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			$pwd = $_POST["pwd"];
 			$surl_1 = substr($surl, 1);
 			function verifyPwd($surl_1, $pwd)
-			{ // 验证密码
+			{ // 验证提取码
 				$url = 'https://pan.baidu.com/share/verify?channel=chunlei&clienttype=0&web=1&app_id=250528&surl=' . $surl_1;
 				$data = "pwd=$pwd";
-				$headerArray = array("user-agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
+				$headerArray = array("User-Agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
 				$json1 = post($url, $data, $headerArray);
 				$json1 = json_decode($json1, true);
-				// -12 验证码错误
+				// -12 提取码错误
 				if ($json1["errno"] == 0) return $json1["randsk"];
 				else return 1;
 			}
@@ -362,25 +338,23 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 					//链接失效
 					echo '<div class="row justify-content-center">
 					<div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-					<h5 class="alert-heading">链接不存在</h5>
-					<hr>
+					<h5 class="alert-heading">链接不存在</h5><hr>
 					<p class="card-text">此链接分享内容可能被取消或因涉及侵权、色情、反动、低俗等信息，无法访问！</p>
 					</div></div></div>';
 				} else if ($filejson["errno"] != 0) {
 					// 鬼知道发生了啥，比如说 -7
 					echo '<div class="row justify-content-center">
 					<div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-					<h5 class="alert-heading">链接存在问题</h5>
-					<hr>
+					<h5 class="alert-heading">链接存在问题</h5><hr>
 					<p class="card-text">此链接存在问题，无法访问！</p>
 					</div></div></div>';
 				} else {
 					// 终于正常了
 					//var_dump($filejson);
 					$filecontent = '<ol class="breadcrumb my-4">
-				文件列表(' . count($filejson["list"]) . ') </ol>
+				文件列表（' . count($filejson["list"]) . '个文件）</ol>
 				<div>
-				<ul class="list-group ">';
+				<ul class="list-group">';
 					for ($i = 0; $i < count($filejson["list"]); $i++) {
 						$file = $filejson["list"][$i];
 						if ($file["isdir"] == 0) {
@@ -409,87 +383,107 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			}
 		} elseif (isset($_GET["download"])) {
 			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-				// 加个 isset ！！！
-				$fs_id = $_POST["fs_id"];
-				$timestamp = $_POST["time"];
-				$sign = $_POST["sign"];
-				$randsk = $_POST["randsk"];
-				$share_id = $_POST["share_id"];
-				$uk = $_POST["uk"];
-				function getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk)
-				{
-					$postdata = "";
-					$postdata .= "encrypt=0";
-					$postdata .= "&extra=" . urlencode("{\"sekey\":\"" . urldecode($randsk) . "\"}"); //被这个转义坑惨了QAQ
-					$postdata .= "&fid_list=[$fs_id]";
-					$postdata .= "&primaryid=$share_id";
-					$postdata .= "&uk=$uk";
-					$postdata .= "&product=share";
-					$postdata .= "&type=nolimit";
-					$url = 'https://pan.baidu.com/api/sharedownload?app_id=250528&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';
-					$headerArray = array(
-						"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-						"Cookie: BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
-						"Referer: https://pan.baidu.com/disk/home"
-					);
-					$res3 = post($url, $postdata, $headerArray);
-					$res3 = json_decode($res3, true);
-					//var_dump($postdata, $res3);
-					//没有referer就112，然后没有sekey参数就118  -20？？？
-					// 参数	                类型	    描述
-					// list	                json array	文件信息列表
-					// names	            json	    如果查询共享目录，该字段为共享目录文件上传者的uk和账户名称
-					// list[0]["category"]	int	        文件类型
-					// list[0]["dlink”]	    string	    文件下载地址
-					// list[0]["file_name”]	string	    文件名
-					// list[0]["isdir”]	    int	        是否是目录
-					// list[0]["server_ctime”]	int	    文件的服务器创建时间
-					// list[0]["server_mtime”]	int	    文件的服务修改时间
-					// list[0]["size”]	    int	        文件大小
-					// list[0]["thumbs”]		        缩略图地址
-					// list[0]["height”]	int	        图片高度
-					// list[0]["width”]	    int	        图片宽度
-					// list[0]["date_taken”]int	        图片拍摄时间
-					return $res3;
-				}
-				$json4 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk);
-				if ($json4["errno"] == 0) {
-					$dlink = $json4["list"][0]["dlink"];
-					$md5 = $json4["list"][0]["md5"];
-					$filename = $json4["list"][0]["server_filename"];
-					$size = $json4["list"][0]["size"];
-					$server_ctime = (int)$json4["list"][0]["server_ctime"] + 28800; //服务器创建时间 +8:00
-					$headerArray = array(
-						'User-Agent: LogStatistic',
-						'Cookie: BDUSS=' . constant("BDUSS") . ';'
-					);
-					$getRealLink = head($dlink, $headerArray); //禁止重定向
-					$getRealLink = strstr($getRealLink, "Location");
-					$getRealLink = substr($getRealLink, 10);
-					$realLink = getSubstr($getRealLink, "http://", "\r\n"); //除掉http://
-					// 3. 使用dlink下载文件
-					// 4. dlink有效期为8小时
-					// 5. 必需要设置User-Agent字段
-					// 6. dlink存在302跳转
-					echo '<div class="row justify-content-center">
-					<div class="col-md-7 col-sm-8 col-11">
-					<div class="alert alert-primary" role="alert">
-					<h5 class="alert-heading">获取下载链接成功</h5>
-					<hr>
-					<p class="card-text">文件名: <b>' . $filename . '</b></p>
-					<p class="card-text">文件大小: <b>' . formatSize($size) . '</b></p>
-					<p class="card-text">文件MD5: <b>' . $md5 . '</b></p>
-					<p class="card-text">上传时间: <b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>
-					<p class="card-text"><a href="http://' . $realLink . '" target=_blank>下载链接(http)</a>
-					<a href="https://' . $realLink . '" target=_blank>下载链接(https)</a></p>
-					<p class="card-text"><a href="?help" target=_blank>下载链接使用方法（必读）</a></p>
-					</div></div></div>';
+				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"])) {
+					$fs_id = $_POST["fs_id"];
+					$timestamp = $_POST["time"];
+					$sign = $_POST["sign"];
+					$randsk = $_POST["randsk"];
+					$share_id = $_POST["share_id"];
+					$uk = $_POST["uk"];
+					function getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk)
+					{
+						$postdata = "encrypt=0";
+						$postdata .= "&extra=" . urlencode("{\"sekey\":\"" . urldecode($randsk) . "\"}"); //被这个转义坑惨了QAQ
+						$postdata .= "&fid_list=[$fs_id]";
+						$postdata .= "&primaryid=$share_id";
+						$postdata .= "&uk=$uk";
+						$postdata .= "&product=share&type=nolimit";
+						$url = 'https://pan.baidu.com/api/sharedownload?app_id=250528&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';
+						$headerArray = array(
+							"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
+							"Cookie: BDUSS=" . constant("BDUSS") . ";STOKEN=" . constant("STOKEN") . ";BDCLND=" . $randsk . ";",
+							"Referer: https://pan.baidu.com/disk/home"
+						);
+						$res3 = post($url, $postdata, $headerArray);
+						$res3 = json_decode($res3, true);
+						//var_dump($postdata, $res3);
+						//没有 referer 就 112 ，然后没有 sekey 参数就 118    -20？？？
+						// 		参数				类型		描述
+						// list					json array	文件信息列表
+						// names				json		如果查询共享目录，该字段为共享目录文件上传者的uk和账户名称
+						// list[0]["category"]	int			文件类型
+						// list[0]["dlink"]		string		文件下载地址
+						// list[0]["file_name"]	string		文件名
+						// list[0]["isdir"]		int			是否是目录
+						// list[0]["server_ctime"]	int		文件的服务器创建时间
+						// list[0]["server_mtime"]	int		文件的服务修改时间
+						// list[0]["size"]		int			文件大小
+						// list[0]["thumbs"]				缩略图地址
+						// list[0]["height"]	int			图片高度
+						// list[0]["width"]		int			图片宽度
+						// list[0]["date_taken"]	int		图片拍摄时间
+						return $res3;
+					}
+					$json4 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk);
+					if ($json4["errno"] == 0) {
+						$dlink = $json4["list"][0]["dlink"];
+						$md5 = $json4["list"][0]["md5"];
+						$filename = $json4["list"][0]["server_filename"];
+						$size = $json4["list"][0]["size"];
+						$server_ctime = (int)$json4["list"][0]["server_ctime"] + 28800; //服务器创建时间 +8:00
+						$headerArray = array(
+							'User-Agent: LogStatistic',
+							'Cookie: BDUSS=' . constant("BDUSS") . ';'
+						);
+						$getRealLink = head($dlink, $headerArray); // 禁止重定向
+						$getRealLink = strstr($getRealLink, "Location");
+						$getRealLink = substr($getRealLink, 10);
+						$realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
+						// 3. 使用dlink下载文件
+						// 4. dlink有效期为8小时
+						// 5. 必需要设置User-Agent字段
+						// 6. dlink存在302跳转
+						if ($realLink == "") {
+							echo '<div class="row justify-content-center">
+							<div class="col-md-7 col-sm-8 col-11">
+							<div class="alert alert-danger" role="alert">
+							<h5 class="alert-heading">获取下载链接失败</h5><hr>
+							<p class="card-text">已获取到文件，但未能获取到下载链接！</p>
+							<p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
+							<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>
+							<p class="card-text">文件名: <b>' . $filename . '</b></p>
+							<p class="card-text">文件大小: <b>' . formatSize($size) . '</b></p>
+							<p class="card-text">文件MD5: <b>' . $md5 . '</b></p>
+							<p class="card-text">上传时间: <b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>
+							</div></div></div>';
+						} else {
+							echo '<div class="row justify-content-center">
+							<div class="col-md-7 col-sm-8 col-11">
+							<div class="alert alert-primary" role="alert">
+							<h5 class="alert-heading">获取下载链接成功</h5><hr>
+							<p class="card-text">文件名: <b>' . $filename . '</b></p>
+							<p class="card-text">文件大小: <b>' . formatSize($size) . '</b></p>
+							<p class="card-text">文件MD5: <b>' . $md5 . '</b></p>
+							<p class="card-text">上传时间: <b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>
+							<p class="card-text"><a href="http://' . $realLink . '" target="_blank">下载链接(http)</a>
+							<a href="https://' . $realLink . '" target="_blank">下载链接(https)</a></p>
+							<p class="card-text"><a href="?help" target="_blank">下载链接使用方法（必读）</a></p>
+							</div></div></div>';
+						}
+					} else {
+						echo '<div class="row justify-content-center">
+						<div class="col-md-7 col-sm-8 col-11">
+						<div class="alert alert-danger" role="alert">
+							<h5 class="alert-heading">获取下载链接失败</h5><hr>
+							<p class="card-text">未知错误！</p>
+							</div></div></div>';
+					}
 				} else {
 					echo '<div class="row justify-content-center">
 					<div class="col-md-7 col-sm-8 col-11">
 					<div class="alert alert-danger" role="alert">
-						<h5 class="alert-heading">获取下载链接失败</h5><hr>
-						<p class="card-text">未知错误</p>
+						<h5 class="alert-heading">参数有误</h5><hr>
+						<p class="card-text">POST 传参出现问题！请不要自行构建表单提交！</p>
 						</div></div></div>';
 				}
 			} else {
