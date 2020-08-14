@@ -19,12 +19,8 @@ function validateForm() {
 }
 function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
 	var form = $('<form method="post" action="?download" target="_blank"></form>');
-	form.append(`<input type="hidden" name="fs_id" value="${fs_id}"/>
-		<input type="hidden" name="time" value="${timestamp}"/>
-		<input type="hidden" name="sign" value="${sign}"/>
-		<input type="hidden" name="randsk" value="${randsk}"/>
-		<input type="hidden" name="share_id" value="${share_id}"/>
-		<input type="hidden" name="uk" value="${uk}"/>`);
+	form.append(`<input type="hidden" name="fs_id" value="${fs_id}"/><input type="hidden" name="time" value="${timestamp}"/><input type="hidden" name="sign" value="${sign}"/>
+		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
 	$(document.body).append(form); form.submit();
 }
 function getIconClass(filename) {
@@ -51,5 +47,5 @@ function getIconClass(filename) {
 }
 function ToSharePage(surl) {
 	sweetAlert('即将跳转','暂不支持文件夹下载！\r\n即将跳转到百度网盘官方的分享页面！','info');
-	return setTimeout(u => { open('https://pan.baidu.com/s/' + u); }, 1800, surl);
+	return setTimeout(u => { open('https://pan.baidu.com/s/' + u); }, 1750, surl);
 }
