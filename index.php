@@ -10,7 +10,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.2.3
+ * @version 1.3.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -21,6 +21,7 @@
  * @link https://space.bilibili.com/52618445
  */
 // 导入配置和函数
+session_start();
 define('init', true);
 if (file_exists('config.php') && file_exists('functions.php')) {
 	require('config.php'); require('functions.php');
@@ -112,36 +113,61 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				</div>
 			</div>
 		<?php } elseif (isset($_POST["surl"]) && isset($_POST["pwd"])) { // 解析链接页面
-			if (isset($_GET["dir"])) {
-				echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-				<h5 class="alert-heading">功能尚未支持</h5><hr /><p class="card-text">很抱歉，此功能仍在开发中！</p></div></div></div>';
+			CheckPassword();
+			$surl = $_POST["surl"];
+			$pwd = $_POST["pwd"];
+			if (isset($_POST["dir"])) {
+				if ($pwd !== '') $randsk = verifyPwd($surl, $pwd);
+				else $randsk = '';
+				$shareid = $_POST["share_id"];
+				$root = getSign($surl, $randsk);
+				if ($root !== 1) {
+					$uk = $_POST["uk"];
+					$sign = $root["sign"];
+					$timestamp = $root["timestamp"];
+					$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
+					if ($filejson["errno"] != 0) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
+						<h5 class="alert-heading">文件夹存在问题</h5><hr /><p class="card-text">此文件夹存在问题，无法访问！</p></div></div></div>'; // 鬼知道发生了啥
+					else { // 终于正常了
+						$link = str_replace(strrchr(str_replace(strrchr($_POST["dir"],'/'), '', $_POST["dir"]),'/'), '', str_replace(strrchr($_POST["dir"],'/'), '', $_POST["dir"])) === ''
+							? '<a href="javascript:OpenRoot(\'1' . $surl . '\',\'' . $pwd . '\');">/（根目录）</a>'
+							: '<a href="javascript:OpenDir(\''.str_replace(strrchr($_POST["dir"],'/'), '', $_POST["dir"]).'\',\''.$pwd.'\',\''.$shareid.'\',\''.$uk.'\',\''.$surl.'\');">..（上级目录）</a>';
+						$filecontent = '<ol class="breadcrumb my-4">文件列表（' . count($filejson["list"]) . '个文件(夹)）</ol><div><ul class="list-group">'
+							. '<li class="list-group-item border-muted rounded text-muted py-2"><i class="far fa-folder mr-2"></i>' . $link . '<span class="float-right"></span></li>';
+						for ($i = 0; $i < count($filejson["list"]); $i++) {
+							$file = $filejson["list"][$i];
+							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted rounded text-muted py-2"><i class="far fa-file mr-2"></i>
+								<a href="javascript:dl(\''.$file["fs_id"].'\','.$timestamp.',\''.$sign.'\',\''.urlencode($randsk).'\',\''.$shareid.'\',\''.$uk.'\');">'.$file["server_filename"].'</a>
+								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
+							else $filecontent .= '<li class="list-group-item border-muted rounded text-muted py-2"><i class="far fa-folder mr-2"></i>
+								<a href="javascript:OpenDir(\''.$file["path"].'\',\''.$pwd.'\',\''.$shareid.'\',\''.$uk.'\',\''.$surl.'\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+						}
+						echo $filecontent . "</ul></div>";
+					}
+				} else echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
+					<h5 class="alert-heading">提示</h5><hr /><p class="card-text">提取码错误或文件失效！</p></div></div></div>';
 			} else {
-				CheckPassword();
-				$surl = $_POST["surl"];
-				$pwd = $_POST["pwd"];
 				$surl_1 = substr($surl, 1);
 				if ($pwd !== '') $randsk = verifyPwd($surl_1, $pwd);
 				else $randsk = '';
 				$root = getSign($surl_1, $randsk);
-				if ($root !== 1) {
-					$filejson = FileList($root);
+				$filejson = FileList($root);
+				if ($filejson !== 1) {
 					$sign = $root["sign"];
 					$timestamp = $root["timestamp"];
 					$shareid = $root["shareid"];
 					$uk = $root["uk"];
-					if ($filejson["errno"] == -21) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-						<h5 class="alert-heading">链接不存在</h5><hr /><p class="card-text">此链接分享内容可能被取消或因涉及侵权、色情、反动、低俗等信息，无法访问！</p></div></div></div>'; // 链接失效
-					else if ($filejson["errno"] != 0) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-						<h5 class="alert-heading">链接存在问题</h5><hr /><p class="card-text">此链接存在问题，无法访问！</p></div></div></div>'; // 鬼知道发生了啥，比如说 -7
+					if ($filejson["errno"] != 0) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
+						<h5 class="alert-heading">链接存在问题</h5><hr /><p class="card-text">此链接存在问题，无法访问！</p></div></div></div>'; // 鬼知道发生了啥
 					else { // 终于正常了
 						$filecontent = '<ol class="breadcrumb my-4">文件列表（' . count($filejson["list"]) . '个文件(夹)）</ol><div><ul class="list-group">';
 						for ($i = 0; $i < count($filejson["list"]); $i++) {
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted rounded text-muted py-2"><i class="far fa-file mr-2"></i>
-								<a href="javascript:dl(\''.$file["fs_id"].'\','.$timestamp.',\''.$sign.'\',\''.$randsk.'\',\''.$shareid.'\',\''.$uk.'\');">'.$file["server_filename"].'</a>
+								<a href="javascript:dl(\''.$file["fs_id"].'\','.$timestamp.',\''.$sign.'\',\''.urlencode($randsk).'\',\''.$shareid.'\',\''.$uk.'\');">'.$file["server_filename"].'</a>
 								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted rounded text-muted py-2"><i class="far fa-folder mr-2"></i>
-								<a href="javascript:ToSharePage(\'' . $surl . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+								<a href="javascript:OpenDir(\''.$file["path"].'\',\''.$pwd.'\',\''.$shareid.'\',\''.$uk.'\',\''.$surl_1.'\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
 						echo $filecontent . "</ul></div>";
 					}
@@ -190,7 +216,17 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<form name="form1" method="post" onsubmit="return validateForm()">
 							<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="分享链接"></div>
 							<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="提取码"></div>
-							<?php if (IsCheckPassword) { echo '<div class="form-group my-4"><input type="text" class="form-control" name="password" placeholder="密码"></div>'; } // 密码 ?>
+							<?php
+							if (IsCheckPassword) {
+								$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="密码"></div>';
+								if (isset($_SESSION["Password"])) {
+									if ($_SESSION["Password"] === Password) {
+										$return = '<div class="form-group my-4">您的设备在短期内已经验证过，无需再次输入密码。</div>';
+									}
+								}
+								echo $return;
+							} // 密码
+							?>
 							<button type="submit" class="mt-4 mb-3 form-control btn btn-success btn-block">打开</button>
 						</form>
 					</div>

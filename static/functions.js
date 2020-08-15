@@ -23,6 +23,12 @@ function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
 		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
 	$(document.body).append(form); form.submit();
 }
+function OpenDir(path, pwd, share_id, uk, surl) {
+	var form = $('<form method="post"></form>');
+	form.append(`<input type="hidden" name="dir" value="${path}"/><input type="hidden" name="pwd" value="${pwd}"/><input type="hidden" name="surl" value="${surl}"/>
+		<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
+	$(document.body).append(form); form.submit();
+}
 function getIconClass(filename) {
 	var filetype = {
 		file_video: ["wmv", "rmvb", "mpeg4", "mpeg2", "flv", "avi", "3gp", "mpga", "qt", "rm", "wmz", "wmd", "wvx", "wmx", "wm", "mpg", "mp4", "mkv", "mpeg", "mov", "asf", "m4v", "m3u8", "swf"],
@@ -45,7 +51,8 @@ function getIconClass(filename) {
 	for (var icon in filetype) for (var type in filetype[icon]) if (t === filetype[icon][type]) return "fa-" + icon.replace('_', '-');
 	return "";
 }
-function ToSharePage(surl) {
-	sweetAlert('即将跳转','暂不支持文件夹下载！\r\n即将跳转到百度网盘官方的分享页面！','info');
-	return setTimeout(open, 1750, 'https://pan.baidu.com/s/' + surl);
+function OpenRoot(surl, pwd){
+	var form = $('<form method="post"></form>');
+	form.append(`<input type="hidden" name="surl" value="${surl}"/><input type="hidden" name="pwd" value="${pwd}"/>`);
+	$(document.body).append(form); form.submit();
 }

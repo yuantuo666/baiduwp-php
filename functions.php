@@ -6,7 +6,7 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.2.3
+ * @version 1.3.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -91,10 +91,23 @@ function formatSize(float $size, int $times = 0) { // 格式化size显示
 }
 function CheckPassword() { // 校验密码
 	if (IsCheckPassword) {
-		if ((!isset($_POST["password"])) || $_POST["password"] !== Password) die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
-		<div class="alert alert-danger" role="alert"><h5 class="alert-heading">错误</h5><hr><p class="card-text">密码错误！</p></div></div>
-		</div></div><script>sweetAlert("错误","密码错误！","error");</script></body></html>');
-		else echo '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
+		if (!isset($_POST["Password"])) {
+			if (isset($_SESSION["Password"])) {
+				if ($_SESSION["Password"] === Password) {
+					echo isset($_POST["dir"]) ? '' : '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
+					return;
+				}
+			}
+		} else {
+			if ($_POST["Password"] === Password) {
+				$_SESSION['Password'] = $_POST["Password"];
+				echo isset($_POST["dir"]) ? '' : '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
+				return;
+			}
+		}
+		die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
+			<div class="alert alert-danger" role="alert"><h5 class="alert-heading">错误</h5><hr><p class="card-text">密码错误！</p></div></div>
+			</div></div><script>sweetAlert("错误","密码错误！","error");</script></body></html>');
 	}
 }
 // 解析分享链接
@@ -116,8 +129,12 @@ function getSign(string $surl, $randsk) {
 	if (preg_match('/yunData.setData\((\{.*?\})\);/', get($url, $header), $matches)) return json_decode($matches[1], true);
 	else return 1;
 }
-function getFileList(string $shareid, string $uk, string $randsk) {
-	$url = 'https://pan.baidu.com/share/list?app_id=250528&channel=chunlei&clienttype=0&desc=0&num=100&order=name&page=1&root=1&shareid='.$shareid.'&showempty=0&uk='.$uk.'&web=1';
+function FileList($sign) {
+	if ($sign === 1) return 1;
+	return $sign['file_list'] === null ? 1 : $sign['file_list'];
+}
+function GetDir(string $dir, string $randsk, string $shareid, string $uk) {
+	$url = 'https://pan.baidu.com/share/list?shareid='.$shareid.'&uk='.$uk.'&dir='.$dir;
 	$header = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";",
@@ -125,15 +142,11 @@ function getFileList(string $shareid, string $uk, string $randsk) {
 	);
 	return json_decode(get($url, $header), true);
 }
-function FileList($sign) {
-	if ($sign === 1) return 1;
-	return $sign['file_list'];
-}
 function FileInfo(string $filename, float $size, string $md5, int $server_ctime) { // 输出 HTML 字符串
 	return '<p class="card-text">文件名：<b>' . $filename . '</b></p><p class="card-text">文件大小：<b>' . formatSize($size) . '</b></p><p class="card-text">文件MD5：<b>' . $md5
 		. '</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
 }
-function getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk) { // 获取下载链接
+function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk) { // 获取下载链接
 	$url = 'https://pan.baidu.com/api/sharedownload?app_id=250528&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';
 	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . urldecode($randsk) . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
 	$header = array(
