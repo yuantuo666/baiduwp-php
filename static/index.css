@@ -1,4 +1,4 @@
-body { background: url("https://pandownload.com/img/baiduwp/bg.png"); }
+body { background: url("../resource/bg.png"); }
 .logo-img { width: 1.1em; position: relative; top: -3px; }
 .form-inline input { width: 500px; }
 .input-card { position: relative; top: 7.0em; }

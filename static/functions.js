@@ -47,5 +47,5 @@ function getIconClass(filename) {
 }
 function ToSharePage(surl) {
 	sweetAlert('即将跳转','暂不支持文件夹下载！\r\n即将跳转到百度网盘官方的分享页面！','info');
-	return setTimeout(u => { open('https://pan.baidu.com/s/' + u); }, 1750, surl);
+	return setTimeout(open, 1750, 'https://pan.baidu.com/s/' + surl);
 }
