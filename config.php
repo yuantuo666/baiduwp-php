@@ -12,7 +12,7 @@
  * 请不要使用弱密码！否则后果自负！
  * 若只在局域网开放，则可根据个人喜好开启或关闭密码。
  *
- * @version 1.2.3
+ * @version 1.3.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
