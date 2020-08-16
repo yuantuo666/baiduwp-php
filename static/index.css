@@ -1,0 +1,11 @@
+body { background: url("../resource/bg.png"); }
+.logo-img { width: 1.1em; position: relative; top: -3px; }
+.form-inline input { width: 500px; }
+.input-card { position: relative; top: 7.0em; }
+.card-header { height: 3.2em; font-size: 20px; line-height: 2.0em; }
+.card-text { word-wrap: break-word; }
+form input, form button { height: 3em; }
+.alert { position: relative; top: 5em; }
+.alert-heading { height: 0.8em; }
+.anchor { vertical-align: top; }
+.anchor + h4 { display: inline-block; margin-left: 0.4rem; }

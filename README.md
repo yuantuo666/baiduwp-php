@@ -1,27 +1,41 @@
 # baiduwp-php
-PanDownload网页复刻版，PHP语言版
+PanDownload 网页复刻版，PHP 语言版<br/>
+本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考<br/>
+希望在使用时能够保留导航栏的 Made by Yuan_Tuo 和 Optimized by LC，感谢！
+- 原作者 [Yuan_Tuo](https://github.com/yuantuo666 "Yuantuo")
+- 由 [LC](https://github.com/lc6464 "LC") 优化
 
-本项目是依据[baiduwp](https://github.com/TkzcM/baiduwp)的javascript版本改写而来，仅供大家学习参考
+## Demo
+[已加密，暂不开放！](https://imwcr.cn/api/bdwp/)
 
-另外使用的时候能不能保留一下作者信息呀（就是菜单栏的Made by Yuan_Tuo），谢~
-
-# Demo
-[暂不开放](https://imwcr.cn/api/bdwp/)
-
-# Setting
+## Setting
+请在 `config.php` 中找：
 ```
-define("BDUSS", "你的BDUSS");
-define("STOKEN", "你的STOKEN");
-$setpassword="你的密码";
+define('BDUSS', '');
+define('STOKEN', '');
+define('IsCheckPassword', true);
+define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 ```
-替换成你自己的SVIP信息就行，获取cookie方法见视频[BV1Yh411d7Gd](https://www.bilibili.com/video/BV1Yh411d7Gd)
+- 前两项替换成你自己的 SVIP 信息就行，获取 cookie 方法见视频 [BV1Yh411d7Gd](https://www.bilibili.com/video/BV1Yh411d7Gd)
+- 第三项是是否需要密码的选项
+- 第四项是首页需要输入的密码，但是如果第三项为 `false` 则无效
+- 详细信息可见 `config.php` 的注释
 
-# Thanks
+## Thanks
+- [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
+- [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")
+- [KinhDown 客户端](https://t.me/kinhdown/ "KinhDown 客户端")
+- [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
 
-[baiduwp](https://github.com/TkzcM/baiduwp): javascript 版本
+## New Changes
+- 当前版本：`1.3.1`
+- 更新日期：2020-8-16
+- 以下修改由 [LC](https://github.com/lc6464 "LC") 完成
+  - 优化后端逻辑和效率
+  - 优化代码
+  - 使用 SESSION 保存已经展示 <ins>**不要泄露密码提示**</ins> 的状态
+  - 优化错误时提示
 
-[PanDownload](https://pandownload.com): static pages
-
-[KinhDown](https://t.me/kinhdown): client type
-
-[PNL](https://www.lanzous.com/u/pnl): download method
+## 坑或不确定
+- `static/functions.js`
+  - 36 行
