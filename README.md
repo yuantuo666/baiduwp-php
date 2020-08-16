@@ -28,14 +28,13 @@ define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 - [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
 
 ## New Changes
-- 当前版本：`1.3.0`
-- 更新日期：2020-8-15
+- 当前版本：`1.3.1`
+- 更新日期：2020-8-16
 - 以下修改由 [LC](https://github.com/lc6464 "LC") 完成
   - 优化后端逻辑和效率
   - 优化代码
-  - 支持打开子文件夹
-  - 支持下载子文件夹内的文件
-  - 使用 SESSION 保存客户端登录状态
+  - 使用 SESSION 保存已经展示泄露密码提示的状态
+  - 优化错误时提示
 
 ## 坑或不确定
 - `static/functions.js`

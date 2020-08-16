@@ -10,7 +10,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.3.0
+ * @version 1.3.1
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -23,11 +23,12 @@
 // 导入配置和函数
 session_start();
 define('init', true);
+define('programVersion', '1.3.1');
 if (file_exists('config.php') && file_exists('functions.php')) {
 	require('config.php'); require('functions.php');
 } else {
-	http_response_code(503); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 7;url=https://github.com/lc6464/baiduwp-php');
-	die("缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在七秒内跳转到 GitHub 储存库！");
+	http_response_code(503); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 5;url=https://github.com/lc6464/baiduwp-php');
+	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
@@ -61,9 +62,10 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="">主页</a></li>
+					<li class="nav-item"><a class="nav-link" href="">首页</a></li>
 					<li class="nav-item"><a class="nav-link" href="https://pandownload.com/" target="_blank">度盘下载器</a></li>
-					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">GitHub 仓库</a></li>
+					<li class="nav-item"><a class="nav-link" href="https://github.com/lc6464/baiduwp-php" target="_blank">GitHub 仓库</a></li>
+					<li class="nav-item"><a class="nav-link" href="https://github.com/lc6464/baiduwp-php/releases/tag/<?php echo programVersion; ?>" target="_blank">版本：<?php echo programVersion; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
 					<li class="nav-item"><a class="nav-link" href="https://lcwebsite.cn/" target="_blank">Optimized by LC</a></li>
 				</ul>

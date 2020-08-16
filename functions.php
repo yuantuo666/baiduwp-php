@@ -6,7 +6,7 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.3.0
+ * @version 1.3.1
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -16,7 +16,10 @@
  * @link https://lcwebsite.cn/
  * @link https://space.bilibili.com/52618445
  */
-if (!defined('init')){ http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./'); die("想啥呢？\r\n直接访问这个文件？"); } // 直接访问处理程序
+if (!defined('init')){ // 直接访问处理程序
+    http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./');
+    die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本" . programVersion . "的有关文件！\r\n禁止直接访问！");
+}
 
 // main
 function setCurl(&$ch, array $header) { // 批处理 curl
@@ -94,15 +97,17 @@ function CheckPassword() { // 校验密码
 		if (!isset($_POST["Password"])) {
 			if (isset($_SESSION["Password"])) {
 				if ($_SESSION["Password"] === Password) {
-					echo isset($_POST["dir"]) ? '' : '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
-					return;
+					echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
+						: '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
+					$_SESSION['ShowAlert'] = true; return;
 				}
 			}
 		} else {
 			if ($_POST["Password"] === Password) {
 				$_SESSION['Password'] = $_POST["Password"];
-				echo isset($_POST["dir"]) ? '' : '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
-				return;
+				echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
+					: '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！\r\n——Yuan_Tuo","info");</script>';
+				$_SESSION['ShowAlert'] = true; return;
 			}
 		}
 		die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
