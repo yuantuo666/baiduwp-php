@@ -11,7 +11,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.3.4
+ * @version 1.3.5
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -205,8 +205,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<h5 class="alert-heading">获取下载链接失败</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
 							<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
 						else echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-primary" role="alert">
-							<h5 class="alert-heading">获取下载链接成功</h5><hr />' . FileInfo($filename, $size, $md5, $server_ctime) . '<p class="card-text"><a href="http://' . $realLink . '" target="_blank">下载链接（不安全）</a>
-							<a href="https://' . $realLink . '" target="_blank">下载链接（安全）</a></p><p class="card-text"><a href="?help" target="_blank">下载链接使用方法（必读）</a></p></div></div></div>'; // 成功！
+							<h5 class="alert-heading">获取下载链接成功</h5><hr />' . FileInfo($filename, $size, $md5, $server_ctime) . '<p class="card-text"><a href="http://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">下载链接（不安全）</a>
+							<a href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">下载链接（安全）</a></p><p class="card-text"><a href="?help" target="_blank">下载链接使用方法（必读）</a></p></div></div></div>'; // 成功！
 					} else echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 						<h5 class="alert-heading">获取下载链接失败</h5><hr /><p class="card-text">未知错误！</p></div></div></div>'; // 未知错误
 				} else echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">

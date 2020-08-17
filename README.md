@@ -32,14 +32,13 @@ define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 - [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
 
 ## New Changes
-- 当前版本：`1.3.4`
+- 当前版本：`1.3.5`
 - 更新日期：2020-8-17
 - 以下修改由 [LC](https://github.com/lc6464 "LC") 完成
   - 优化后端逻辑和效率
   - 优化代码
   - 优化错误时提示
-  - 修复 PHP 7- 版本使用时报错的情况
-  - 强制要求使用 PHP 7 或 7+
+  - 修复浏览器中点击下载链接，传递 Referer 导致概率性出错的问题
 
 ## 坑或不确定
 - `static/functions.js`
