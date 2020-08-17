@@ -40,4 +40,4 @@ define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 
 ## 坑或不确定
 - `static/functions.js`
-  - 36 行
+  - 42 行
