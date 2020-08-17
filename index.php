@@ -4,13 +4,14 @@
  *
  * 功能描述：使用百度 SVIP 账号获取真实下载地址，与 Pandownload 原版无关。
  * 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考。
+ *
  * 希望在使用时能够保留导航栏的 Made by Yuan_Tuo 和 Optimized by LC，感谢！
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.3.1
+ * @version 1.3.3
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -23,7 +24,6 @@
 // 导入配置和函数
 session_start();
 define('init', true);
-define('programVersion', '1.3.1');
 if (file_exists('config.php') && file_exists('functions.php')) {
 	require('config.php'); require('functions.php');
 } else {
