@@ -70,7 +70,7 @@ function getSubstr(string $str, string $leftStr, string $rightStr) {
 	$left += strlen($leftStr);
 	return substr($str, $left, $right - $left);
 }
-function formatSize(float $size, $times = 0) { // 格式化size显示 这里如果是PHP严格模式，会报错，现已修正
+function formatSize(float $size, int $times = 0) { // 格式化size显示 PHP版本过老会报错
 	if ($size > 1024) {
 		$size /= 1024;
 		return formatSize($size, $times + 1); // 递归处理
