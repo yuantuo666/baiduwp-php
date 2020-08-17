@@ -24,6 +24,10 @@
 // 导入配置和函数
 session_start();
 define('init', true);
+if (version_compare(phpversion(), '7.0', '<')) {
+	http_response_code(503); header('Content-Type: text/plain; charset=utf-8');
+	die('PanDownload复刻版运行环境 需要PHP环境在 7.0 以上 ，当前是'.phpversion().'请更新');
+}
 if (file_exists('config.php') && file_exists('functions.php')) {
 	require('config.php'); require('functions.php');
 } else {
