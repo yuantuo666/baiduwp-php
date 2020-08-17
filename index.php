@@ -10,7 +10,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.3.1
+ * @version 1.3.2
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -23,7 +23,6 @@
 // 导入配置和函数
 session_start();
 define('init', true);
-define('programVersion', '1.3.1');
 if (file_exists('config.php') && file_exists('functions.php')) {
 	require('config.php'); require('functions.php');
 } else {

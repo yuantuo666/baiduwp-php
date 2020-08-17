@@ -16,7 +16,7 @@ define('STOKEN', '');
 define('IsCheckPassword', true);
 define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 ```
-- 前两项替换成你自己的 SVIP 信息就行，获取 cookie 方法见视频 [BV1Yh411d7Gd](https://www.bilibili.com/video/BV1Yh411d7Gd)
+- 前两项填入你自己的 SVIP 信息就行，获取 cookie 方法见视频 [BV1Yh411d7Gd](https://www.bilibili.com/video/BV1Yh411d7Gd)
 - 第三项是是否需要密码的选项
 - 第四项是首页需要输入的密码，但是如果第三项为 `false` 则无效
 - 详细信息可见 `config.php` 的注释
@@ -28,13 +28,15 @@ define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 - [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
 
 ## New Changes
-- 当前版本：`1.3.1`
-- 更新日期：2020-8-16
+- 当前版本：`1.3.2`
+- 更新日期：2020-8-17
 - 以下修改由 [LC](https://github.com/lc6464 "LC") 完成
   - 优化后端逻辑和效率
   - 优化代码
-  - 使用 SESSION 保存已经展示泄露密码提示的状态
-  - 优化错误时提示
+  - 修复缺少文件或直接访问 `config.php` 和 `functions.php` 时出错的问题
+
+## 安装注意事项
+- 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限**问题
 
 ## 坑或不确定
 - `static/functions.js`
