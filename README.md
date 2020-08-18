@@ -11,12 +11,13 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ## Setting
 请在 `config.php` 中找：
 ```
-define('BDUSS', '');
-define('STOKEN', '');
+define('BDUSS', '123');
+define('STOKEN', '456');
 define('IsCheckPassword', true);
 define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 ```
 - 前两项填入你自己的 SVIP 信息就行，获取 cookie 方法见视频 [BV1Yh411d7Gd](https://www.bilibili.com/video/BV1Yh411d7Gd)
+- 其中123换成SVIP的BDUSS，456换成SVIP的STOKEN
 - 第三项是是否需要密码的选项
 - 第四项是首页需要输入的密码，但是如果第三项为 `false` 则无效
 - 详细信息可见 `config.php` 的注释
