@@ -12,7 +12,7 @@
  * 请不要使用弱密码！否则后果自负！
  * 若只在局域网开放，则可根据个人喜好开启或关闭密码。
  *
- * @version 1.3.5
+ * @version 1.3.6
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -22,7 +22,7 @@
  * @link https://lcwebsite.cn/
  * @link https://space.bilibili.com/52618445
  */
-define('programVersion', '1.3.5');
+define('programVersion', '1.3.6');
 if (!defined('init')){ // 直接访问处理程序
 	http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./');
 	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的配置文件！\r\n禁止直接访问！");
