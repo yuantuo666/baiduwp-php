@@ -15,8 +15,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ## Setting
 请在 `config.php` 中找：
 ```
-define('BDUSS', '123');
-define('STOKEN', '456');
+define('BDUSS', '');
+define('STOKEN', '');
 define('IsCheckPassword', true);
 define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 ```
@@ -25,6 +25,15 @@ define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 - 第三项是是否需要密码的选项
 - 第四项是首页需要输入的密码，但是如果第三项为 `false` 则无效
 - 详细信息可见 `config.php` 的注释
+
+例如，你的SVIP的BDUSS是 `123` ，STOKEN是 `456` ，开启密码并且设置为 `789` ，那么应该将 `config.php` 中设置成以下的代码：
+
+```
+define('BDUSS', '123');
+define('STOKEN', '456');
+define('IsCheckPassword', true);
+define('Password', '789');
+```
 
 ## Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
