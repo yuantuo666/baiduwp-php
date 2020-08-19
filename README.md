@@ -8,6 +8,10 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ## Demo
 [已加密，暂不开放！](https://imwcr.cn/api/bdwp/)
 
+## 安装注意事项
+- 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限**问题
+- 仅支持 **PHP 7 和 7+**！
+
 ## Setting
 请在 `config.php` 中找：
 ```
@@ -29,17 +33,14 @@ define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 - [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
 
 ## New Changes
-- 当前版本：`1.3.3`
+- 当前版本：`1.3.5`
 - 更新日期：2020-8-17
 - 以下修改由 [LC](https://github.com/lc6464 "LC") 完成
   - 优化后端逻辑和效率
   - 优化代码
-  - 修复缺少文件或直接访问 `config.php` 和 `functions.php` 时出错的问题
   - 优化错误时提示
+  - 修复浏览器中点击下载链接，传递 Referer 导致概率性出错的问题
 
-## 坑或不确定
-- `static/functions.js`
-  - 42 行
 
 ## 安装注意事项
 - 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限**问题

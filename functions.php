@@ -6,7 +6,7 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.3.3
+ * @version 1.3.5
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
