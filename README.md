@@ -6,7 +6,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - 由 [LC](https://github.com/lc6464 "LC") 优化
 
 ## 黑名单
-- http://vippan.top/ 版本1.3.6
+- http://vippan.top/ http://huluxia.vippan.top/ 版本1.3.6
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
 已经通知站长，请修改网站后联系我删除黑名单。
