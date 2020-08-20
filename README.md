@@ -5,6 +5,10 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - 原作者 [Yuan_Tuo](https://github.com/yuantuo666 "Yuantuo")
 - 由 [LC](https://github.com/lc6464 "LC") 优化
 
+## 黑名单
+- http://vippan.top/
+以上网站使用本项目源码，未与作者联系而删除作者信息。
+
 ## Demo
 [已加密，暂不开放！](https://imwcr.cn/api/bdwp/)
 
