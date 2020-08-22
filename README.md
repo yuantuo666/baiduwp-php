@@ -18,6 +18,14 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限**问题
 - 仅支持 **PHP 7 和 7+**！
 
+## 视频教程
+B站的视频应该是被举报了，现在已经锁定了，历经十二天终究是昙花一现。
+
+[原视频备份](https://v.youku.com/v_show/id_XNDc5MDExMzAyMA====.html)
+
+[LC](https://github.com/lc6464 "LC")优化版使用方法 [BV1dt4y1D7Cf](https://b23.tv/pfUrnp)
+
+
 ## Setting
 请在 `config.php` 中找：
 ```
