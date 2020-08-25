@@ -2,8 +2,6 @@
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考<br/>
 希望在使用时能够保留导航栏的 Made by Yuan_Tuo 和 Optimized by LC，感谢！
-- 原作者 [Yuan_Tuo](https://github.com/yuantuo666 "Yuantuo")
-- 由 [LC](https://github.com/lc6464 "LC") 优化
 
 ## 黑名单
 - 暂无
@@ -56,8 +54,8 @@ define('Password', '789');
 - [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
 
 ## New Changes
-- 当前版本：`1.3.6`
-- 更新日期：2020-8-19
+- 当前版本：`1.3.7`
+- 更新日期：2020-8-25
 - 修改内容
-  - 修复下载大文件时json_decode处理数字使用科学计数法导致下载失败
-
+  - 修复?download页面下无密码可进入问题
+  - 增加版本显示，便于反馈问题
