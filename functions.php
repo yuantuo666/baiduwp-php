@@ -6,15 +6,12 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.3.6
+ * @version 1.3.7
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
- * @author LC <lc@lcwebsite.cn>
- * @link https://lcwebsite.cn/
- * @link https://space.bilibili.com/52618445
  */
 if (!defined('init')){ // 直接访问处理程序
 	http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./'); define('init', true);
