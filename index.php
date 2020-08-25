@@ -5,21 +5,18 @@
  * 功能描述：使用百度 SVIP 账号获取真实下载地址，与 Pandownload 原版无关。
  * 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考。
  *
- * 希望在使用时能够保留导航栏的 Made by Yuan_Tuo 和 Optimized by LC，感谢！
+ * 希望在使用时能够保留导航栏的 Made by Yuan_Tuo 感谢！
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.3.6
+ * @version 1.3.7
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
- * @author LC <lc@lcwebsite.cn>
- * @link https://lcwebsite.cn/
- * @link https://space.bilibili.com/52618445
  */
 session_start();
 define('init', true);
@@ -43,6 +40,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="author" content="Yuan_Tuo" />
 	<meta name="author" content="LC" />
+	<meta name="version" content="<?php echo programVersion; ?>" />
 	<meta name="description" content="PanDownload 网页版，百度网盘分享链接在线解析工具。" />
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
 	<title>PanDownload 复刻版</title>
@@ -61,16 +59,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 <body>
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<div class="container">
-			<a class="navbar-brand" href=""><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO" />PanDownload</a>
+			<a class="navbar-brand" href="./"><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO" />PanDownload</a>
 			<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="">首页</a></li>
-					<li class="nav-item"><a class="nav-link" href="https://pandownload.com/" target="_blank">度盘下载器</a></li>
-					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">GitHub 仓库</a></li>
-					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php/releases/tag/<?php echo programVersion; ?>" target="_blank">版本：<?php echo programVersion; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="./">首页</a></li>
+					<li class="nav-item"><a class="nav-link" href="?help" target="_blank">下载帮助</a></li>
 					<li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
-					<li class="nav-item"><a class="nav-link" href="https://lcwebsite.cn/" target="_blank">Optimized by LC</a></li>
 				</ul>
 			</div>
 		</div>
@@ -107,6 +102,14 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									<ol><li>设置 –> 浏览设置 -> 浏览器标识(UA)</li><li>添加自定义 UA：LogStatistic</li></ol>
 									<div id="Alook"><a class="anchor" href="#Alook"></a><h4>Alook 浏览器（IOS）</h4></div>
 									<ol><li>设置 -> 通用设置 -> 浏览器标识 -> 移动版浏览器标识 -> 自定义 -><br />填入 <b>LogStatistic</b></li></ol>
+									<div id="Copyright"><a class="anchor" href="#Copyright"></a><h4>关于此项目</h4></div>
+									<ol>
+									    <li>本项目与PanDownload无关。</li>
+									    <li>本项目仅以学习为目的，不得用于其他用途。</li>
+									    <li>当前项目版本：<?php echo programVersion; ?></li>
+									    <li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
+									    <li><a href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
+									</ol>
 								</section>
 								<script>
 									$('.anchor').attr('target', '_self').prepend(`<svg viewBox="0 0 16 16" version="1.1" width="16" height="16"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5
@@ -180,7 +183,10 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 					<h5 class="alert-heading">提示</h5><hr /><p class="card-text">提取码错误或文件失效！</p></div></div></div>';
 			}
 		} elseif (isset($_GET["download"])) { // 解析下载地址页面
-			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			if (IsCheckPassword AND (!isset($_SESSION["Password"]) OR $_SESSION["Password"] != Password)) {
+			    echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
+					<h5 class="alert-heading">提示</h5><hr /><p class="card-text">密码错误或超时，请返回首页重新验证密码。</p></div></div></div>';
+			}elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"])) {
 					$fs_id = $_POST["fs_id"];
 					$timestamp = $_POST["time"];
@@ -216,7 +222,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 		} else { // 首页 ?>
 			<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 				<div class="card">
-					<div class="card-header bg-dark text-light">百度网盘分享链接在线解析</div>
+					<div class="card-header bg-dark text-light">百度网盘分享链接在线解析 - V<?php echo programVersion; ?></div>
 					<div class="card-body">
 						<form name="form1" method="post" onsubmit="return validateForm()">
 							<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="分享链接"></div>
