@@ -324,7 +324,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			?>
 			<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 				<div class="card">
-					<div class="card-header bg-dark text-light">百度网盘分享链接在线解析 <a class="badge badge-info" href="https://github.com/yuantuo666/baiduwp-php">V<?php echo programVersion; ?></a></div>
+					<div class="card-header bg-dark text-light">百度网盘在线解析 <a class="badge badge-info" href="https://github.com/yuantuo666/baiduwp-php">V<?php echo programVersion; ?></a></div>
 					<div class="card-body">
 						<form name="form1" method="post" onsubmit="return validateForm()">
 							<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="请输入分享链接(完整也可)"></div>
