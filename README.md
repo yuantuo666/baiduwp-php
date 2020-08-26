@@ -3,8 +3,19 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考<br/>
 希望在使用时能够保留导航栏的 Made by Yuan_Tuo ，感谢！
 
+因为作者开学了，所以项目将不再频繁更新。
+
+一般情况下网页版不会出现问题，第一次使用就失败一般是设置的问题；如果使用一段时间后失效，一般是账号问题或服务器IP被baidu封了；如果是方法失效，这个项目将关闭。
+
+- 处理下载限速一般方法
+  - 尝试重新分享文件，部分文件可能出现奇怪的问题
+  - 耐心等待baidu解封账号
+  - 更换后台SVIP账号
+  - 更换服务器IP
+
+
 ## 黑名单
-- https://pan.kdbaidu.com/ （站长删除全部版本及版权信息）
+- 暂无
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
 已经通知站长，请修改网站后联系我删除黑名单。
@@ -52,10 +63,13 @@ define('Password', '789');
 - [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")
 - [KinhDown 客户端](https://t.me/kinhdown/ "KinhDown 客户端")
 - [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
+- [LC优化版](https://github.com/lc6464 "LC")
 
 ## New Changes
-- 当前版本：`1.3.7`
-- 更新日期：2020-8-25
+- 当前版本：`1.4.0`
+- 更新日期：2020-8-26
 - 修改内容
-  - 修复?download页面下无密码可进入问题
-  - 增加版本显示，便于反馈问题
+  - 增加推送至aria2功能
+  - 增加面包屑导航，便于寻找指定文件夹
+  - 完善错误提示，获取列表超时会提示
+  - 修复特殊路径报错（url传入时未编码）
