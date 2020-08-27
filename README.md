@@ -15,7 +15,6 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 
 ## 黑名单
-- https://pan.cveoy.com/index.php
 - http://byu5.cn/baiduwp/
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
