@@ -27,10 +27,10 @@ function validateForm() {
 	document.forms["form1"]["surl"].value = surl;
 	return true;
 }
-function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
+function dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
 	var form = $('<form method="post" action="?download" target="_blank"></form>');
 	form.append(`<input type="hidden" name="fs_id" value="${fs_id}"/><input type="hidden" name="time" value="${timestamp}"/><input type="hidden" name="sign" value="${sign}"/>
-		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
+		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="bdstoken" value="${bdstoken}"/><input type="hidden" name="filesize" value="${filesize}"/>`);
 	$(document.body).append(form); form.submit();
 }
 function OpenDir(path, pwd, share_id, uk, surl) {

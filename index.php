@@ -12,7 +12,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.4.0
+ * @version 1.4.1
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -168,6 +168,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 					$uk = $_POST["uk"];
 					$sign = $root["sign"];
 					$timestamp = $root["timestamp"];
+					$bdstoken = $root["bdstoken"];
 					$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
 					if ($filejson["errno"] != 0) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 						<h5 class="alert-heading">文件夹存在问题</h5><hr /><p class="card-text">此文件夹存在问题，无法访问！</p></div></div></div>'; // 鬼知道发生了啥
@@ -187,7 +188,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						for ($i = 0; $i < count($filejson["list"]); $i++) { //开始输出文件列表
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
-								<a href="javascript:dl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\');">' . $file["server_filename"] . '</a>
+								<a href="javascript:dl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
 								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 								<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
@@ -207,6 +208,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 					$timestamp = $root["timestamp"];
 					$shareid = $root["shareid"];
 					$uk = $root["uk"];
+					$bdstoken = $root["bdstoken"];
 					if ($filejson["errno"] != 0) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 						<h5 class="alert-heading">链接存在问题</h5><hr /><p class="card-text">此链接存在问题，无法访问！</p></div></div></div>'; // 鬼知道发生了啥
 					else { // 终于正常了
@@ -220,7 +222,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						for ($i = 0; $i < count($filejson["list"]); $i++) {
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
-								<a href="javascript:dl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\');">' . $file["server_filename"] . '</a>
+								<a href="javascript:dl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
 								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 								<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
@@ -234,14 +236,30 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			if (IsCheckPassword and (!isset($_SESSION["Password"]) or $_SESSION["Password"] != Password)) {
 				dl_error("密码错误", "密码错误或超时，请返回首页重新验证密码。"); // 密码错误
 			} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"])) {
+				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"]) && isset($_POST["bdstoken"]) && isset($_POST["filesize"])) {
 					$fs_id = $_POST["fs_id"];
 					$timestamp = $_POST["time"];
 					$sign = $_POST["sign"];
 					$randsk = $_POST["randsk"];
 					$share_id = $_POST["share_id"];
 					$uk = $_POST["uk"];
-					$json4 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk);
+					$bdstoken=$_POST["bdstoken"];
+					$filesize=$_POST["filesize"];
+					$nouarealLink="";//重置
+					if((int)$filesize<=52428800){
+					    $json5 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk ,$bdstoken,true);
+					    if ($json5["errno"] == 0) {
+					        $nouadlink = $json5["list"][0]["dlink"];
+					        //开始获取真实链接
+					    	$headerArray = array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36', 'Cookie: BDUSS=' . BDUSS . ';');
+					    	$getRealLink = head($nouadlink, $headerArray); // 禁止重定向
+					    	$getRealLink = strstr($getRealLink, "Location");
+					    	$getRealLink = substr($getRealLink, 10);
+					    	$nouarealLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
+					    }
+					}
+					$json4 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk ,$bdstoken,false);
+					
 					if ($json4["errno"] == 0) {
 						$dlink = $json4["list"][0]["dlink"];
 						//获取文件相关信息
@@ -255,6 +273,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						$getRealLink = strstr($getRealLink, "Location");
 						$getRealLink = substr($getRealLink, 10);
 						$realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
+						
 						// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
 						if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 							<h5 class="alert-heading">获取下载链接失败</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
@@ -266,9 +285,35 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									<div class="alert alert-primary" role="alert">
 										<h5 class="alert-heading">获取下载链接成功</h5>
 										<hr /><?php echo FileInfo($filename, $size, $md5, $server_ctime); ?>
+										<?php 
+										if($nouarealLink!=""){
+											echo '<hr />';
+											$type=substr($filename,-4);
+											
+											if ($type==".jpg" || $type==".png" || $type=="jpeg" || $type==".bmp"){
+										    	echo '<img src="https://'.$nouarealLink.'" class="img-fluid rounded">';
+										    }elseif($type ==".pdf" || $type =="docx" || $type ==".doc" || $type =="xlsx" || $type ==".xls" || $type =="pptx" || $type ==".ppt" || $type ==".csv" || $type ==".xml" || $type ==".rtf"){
+										    	echo '<p class="card-text"><a href="http://view.xdocin.com/xdoc?_xdoc='.urlencode('https://'.$nouarealLink).'" target="_blank">进入在线预览</a></p>';
+										    }elseif($type=".mp4"){
+										    	echo '<video src="https://'.$nouarealLink.'" controls="controls"></video>';
+										    }elseif($type=".mp3"){
+										    	echo '<audio src="https://'.$nouarealLink.'" controls="controls"></audio>';
+										    }
+										    
+										    echo '
+										    <p class="card-text">
+											
+											<a href="https://'. $nouarealLink.'" target="_blank" rel="nofollow noopener noreferrer">直链（无需设置UA）</a>
+										</p>';
+										}
+										
+										?>
+										
+										
+										<hr />
 										<p class="card-text">
 											<a id="http" href="http://<?php echo $realLink; ?>" target="_blank" rel="nofollow noopener noreferrer">下载链接（不安全）</a>
-											<a id="https" href="https://<?php echo $realLink; ?>" target="_blank" rel="nofollow noopener noreferrer">下载链接（安全）</a>
+											<a id="https" href="https://<?php echo $realLink; ?>" target="_blank" rel="nofollow noopener noreferrer">下载链接（需设置UA，8小时有效）</a>
 										</p>
 										<p class="card-text">
 											<a href="javascript:void(0)" data-toggle="modal" data-target="#exampleModal">推送到Aria2</a>
@@ -317,7 +362,9 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			<?php }
 						// 成功！
 					} elseif ($json4["errno"] == 112) dl_error("链接超时", "获取链接超时，每次解析列表后只有5min有效时间，请返回首页重新解析。"); // 链接超时
-					else dl_error("获取下载链接失败", "未知错误！"); // 未知错误
+					else {
+					    dl_error("获取下载链接失败", "未知错误！"); // 未知错误
+					    }
 				} else dl_error("参数有误", "POST 传参出现问题！请不要自行构建表单提交！"); // 参数不齐
 			} else dl_error("方法错误", "请不要直接访问此页面或使用 GET 方式访问！"); // 方法错误
 		} else { // 首页 

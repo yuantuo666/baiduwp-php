@@ -7,7 +7,7 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.4.0
+ * @version 1.4.1
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -183,11 +183,17 @@ function FileInfo(string $filename, float $size, string $md5, int $server_ctime)
 	return '<p class="card-text">文件名：<b>' . $filename . '</b></p><p class="card-text">文件大小：<b>' . formatSize($size) . '</b></p><p class="card-text">文件MD5：<b>' . $md5
 		. '</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
 }
-function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk)
+function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, string $bdstoken,bool $isnoualink)
 { // 获取下载链接
 	$app_id = 250528;
 	//推荐应用ID：498065、309847、778750、250528（官方）、265486、266719；
-	$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';
+	
+	if($isnoualink){
+	    $url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken='.$bdstoken;//获取直链 50MB以内
+	}else{
+	    $url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';//获取下载链接
+	}
+	
 	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . urldecode($randsk) . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
 	$header = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
@@ -195,7 +201,8 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 		"Referer: https://pan.baidu.com/disk/home"
 	);
 	return json_decode(post($url, $data, $header), true);
-	//没有 referer 就 112 ，然后没有 sekey 参数就 118    -20？？？
+	
+	//没有 referer 就 112 ，然后没有 sekey 参数就 118    -20出现验证码
 	// 		参数				类型		描述
 	// list					json array	文件信息列表
 	// names				json		如果查询共享目录，该字段为共享目录文件上传者的uk和账户名称
