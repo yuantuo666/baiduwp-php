@@ -33,11 +33,12 @@ define('STOKEN', '');
 define('IsCheckPassword', true);
 define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 ```
-- 前两项填入你自己的 SVIP 信息就行，获取 cookie 方法见视频 [备份](https://v.youku.com/v_show/id_XNDc5MDExMzAyMA====.html)
-- 其中123换成SVIP的BDUSS，456换成SVIP的STOKEN
+- 前两项填入你自己的 SVIP 信息就行，获取 cookie 方法见 [PD官网](https://pandownload.com/faq/cookie.html)
 - 第三项是是否需要密码的选项
 - 第四项是首页需要输入的密码，但是如果第三项为 `false` 则无效
 - 详细信息可见 `config.php` 的注释
+
+---
 
 例如，你的SVIP的BDUSS是 `123` ，STOKEN是 `456` ，开启密码并且设置为 `789` ，那么应该将 `config.php` 中设置成以下的代码：
 
