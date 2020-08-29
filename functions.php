@@ -7,7 +7,7 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.4.1
+ * @version 1.4.2
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -111,20 +111,18 @@ function formatSize(float $size, int $times = 0)
 			default:
 				$unit = '单位未知';
 		}
-		return sprintf('%.3f', $size) . $unit;
+		return sprintf('%.2f', $size) . $unit;
 	}
 }
 function CheckPassword()
 { // 校验密码
 	if (IsCheckPassword) {
 		if (!isset($_POST["Password"])) {
-			if (isset($_SESSION["Password"])) {
-				if ($_SESSION["Password"] === Password) {
-					echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
-						: '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
-					$_SESSION['ShowAlert'] = true;
-					return;
-				}
+			if (isset($_SESSION["Password"]) and $_SESSION["Password"] === Password) {
+				echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
+					: '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
+				$_SESSION['ShowAlert'] = true;
+				return;
 			}
 		} else {
 			if ($_POST["Password"] === Password) {
@@ -147,6 +145,11 @@ function verifyPwd(string $surl_1, string $pwd)
 	$data = "pwd=$pwd";
 	$header = array("User-Agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
 	$result = json_decode(post($url, $data, $header), true); // -12 提取码错误
+	if (DEBUG) {
+		echo '<pre>verifyPwd():';
+		var_dump($result);
+		echo '</pre>';
+	}
 	if ($result["errno"] === 0) return $result["randsk"];
 	else return 1;
 }
@@ -158,10 +161,22 @@ function getSign(string $surl, $randsk)
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
 	);
-	// if (preg_match('/yunData.setData\((\{.*?\})\);/', get($url, $header), $matches)) return json_decode($matches[1], true);
 	//如果不修改这里,则要修改配置文件ini
-	if (preg_match('/yunData.setData\((\{.*?\})\);/', get($url, $header), $matches)) return json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
-	else return 1;
+	$result = get($url, $header);
+	if (preg_match('/yunData.setData\((\{.*?\})\);/', $result, $matches)) {
+		$result = json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
+		if (DEBUG) {
+			echo '<pre>getSign():';
+			var_dump($result);
+			echo '</pre>';
+		}
+		return $result;
+	} else {
+		if (DEBUG) {
+			echo '<pre>getSign():no match</pre>';
+		}
+		return 1;
+	}
 }
 function FileList($sign)
 {
@@ -176,32 +191,42 @@ function GetDir(string $dir, string $randsk, string $shareid, string $uk)
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";",
 		"Referer: https://pan.baidu.com/disk/home"
 	);
-	return json_decode(get($url, $header), true);
+	$result = json_decode(get($url, $header), true);
+	if (DEBUG) {
+		echo '<pre>GetDir():';
+		var_dump($result);
+		echo '</pre>';
+	}
+	return $result;
 }
 function FileInfo(string $filename, float $size, string $md5, int $server_ctime)
 { // 输出 HTML 字符串
 	return '<p class="card-text">文件名：<b>' . $filename . '</b></p><p class="card-text">文件大小：<b>' . formatSize($size) . '</b></p><p class="card-text">文件MD5：<b>' . $md5
 		. '</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
 }
-function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, string $bdstoken,bool $isnoualink)
+function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, string $bdstoken, bool $isnoualink, int $app_id = 250528)
 { // 获取下载链接
-	$app_id = 250528;
-	//推荐应用ID：498065、309847、778750、250528（官方）、265486、266719；
-	
-	if($isnoualink){
-	    $url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken='.$bdstoken;//获取直链 50MB以内
-	}else{
-	    $url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1';//获取下载链接
+
+	if ($isnoualink) {
+		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken=' . $bdstoken; //获取直链 50MB以内
+	} else {
+		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; //获取下载链接
 	}
-	
+
 	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . urldecode($randsk) . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
 	$header = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";",
 		"Referer: https://pan.baidu.com/disk/home"
 	);
-	return json_decode(post($url, $data, $header), true);
-	
+	$result = json_decode(post($url, $data, $header), true);
+	if (DEBUG) {
+		echo '<pre>getDlink():';
+		var_dump($result);
+		echo '</pre>';
+	}
+	return $result;
+
 	//没有 referer 就 112 ，然后没有 sekey 参数就 118    -20出现验证码
 	// 		参数				类型		描述
 	// list					json array	文件信息列表
@@ -218,9 +243,33 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 	// list[0]["width"]		int			图片宽度
 	// list[0]["date_taken"]	int		图片拍摄时间
 }
-function dl_error(string $title, string $content)
+function dl_error(string $title, string $content, bool $jumptip = false)
 {
 	echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-	<h5 class="alert-heading">' . $title . '</h5><hr /><p class="card-text">' . $content . '</p></div></div></div>';
+	<h5 class="alert-heading">' . $title . '</h5><hr /><p class="card-text">' . $content;
+	if ($jumptip) {
+		echo '<br>请打开调试模式，并将错误信息复制提交issue到<a href="https://github.com/yuantuo666/baiduwp-php">github项目</a>。';
+	}
+	echo '</p></div></div></div>';
 	return 0;
+}
+function get_BDCLND($surl)
+{
+	$header = head("https://pan.baidu.com/s/" . $surl, []);
+	$bdclnd = preg_match('/BDCLND=(.+?);/', $header, $matches);
+	if ($bdclnd) {
+		if (DEBUG) {
+			echo '<pre>get_BDCLND():';
+			var_dump($matches[1]);
+			echo '</pre>';
+		}
+		return $matches[1];
+	} else {
+		if (DEBUG) {
+			echo '<pre>get_BDCLND():';
+			var_dump($header);
+			echo '</pre>';
+		}
+		return '';
+	}
 }

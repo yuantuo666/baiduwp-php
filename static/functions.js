@@ -3,6 +3,8 @@
  *
  * 许多函数来源于github，详见项目里的Thanks
  *
+ * @version 1.4.2
+ * 
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
@@ -10,7 +12,7 @@
  */
 function validateForm() {
 	var link = document.forms["form1"]["surl"].value;
-	if (link == null || link === "") { document.forms["form1"]["surl"].focus(); return false; }
+	if (link == null || link === "") { document.forms["form1"]["surl"].focus(); sweetAlert("提示","请填写分享链接","info"); return false; }
 	var uk = link.match(/uk=(\d+)/), shareid = link.match(/shareid=(\d+)/);
 	if (uk != null && shareid != null) {
 		document.forms["form1"]["surl"].value = "";
@@ -21,7 +23,7 @@ function validateForm() {
 	if (surl == null) {
 		surl = link.match(/1[A-Za-z0-9-_]+/);
 		if (surl == null) {
-			document.forms["form1"]["surl"].focus(); return false;
+			document.forms["form1"]["surl"].focus(); sweetAlert("提示","分享链接填写有误，请检查","info"); return false;
 		} else surl = surl[0];
 	} else surl = "1" + surl[1];
 	document.forms["form1"]["surl"].value = surl;
@@ -33,10 +35,10 @@ function dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
 		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="bdstoken" value="${bdstoken}"/><input type="hidden" name="filesize" value="${filesize}"/>`);
 	$(document.body).append(form); form.submit();
 }
-function OpenDir(path, pwd, share_id, uk, surl) {
+function OpenDir(path, pwd, share_id, uk, surl, randsk) {
 	var form = $('<form method="post"></form>');
 	form.append(`<input type="hidden" name="dir" value="${path}"/><input type="hidden" name="pwd" value="${pwd}"/><input type="hidden" name="surl" value="${surl}"/>
-		<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
+		<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="randsk" value="${randsk}"/>`);
 	$(document.body).append(form); form.submit();
 }
 function getIconClass(filename) {
@@ -65,6 +67,13 @@ function OpenRoot(surl, pwd){
 	var form = $('<form method="post"></form>');
 	form.append(`<input type="hidden" name="surl" value="${surl}"/><input type="hidden" name="pwd" value="${pwd}"/>`);
 	$(document.body).append(form); form.submit();
+}
+function Getpw(){
+	var link = document.forms["form1"]["surl"].value;
+	var pw = link.match(/提取码.? *(\w{4})/);
+	if (pw != null) {
+		document.forms["form1"]["pwd"].value = pw[1];
+	}
 }
 
 // 以下推送到aria2代码来自TkzcM

@@ -5,8 +5,10 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 因为作者开学了，所以项目将不再频繁更新。
 
+注意！使用 `1.3.6` 版本及以前的站长，请及时更新到最新版本，老版本存在安全问题，可能导致SVIP账号被盗用。<br/>
+[演示](https://i.loli.net/2020/08/29/hdjEKGzTZBu6yQI.gif)
+
 ## Blacklists
-- http://pan-jx.kosr.cn/ (版本1.3.3 作者以3元出售密码)
 - http://byu5.cn/baiduwp/
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
@@ -31,23 +33,26 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ```
 define('BDUSS', '');
 define('STOKEN', '');
+define('SVIP_BDUSS', '');
 define('IsCheckPassword', true);
 define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
 ```
-- 前两项填入你自己的 SVIP 信息就行，获取 cookie 方法见 [PD官网](https://pandownload.com/faq/cookie.html)
-- 第三项是是否需要密码的选项
-- 第四项是首页需要输入的密码，但是如果第三项为 `false` 则无效
+- 前两项填入`你自己的百度账号信息`*(SVIP也可)*，用于获取下载列表，获取 cookie 方法见 [PD官网](https://pandownload.com/faq/cookie.html)
+- 第三项必须填入`SVIP的BDUSS`，用于获取下载链接，获取cookie方法同上。
+- 第四项是是否需要密码的选项
+- 第五项是首页需要输入的密码，但是如果第三项为 `false` 则无效
 - 详细信息可见 `config.php` 的注释
 
 ---
 
-例如，你的SVIP的BDUSS是 `123` ，STOKEN是 `456` ，开启密码并且设置为 `789` ，那么应该将 `config.php` 中设置成以下的代码：
+例如，你的BDUSS是 `123` ，STOKEN是 `456` ，SVIP的BDUSS是 `789` ，开启密码并且设置为 `666` ，那么应该将 `config.php` 中设置成以下的代码：
 
 ```
 define('BDUSS', '123');
 define('STOKEN', '456');
+define('SVIP_BDUSS', '789');
 define('IsCheckPassword', true);
-define('Password', '789');
+define('Password', '666');
 ```
 
 ## Thanks
@@ -55,14 +60,20 @@ define('Password', '789');
 - [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")
 - [KinhDown 客户端](https://t.me/kinhdown/ "KinhDown 客户端")
 - [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
-- [LC优化版](https://github.com/lc6464 "LC")
+- [LC 优化版](https://github.com/lc6464 "LC")
 
 ## New Changes
-- 当前版本：`1.4.1`
-- 更新日期：2020-8-27
+- 当前版本：`1.4.2`
+- 更新日期：2020-8-29
 - 修改内容
-  - 修改POST内容，让调用接口暂时失效
-  - 增加直链解析，可以不设置UA下载（不过并不稳定，且只支持50MB以下文件）
+  - 列表页面新增超时提醒，5min后弹窗提示。
+  - 修复在线播放功能，在设置UA情况下可以播放50MB以上文件。
+  - 优化代码，删除打开文件夹每次查询密码是否正确代码。
+  - 加入运行时间计算，在控制台中可以查看。
+  - 将SVIP的BDUSS分离开，便于后期维护。
+  - 隐藏旧链接显示的sharelinkXXX-XXX文件夹（此文件夹无法正常打开）。
+  - 增加调试模式，便于反馈问题。
+  - 增加自动从分享文本中提取验证密码功能。
 
 ## About
 #### JavaScript版作者
