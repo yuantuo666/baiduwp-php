@@ -10,6 +10,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ## Blacklists
 - http://byu5.cn/baiduwp/
+- http://laochuan520.cn/pan/ http://zpan.site/ (版本1.3.7）
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
 已经通知站长，请修改网站后联系我删除黑名单。
