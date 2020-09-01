@@ -3,10 +3,12 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考<br/>
 希望在使用时能够保留导航栏的 Made by Yuan_Tuo ，感谢！
 
+### 我希望保留版权的目的只是想给那些想要学习这方面的人一个机会，再说保留这个对你自己又没有坏处。
+### 源码我也没有收费，保留原作者版权也是MIT协议所规定的。这也是对作者的一种尊重，让作者有继续开发的动力。
+
 因为作者开学了，所以项目将不再频繁更新。
 
-注意！使用 `1.3.6` 版本及以前的站长，请及时更新到最新版本，老版本存在安全问题，可能导致SVIP账号被盗用。<br/>
-[演示](https://i.loli.net/2020/08/29/hdjEKGzTZBu6yQI.gif)
+注意！使用 `1.3.6` 版本及以前的站长，请及时更新到最新版本，老版本存在安全问题，可能导致SVIP账号被盗用。[漏洞利用演示](https://i.loli.net/2020/08/29/hdjEKGzTZBu6yQI.gif)
 
 ## Blacklists
 - http://byu5.cn/baiduwp/
@@ -16,7 +18,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 已经通知站长，请修改网站后联系我删除黑名单。
 
 ## Demo
-[限时开放，用到账号被封停止](http://pan.yuantuo.firadio.net.web72.feieryun.cn:82/baidu/)
+[账号已经被封](http://pan.yuantuo.firadio.net.web72.feieryun.cn:82/baidu/)
 
 ## Tips
 - 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限**问题
