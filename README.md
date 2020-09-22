@@ -19,7 +19,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 已经通知站长，请修改网站后联系我删除黑名单。
 
 ## Demo
-[账号已经被封](http://pan.yuantuo.firadio.net.web72.feieryun.cn:82/baidu/)
+[演示站暂不开放](https://imwcr.cn/api/bdwp/)
 
 ## Tips
 - 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限**问题
