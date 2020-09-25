@@ -11,9 +11,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 注意！使用 `1.3.6` 版本及以前的站长，请及时更新到最新版本，老版本存在安全问题，可能导致SVIP账号被盗用。[漏洞利用演示](https://i.loli.net/2020/08/29/hdjEKGzTZBu6yQI.gif)
 
 ## Blacklists
-- http://byu5.cn/baiduwp/
 - https://pan.cveoy.com/ 版本1.4.2
-- https://bwp.eu-gb.cf.appdomain.cloud/ 版本1.3.7
+- http://c.duozy.cn/ 版本1.3.5 
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
 已经通知站长，请修改网站后联系我删除黑名单。
