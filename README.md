@@ -1,6 +1,6 @@
 # Baiduwp-PHP
 PanDownload 网页复刻版，PHP 语言版<br/>
-本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考<br/>
+本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp")（JavaScript 语言版）改写而来，仅供大家学习参考<br/>
 希望在使用时能够保留导航栏的 Made by Yuan_Tuo ，感谢！
 
 ### 我希望保留版权的目的只是想给那些想要学习这方面的人一个机会，再说保留这个对你自己又没有坏处。
@@ -89,7 +89,7 @@ define('Password', '666');
   - 增加自动从分享文本中提取验证密码功能。
 
 ## About
-#### JavaScript版作者
+#### baiduwp JavaScript版
 最开始Pandownload网页版复活版是由[TkzcM](https://github.com/TkzcM)大佬制作的，随后发布在[吾爱破解](https://www.52pojie.cn/thread-1238874-1-1.html)上。<br/>
 B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的视频登上了热门，导致PanDL.Live大量用户涌入。随后在8.10这个网站就关闭了，原因是服务器成本太高，所以停止了服务。<br/>
 但这位作者在github上开源了这份代码，于是我就下载下来研究，发现有不稳定的情况（不知道是不是我设置有问题），于是我就尝试把代码转写成PHP语言，发现效果好很多。
@@ -109,4 +109,7 @@ B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的
 关于接口引用，因为论坛的规定，不能留下其他的网站网址，但联系作者得知他也很想去感谢那些站长。<br/>
 
 #### 百度网盘算法更新
-在9.27号百度网盘更新了新的V7.0.5Windows版本，其他开发者开发的黑解算法失效，此项目不受影响。
+在9.27号百度网盘更新了新的V7.0.5 Windows版本，其他开发者开发的黑解算法失效，此项目不受影响。
+
+#### baiduwp Spring Boot 版
+作者 muzi9527 以本项目为蓝本，改写了[baiduwp-springboot](https://github.com/muzi9527/baiduwp-springboot)（Spring Boot语言版）。
