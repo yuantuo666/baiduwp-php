@@ -3,20 +3,16 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp")（JavaScript 语言版）改写而来，仅供大家学习参考<br/>
 希望在使用时能够保留导航栏的 Made by Yuan_Tuo ，感谢！
 
-### 我希望保留版权的目的只是想给那些想要学习这方面的人一个机会，再说保留这个对你自己又没有坏处。
-### 源码我也没有收费，保留原作者版权也是MIT协议所规定的。这也是对作者的一种尊重，让作者有继续开发的动力。
-
-目前 `1.4.2` 版本比较稳定，基本不会更新。
-
-注意！使用 `1.3.6` 版本及以前的站长，请及时更新到最新版本，老版本存在安全问题，可能导致SVIP账号被盗用。[漏洞利用演示](https://i.loli.net/2020/08/29/hdjEKGzTZBu6yQI.gif)
-
 ## Blacklists
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
 已经通知站长，请修改网站后联系我删除黑名单。
 
-## Demo
+### 我希望保留版权的目的只是想给那些想要学习这方面的人一个机会，再说保留这个对你自己又没有坏处。
+### 源码我也没有收费，保留原作者版权也是MIT协议所规定的。这也是对作者的一种尊重，让作者有继续开发的动力。
+
+# Demo
 [前往演示地址](http://imwcr.cn/api/bdwp/)<br />
 为方便测试程序可用性，现开放demo演示。<br />
 演示服务器在 2020-09-30 19:17:55 遭到20GbpsDDoS攻击，现已恢复<br />
@@ -34,56 +30,114 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - 仅支持 **PHP 7 和 7+**！
 - 一般情况下网页版不会出现问题，第一次使用就失败一般是**设置的问题**。
 - 如果使用一段时间后失效，一般是**账号问题**或**服务器IP被baidu封了**；如果是方法失效，这个项目将关闭。
+- 使用 `1.3.6` 版本及以前的站长，请及时更新到最新版本，老版本存在安全问题（在获取链接页面没有验证密码），可能导致SVIP账号被盗用。[漏洞利用演示](https://i.loli.net/2020/08/29/hdjEKGzTZBu6yQI.gif)
 - 处理下载限速方法
   - 尝试重新分享文件，部分文件可能出现奇怪的问题
   - 耐心等待baidu解封账号
   - 更换后台SVIP账号
   - 更换服务器IP
 
-## Setting
-请在 `config.php` 中找：
+# Setting
+请在 `config.php` 中找到以下内容：
 ```
-define('BDUSS', '');
-define('STOKEN', '');
-define('SVIP_BDUSS', '');
-define('IsCheckPassword', true);
-define('Password', '请在这里填写密码啦！ヾ(≧▽≦*)o');
+define('BDUSS', '①');
+define('STOKEN', '②');
+define('SVIP_BDUSS', '③');
+define('IsCheckPassword', ④);
+define('Password', '⑤');
+
+define('APP_ID', '⑥');
+define('DEBUG', ⑦);
+
+define('USING_DB', ⑧);
+define('DbConfig', array(
+	"servername" => "⑨",
+	"username" => "⑩",
+	"password" => "⑪",
+	"dbname" => "⑫",
+	"dbtable" => "⑬"
+));
 ```
-- 前两项填入`你自己的百度账号信息`*(SVIP也可)*，用于获取下载列表，获取 cookie 方法见 [PD官网](https://pandownload.com/faq/cookie.html)
-- 第三项必须填入`SVIP的BDUSS`，用于获取下载链接，获取cookie方法同上。
-- 第四项是是否需要密码的选项
-- 第五项是首页需要输入的密码，但是如果第三项为 `false` 则无效
+- 【必填】请在①②填入`你自己的百度账号信息`*(SVIP也可)*，用于获取下载列表，获取 cookie 方法见 [PD官网](https://pandownload.com/faq/cookie.html)
+- 【必填】在③中必须填入`SVIP的BDUSS`，用于获取下载链接，获取cookie方法同上。
+- 请在④中选择是否需要密码(`TRUE`或者`FALSE`)
+- 若开启了密码，请在⑤中设置是首页密码
+- 在⑥中是获取文件的Dlink时使用的app_id
+- 在⑦中是是否开启DEBUG调试模式
+- 在⑧中是是否使用数据库，限制每日下载ip
+- 在⑨-⑬是数据库设置
+
 - 详细信息可见 `config.php` 的注释
-
 ---
-
-例如，你的BDUSS是 `123` ，STOKEN是 `456` ，SVIP的BDUSS是 `789` ，开启密码并且设置为 `666` ，那么应该将 `config.php` 中设置成以下的代码：
-
+### 演示案例
+例如，你的BDUSS是 `123` ，STOKEN是 `456` ，SVIP的BDUSS是 `789` ，`开启` 密码并且设置为 `666` ，启用数据库。（数据库相关信息：服务器地址`localhost`、账号`root`、密码`root`、数据库名`bdwp`）<br />
+那么应该将 `config.php` 中设置成以下的代码：
 ```
 define('BDUSS', '123');
 define('STOKEN', '456');
 define('SVIP_BDUSS', '789');
 define('IsCheckPassword', true);
 define('Password', '666');
+
+define('APP_ID', '25565');
+define('DEBUG', false);
+
+define('USING_DB', true);
+define('DbConfig', array(
+	"servername" => "localhost",
+	"username" => "root",
+	"password" => "root",
+	"dbname" => "bdwp",
+	"dbtable" => "bdwp"
+));
 ```
-
-## Thanks
-- [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
-- [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")
-- [KinhDown 客户端](https://t.me/kinhdown/ "KinhDown 客户端")
-- [PNL 下载方式](https://www.lanzous.com/u/pnl "PNL 下载方式")
-- [LC 优化版](https://github.com/lc6464 "LC")
-
+---
+### 数据库设置
+要使用账号记录功能，请在`MySQL`中创建`bdwp`表
+```
+CREATE TABLE `bdwp` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`userip` TEXT NOT NULL COMMENT '用户ip',
+	`filename` TEXT NOT NULL COMMENT '文件名',
+	`size` TEXT NOT NULL COMMENT '文件大小',
+	`md5` TEXT NOT NULL COMMENT '文件效验码',
+	`path` TEXT NOT NULL COMMENT '文件路径',
+	`server_ctime` TEXT NOT NULL COMMENT '文件创建时间',
+	`realLink` TEXT NOT NULL COMMENT '文件下载地址',
+	`ptime` datetime NOT NULL COMMENT '解析时间',
+	PRIMARY KEY (`id`)
+) ENGINE = MyISAM;
+```
+要使用SVIP自动切换功能，请在`MySQL`中创建`bdwp_svip`表
+```
+CREATE TABLE `bdwp_svip` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`name` TEXT NOT NULL COMMENT '账号名称',
+	`svip_bduss` TEXT NOT NULL COMMENT '会员bduss',
+	`add_time` datetime NOT NULL COMMENT '会员账号加入时间',
+	`is_using` boolean NOT NULL COMMENT '是否正在使用(非零表示真)',
+	PRIMARY KEY (`id`)
+) ENGINE = MyISAM;
+```
+要使用黑/白名单功能，请在`MySQL`中创建`bdwp_ip`表
+```
+CREATE TABLE `bdwp_ip` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'ip地址',
+  `remark` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '备注',
+  `add_time` datetime NOT NULL COMMENT '白黑名单添加时间',
+  `type` tinyint(4) NOT NULL COMMENT '状态(0:允许,-1:禁止)',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+```
 ## New Changes
 - 当前版本：`1.4.3`
-- 更新日期：2020-10-2
-- 注：此版本暂未发布，目前已授权给bdwp.pro使用。
+- 更新日期：2020-10-20
 - 修改内容
   - 后台增加MySQL数据库，保存8小时内解析文件。
-  - 首页增加SVIP账号状态检测，显示最近一次解析结果。
-  - 对于小于50MB文件，采用新方法获取，不消耗会员解析次数。
+  - 限制同一IP及设备的解析次数。
 
-## About
+# About
 #### baiduwp JavaScript版
 最开始Pandownload网页版复活版是由[TkzcM](https://github.com/TkzcM)大佬制作的，随后发布在[吾爱破解](https://www.52pojie.cn/thread-1238874-1-1.html)上。<br/>
 B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的视频登上了热门，导致PanDL.Live大量用户涌入。随后在8.10这个网站就关闭了，原因是服务器成本太高，所以停止了服务。<br/>
@@ -108,3 +162,6 @@ B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的
 
 #### baiduwp Spring Boot 版
 作者 muzi9527 以本项目为蓝本，改写了[baiduwp-springboot](https://github.com/muzi9527/baiduwp-springboot)（Spring Boot语言版）。
+## Thanks
+- [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
+- [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")

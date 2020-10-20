@@ -7,7 +7,7 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.4.2
+ * @version 1.4.3
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -272,4 +272,28 @@ function get_BDCLND($surl)
 		}
 		return '';
 	}
+}
+function connectdb(bool $isAPI = false)
+{
+	$servername = DbConfig["servername"];
+	$username = DbConfig["username"];
+	$password = DbConfig["password"];
+	$dbname = DbConfig["dbname"];
+	$GLOBALS['dbtable'] = DbConfig["dbtable"];
+	$conn = mysqli_connect($servername, $username, $password, $dbname);
+	$GLOBALS['conn'] = $conn;
+	// Check connection
+	if (!$conn) {
+		if ($isAPI) {
+			//api特殊处理
+			EchoInfo(-1, array("msg" => "数据库连接失败：" . mysqli_connect_error(), "sviptips" => "Error"));
+			exit;
+		} else {
+			dl_error("服务器错误", "数据库连接失败：" . mysqli_connect_error());
+			exit;
+		}
+	}
+	mysqli_query($conn, "set sql_mode = ''");
+	mysqli_query($conn, "set character set 'utf8'");
+	mysqli_query($conn, "set names 'utf8'");
 }

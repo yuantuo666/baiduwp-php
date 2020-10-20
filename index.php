@@ -12,7 +12,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.4.2
+ * @version 1.4.3
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -71,6 +71,22 @@ if (DEBUG) {
 	<script src="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.js"></script>
 	<script src="static/functions.js"></script>
 	<script defer src="static/ready.js"></script>
+	<script>
+		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
+			swal({
+					title: "继续解析？",
+					text: "为保证服务稳定，每个IP每天有一次免费解析次数，是否继续？",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonClass: "btn-success",
+					confirmButtonText: "Yes, do it!",
+					closeOnConfirm: false
+				},
+				function() {
+					dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
+				});
+		}
+	</script>
 </head>
 
 <body>
@@ -198,7 +214,7 @@ if (DEBUG) {
 							<li class="breadcrumb-item"><a href="javascript:OpenRoot(\'1' . $surl . '\',\'' . $pwd . '\');">全部文件</a></li>';
 						$dir_list = explode("/", $_POST["dir"]);
 						for ($i = 1; $i <= count($dir_list) - 2; $i++) {
-							if($i == 1 AND strstr($dir_list[$i],"sharelink")) continue;
+							if ($i == 1 and strstr($dir_list[$i], "sharelink")) continue;
 							$fullsrc = strstr($_POST["dir"], $dir_list[$i], true) . $dir_list[$i];
 							$filecontent .= '<li class="breadcrumb-item"><a href="javascript:OpenDir(\'' . $fullsrc . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\');">' . $dir_list[$i] . '</a></li>';
 						}
@@ -209,8 +225,8 @@ if (DEBUG) {
 						for ($i = 0; $i < count($filejson["list"]); $i++) { //开始输出文件列表
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
-								<a href="javascript:dl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
-								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
+							<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
+							<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 								<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
@@ -245,7 +261,7 @@ if (DEBUG) {
 						for ($i = 0; $i < count($filejson["list"]); $i++) {
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
-								<a href="javascript:dl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
+								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
 								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 								<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
@@ -289,25 +305,89 @@ if (DEBUG) {
 						$md5 = $json4["list"][0]["md5"];
 						$filename = $json4["list"][0]["server_filename"];
 						$size = $json4["list"][0]["size"];
+						$path = $json4["list"][0]["path"];
 						$server_ctime = (int)$json4["list"][0]["server_ctime"] + 28800; // 服务器创建时间 +8:00
+						
+						if (USING_DB) {
+							connectdb();
+
+							function getip()
+							{
+								if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) {
+									$ip = getenv("HTTP_CLIENT_IP");
+								} else if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown")) {
+									$ip = getenv("HTTP_X_FORWARDED_FOR");
+								} else if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown")) {
+									$ip = $_SERVER['REMOTE_ADDR'];
+								} else {
+									$ip = "unknown";
+								}
+								return $ip;
+							}
+							$ip = getip();
+
+							//查询数据库中是否存在已经保存的数据
+							$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL 8 HOUR);";
+							$mysql_query = mysqli_query($conn, $sql);
+						}
+						if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
+							$realLink = $result["realLink"];
+							$usingcache = true;
+						} else {
+							//判断cookie
+							if (!empty($_COOKIE["SESSID"]) and !$smallfile) {
+								//提示无权继续
+								dl_error("免费次数不足", "<p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+								exit;
+							}
+							if (USING_DB) {
+								//判断今天内是否获取过文件
+								$sql = "SELECT * FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
+								$mysql_query = mysqli_query($conn, $sql);
+								if ($result = mysqli_fetch_assoc($mysql_query) and !$smallfile) {
+									//提示无权继续
+									dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>您已于 <b>" . $result["ptime"] . "</b> 时解析过文件“<b>" . $result["filename"] . "</b>”。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+									exit;
+								}
+							}
 						//开始获取真实链接
 						$headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . SVIP_BDUSS . ';'); //仅此处用到SVIPBDUSS
 						$getRealLink = head($dlink, $headerArray); // 禁止重定向
 						$getRealLink = strstr($getRealLink, "Location");
 						$getRealLink = substr($getRealLink, 10);
 						$realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
+						}
 
 						// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
 						if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 							<h5 class="alert-heading">获取下载链接失败</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
 							<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
 						else {
+							
+							//记录下使用者ip，下次进入时提示
+							if (USING_DB and !$usingcache) {
+								$ptime = date("Y-m-d H:i:s");
+
+								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`) VALUES ('$ip','$filename','$size','$md5','$path','$server_ctime','$realLink','$ptime')";
+								$mysql_query = mysqli_query($conn, $sql);
+								if ($mysql_query == false) {
+									//保存错误
+									dl_error("数据库错误", "数据库错误，请联系站长修护");
+									exit;
+								}
+								echo "<script>var d=new Date();d.setDate(d.getDate()+1);d.setHours(0);d.setMinutes(0);d.setSeconds(0);document.cookie='SESSID=Nbef-cz-Zvbo_Uvp;expires='+d.toGMTString();</script>";
+								//为了防止一些换ip调用，这里写一个cookie
+							}
+
 	?>
 					<div class="row justify-content-center">
 						<div class="col-md-7 col-sm-8 col-11">
 							<div class="alert alert-primary" role="alert">
 								<h5 class="alert-heading">获取下载链接成功</h5>
-								<hr /><?php echo FileInfo($filename, $size, $md5, $server_ctime); ?>
+								<hr />
+								<p class="card-text"><?php if ($usingcache) echo "下载链接从数据库中提取，不消耗免费次数。";
+														else echo "服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。"; ?></p>
+								<?php echo FileInfo($filename, $size, $md5, $server_ctime); ?>
 								<?php
 								echo '<hr><p class="card-text">在线预览：</p>';
 								if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic" or (int)$filesize <= 52428800) {
@@ -315,13 +395,11 @@ if (DEBUG) {
 									$type = substr($filename, -4);
 									if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
 										echo '<img src="https://' . $realLink . '" class="img-fluid rounded" style="width: 100%;">';
-									} elseif ($type == ".pdf" || $type == "docx" || $type == ".doc" || $type == "xlsx" || $type == ".xls" || $type == "pptx" || $type == ".ppt" || $type == ".csv" || $type == ".xml" || $type == ".rtf" || $type == ".txt") {
-										echo '<p class="card-text"><a href="http://view.xdocin.com/xdoc?_xdoc=' . urlencode('https://' . $realLink) . '" target="_blank">进入在线预览</a></p>';
 									} elseif ($type == ".mp4") {
 										echo '<video src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</video>';
-									} elseif ($type == ".mp3" || $type ==".wav") {
+									} elseif ($type == ".mp3" || $type == ".wav") {
 										echo '<audio src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</audio>';
-									}else{
+									} else {
 										echo '<p class="card-text">暂不支持当前文件。</p>';
 									}
 								} else {
@@ -402,7 +480,7 @@ if (DEBUG) {
 			<div class="card-header bg-dark text-light">百度网盘在线解析 <a class="badge badge-info" href="https://github.com/yuantuo666/baiduwp-php">V<?php echo programVersion; ?></a></div>
 			<div class="card-body">
 				<form name="form1" method="post" onsubmit="return validateForm()">
-					<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="请输入分享链接(完整也可)"  oninput="Getpw()"></div>
+					<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="请输入分享链接(完整也可)" oninput="Getpw()"></div>
 					<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="请输入提取码(没有留空)"></div>
 					<?php
 					if (IsCheckPassword) {
