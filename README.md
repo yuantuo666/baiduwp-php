@@ -3,6 +3,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp")（JavaScript 语言版）改写而来，仅供大家学习参考<br/>
 希望在使用时能够保留导航栏的 Made by Yuan_Tuo ，感谢！
 
+![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
+
 ## Blacklists
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
 
@@ -11,15 +13,6 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ### 我希望保留版权的目的只是想给那些想要学习这方面的人一个机会，再说保留这个对你自己又没有坏处。
 ### 源码我也没有收费，保留原作者版权也是MIT协议所规定的。这也是对作者的一种尊重，让作者有继续开发的动力。
-
-# Demo
-[前往演示地址](http://imwcr.cn/api/bdwp/)<br />
-为方便测试程序可用性，现开放demo演示。<br />
-演示服务器在 2020-09-30 19:17:55 遭到20GbpsDDoS攻击，现已恢复<br />
-每个IP每天有一次免费解析机会，解析后的下载地址会在数据库中保存8小时，在8小时内再次解析不消耗次数。<br />
-愿意捐赠SVIP账号的同学可以邮件联系yuantuo666@gmail.com，将会在首页展示捐赠者。<br />
-
-![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
 ## Donate
 [捐赠作者](https://imwcr.cn/?donate)<br />
@@ -130,6 +123,10 @@ CREATE TABLE `bdwp_ip` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM;
 ```
+## Demo
+[暂不开放](http://imwcr.cn/api/bdwp/)<br />
+演示服务器曾在 2020-09-30 19:17:55 遭到20GbpsDDoS攻击。<br />
+因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 ## New Changes
 - 当前版本：`1.4.3`
 - 更新日期：2020-10-20
@@ -162,6 +159,7 @@ B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的
 
 #### baiduwp Spring Boot 版
 作者 muzi9527 以本项目为蓝本，改写了[baiduwp-springboot](https://github.com/muzi9527/baiduwp-springboot)（Spring Boot语言版）。
+
 ## Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
 - [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")
