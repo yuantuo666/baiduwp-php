@@ -12,7 +12,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.4.3
+ * @version 1.4.5
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -75,7 +75,7 @@ if (DEBUG) {
 		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
 			swal({
 					title: "继续解析？",
-					text: "为保证服务稳定，每个IP每天有一次免费解析次数，是否继续？",
+					text: "为保证服务稳定，每个IP每天有<?php echo DownloadTimes; ?>次免费解析次数，是否继续？",
 					type: "warning",
 					showCancelButton: true,
 					confirmButtonClass: "btn-success",
@@ -225,8 +225,8 @@ if (DEBUG) {
 						for ($i = 0; $i < count($filejson["list"]); $i++) { //开始输出文件列表
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
-							<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
-							<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
+								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
+								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 								<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
@@ -276,6 +276,41 @@ if (DEBUG) {
 				dl_error("密码错误", "密码错误或超时，请返回首页重新验证密码。"); // 密码错误
 			} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"]) && isset($_POST["bdstoken"]) && isset($_POST["filesize"])) {
+					function getip()
+					{
+						if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) {
+							$ip = getenv("HTTP_CLIENT_IP");
+						} else if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown")) {
+							$ip = getenv("HTTP_X_FORWARDED_FOR");
+						} else if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown")) {
+							$ip = $_SERVER['REMOTE_ADDR'];
+						} else {
+							$ip = "unknown";
+						}
+						return $ip;
+					}
+					$ip = getip();
+					if (USING_DB) {
+						connectdb();
+
+						//查询数据库中是否存在已经保存的数据
+						$sql = "SELECT * FROM `" . $dbtable . "_ip` WHERE `ip`='$ip';";
+						$mysql_query = mysqli_query($conn, $sql);
+						if ($result = mysqli_fetch_assoc($mysql_query)) {
+							//存在 判断类型
+							if ($result["type"] == -1) {
+								//黑名单
+								$isipwhite = FALSE;
+								dl_error("账户错误", "当前ip已被加入黑名单，请联系站长解封");
+								exit;
+							} elseif ($result["type"] == 0) {
+								//白名单
+								echo "<script>console.log('当前IP为白名单~');</script>";
+								$isipwhite = TRUE;
+							}
+						}
+					}
+
 					$fs_id = $_POST["fs_id"];
 					$timestamp = $_POST["time"];
 					$sign = $_POST["sign"];
@@ -284,6 +319,8 @@ if (DEBUG) {
 					$uk = $_POST["uk"];
 					$bdstoken = $_POST["bdstoken"];
 					$filesize = $_POST["filesize"];
+					$smallfile = ((int)$filesize < 52428800) ? true : false; //如果是小文件 那么可以不需要传入SVIP的BDUSS 仅需普通用户的即可
+					$smallfile = false; //小文件竟然也会限速，醉了，现在先不搞这个
 					// 文件小于50MB可以使用这种方法获取：
 					// $nouarealLink="";//重置
 					// if((int)$filesize<=52428800){
@@ -307,24 +344,9 @@ if (DEBUG) {
 						$size = $json4["list"][0]["size"];
 						$path = $json4["list"][0]["path"];
 						$server_ctime = (int)$json4["list"][0]["server_ctime"] + 28800; // 服务器创建时间 +8:00
-						
+
 						if (USING_DB) {
 							connectdb();
-
-							function getip()
-							{
-								if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) {
-									$ip = getenv("HTTP_CLIENT_IP");
-								} else if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown")) {
-									$ip = getenv("HTTP_X_FORWARDED_FOR");
-								} else if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown")) {
-									$ip = $_SERVER['REMOTE_ADDR'];
-								} else {
-									$ip = "unknown";
-								}
-								return $ip;
-							}
-							$ip = getip();
 
 							//查询数据库中是否存在已经保存的数据
 							$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL 8 HOUR);";
@@ -334,28 +356,92 @@ if (DEBUG) {
 							$realLink = $result["realLink"];
 							$usingcache = true;
 						} else {
-							//判断cookie
-							if (!empty($_COOKIE["SESSID"]) and !$smallfile) {
-								//提示无权继续
-								dl_error("免费次数不足", "<p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-								exit;
-							}
+							// //判断cookie   取消这个判断 下载次数限制在后台控制
+							// if (!$isipwhite and !empty($_COOKIE["SESSID"]) and !$smallfile) {
+							// 	//提示无权继续
+							// 	dl_error("免费次数不足", "<p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+							// 	exit;
+							// }
 							if (USING_DB) {
 								//判断今天内是否获取过文件
-								$sql = "SELECT * FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
-								$mysql_query = mysqli_query($conn, $sql);
-								if ($result = mysqli_fetch_assoc($mysql_query) and !$smallfile) {
-									//提示无权继续
-									dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>您已于 <b>" . $result["ptime"] . "</b> 时解析过文件“<b>" . $result["filename"] . "</b>”。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-									exit;
+								if (!$isipwhite and !$smallfile) { //白名单和小文件跳过
+									//获取解析次数
+									$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
+									$mysql_query = mysqli_query($conn, $sql);
+									$result = mysqli_fetch_assoc($mysql_query);
+									if ($result["Num"] >= DownloadTimes) {
+										//提示无权继续
+										// dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>您已于 <b>" . $result["ptime"] . "</b> 时解析过文件“<b>" . $result["filename"] . "</b>”。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+										dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+										exit;
+									}
+								}
+								//获取SVIP BDUSS
+
+								$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; //时间倒序输出第一项未被限速账号
+								$Result = mysqli_query($conn, $sql);
+								if ($Result =  mysqli_fetch_assoc($Result)) {
+									$SVIP_BDUSS = $Result["svip_bduss"];
+									$id = $Result["id"];
+								} else {
+									//数据库中所有SVIP账号已经用完，启用本地SVIP账号
+									$SVIP_BDUSS = SVIP_BDUSS;
+									$id = "-1";
+								}
+							} else {
+								$SVIP_BDUSS = SVIP_BDUSS;
+								$id = "-1";
+							}
+
+
+
+							//开始获取真实链接
+							if ($smallfile) $headerArray = array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36', 'Cookie: BDUSS=' . BDUSS . ';');
+							else $headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . $SVIP_BDUSS . ';'); //仅此处用到SVIPBDUSS
+
+							$getRealLink = head($dlink, $headerArray); // 禁止重定向
+							$getRealLink = strstr($getRealLink, "Location");
+							$getRealLink = substr($getRealLink, 10);
+							if ($smallfile) $realLink = getSubstr($getRealLink, "https://", "\r\n"); // 注意，这里小文件是https
+							else $realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
+							$usingcache = false;
+
+
+							if (USING_DB) {
+								//判断账号是否限速，如果限速就将其标记，切换账号
+								if (strstr('https://' . $realLink, "//qdall") or $realLink == "") {
+									//限速
+									if ($id != "-1") {
+										$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= -1 WHERE `id`=$id";
+										$mysql_query = mysqli_query($conn, $sql);
+										if ($mysql_query != false) {
+											//SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
+	?>
+									<div class="row justify-content-center">
+										<div class="col-md-7 col-sm-8 col-11">
+											<div class="alert alert-danger" role="alert">
+												<h5 class="alert-heading">请稍后，正在切换账号中~</h5>
+												<hr />
+												<p class="card-text">当前SVIP账号已经被限速</p>
+												<p class="card-text">正在自动切换新账号中</p>
+												<p class="card-text">预计需要2~3秒，请耐心等待</p>
+												</p>
+											</div>
+										</div>
+									</div>
+									<script>
+										setTimeout("location.reload();", 2000);
+									</script>
+					<?php exit;
+										} else {
+											//SVIP账号自动切换失败
+
+										}
+									} else {
+										//本地账号也限速
+									}
 								}
 							}
-						//开始获取真实链接
-						$headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . SVIP_BDUSS . ';'); //仅此处用到SVIPBDUSS
-						$getRealLink = head($dlink, $headerArray); // 禁止重定向
-						$getRealLink = strstr($getRealLink, "Location");
-						$getRealLink = substr($getRealLink, 10);
-						$realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
 						}
 
 						// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
@@ -363,12 +449,12 @@ if (DEBUG) {
 							<h5 class="alert-heading">获取下载链接失败</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
 							<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
 						else {
-							
+
 							//记录下使用者ip，下次进入时提示
 							if (USING_DB and !$usingcache) {
 								$ptime = date("Y-m-d H:i:s");
 
-								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`) VALUES ('$ip','$filename','$size','$md5','$path','$server_ctime','$realLink','$ptime')";
+								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$filename','$size','$md5','$path','$server_ctime','$realLink','$ptime','$id')";
 								$mysql_query = mysqli_query($conn, $sql);
 								if ($mysql_query == false) {
 									//保存错误
@@ -379,18 +465,19 @@ if (DEBUG) {
 								//为了防止一些换ip调用，这里写一个cookie
 							}
 
-	?>
+					?>
 					<div class="row justify-content-center">
 						<div class="col-md-7 col-sm-8 col-11">
 							<div class="alert alert-primary" role="alert">
 								<h5 class="alert-heading">获取下载链接成功</h5>
 								<hr />
 								<p class="card-text"><?php if ($usingcache) echo "下载链接从数据库中提取，不消耗免费次数。";
+														elseif ($smallfile) echo "<span style=\"color:red;\">恭喜你，中奖啦！本次解析不消耗次数哦~</span>";
 														else echo "服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。"; ?></p>
 								<?php echo FileInfo($filename, $size, $md5, $server_ctime); ?>
 								<?php
 								echo '<hr><p class="card-text">在线预览：</p>';
-								if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic" or (int)$filesize <= 52428800) {
+								if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic" or $smallfile) {
 
 									$type = substr($filename, -4);
 									if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
@@ -410,7 +497,7 @@ if (DEBUG) {
 								echo '
 								<p class="card-text">
 									<a id="http" href="http://' . $realLink . '" style="display: none;">下载链接（不安全）</a>';
-								if ((int)$filesize <= 52428800) {
+								if ($smallfile) {
 									echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">下载链接（无需设置UA，8小时有效）</a>';
 								} else {
 									echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">下载链接（需设置UA，8小时有效）</a>';
@@ -477,7 +564,10 @@ if (DEBUG) {
 	?>
 	<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 		<div class="card">
-			<div class="card-header bg-dark text-light">百度网盘在线解析 <a class="badge badge-info" href="https://github.com/yuantuo666/baiduwp-php">V<?php echo programVersion; ?></a></div>
+			<div class="card-header bg-dark text-light">
+				<text id="parsingtooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询信息">百度网盘在线解析</text>
+				<span style="float: right;" id="sviptooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询SVIP账号状态"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
+			</div>
 			<div class="card-body">
 				<form name="form1" method="post" onsubmit="return validateForm()">
 					<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="请输入分享链接(完整也可)" oninput="Getpw()"></div>
@@ -497,8 +587,69 @@ if (DEBUG) {
 				</form>
 			</div>
 		</div>
+		<script>
+			//主页部分脚本
+			$(document).ready(function() {
+
+				$("#sviptooltip").tooltip(); //初始化
+				$("#parsingtooltip").tooltip(); //初始化
+
+				$.get("api.php?m=LastParse", function(data, status) {
+					if (status == "success") {
+						var json = JSON.parse(data);
+						if (json.error == 0) {
+							//请求成功
+							if (json.svipstate == 1) {
+								$("#svipstate-point").addClass("point-success");
+							} else {
+								$("#svipstate-point").addClass("point-danger");
+							}
+						}
+						$("#svipstate").text(json.sviptips);
+						$("#sviptooltip").attr("data-original-title", json.msg);
+					}
+				});
+
+				$.get("api.php?m=ParseCount", function(data, status) {
+					if (status == "success") {
+						var json = JSON.parse(data);
+						$("#parsingtooltip").attr("data-original-title", json.msg);
+					}
+				});
+
+			});
+		</script>
+		<style>
+			/*
+			设计圆点
+			*/
+			.point {
+				display: inline-block;
+				width: 5px;
+				height: 5px;
+				border-radius: 500px;
+				margin: 0px 5px;
+				/*调整圆点的位置*/
+				background-color: #ddd;
+				vertical-align: baseline;
+			}
+
+			.point-lg {
+				width: 12px;
+				height: 12px;
+			}
+
+			.point-success {
+				background-color: #28a745;
+			}
+
+			.point-danger {
+				background-color: #dc3545;
+			}
+		</style>
 	</div>
-<?php }
+<?php
+		}
 		echo Footer; ?>
 </div>
 
