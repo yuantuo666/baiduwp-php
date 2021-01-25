@@ -5,10 +5,13 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
-# http://www.dupan.cc/ （站长QQ33703259） 所公布的源码添加了后台并加密，添加的bduss会被上传网站后台，请勿下载使用
+# http://www.dupan.cc/ （站长QQ33703259） 所发布的源码已被篡改，添加了后台并加密，添加的bduss会被上传网站后台，请勿下载使用
 首先在这里道个歉，这个项目收费确实有点不妥。<br />
 现在已经公布了所有源码，可以通过github的commits查看以前的源码，从未添加过后台，也没有加密。<br />
-后台的赞助版是dupan.cc站长所修改的，添加的bduss会被上传dupan.cc服务器，请勿下载使用！！！！
+dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用篡改的源码，在后台添加的bduss会被上传dupan.cc服务器，请勿下载使用！！！！
+
+## Donate
+[捐赠作者](https://imwcr.cn/?donate)<br />
 
 ## Blacklists
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
@@ -22,10 +25,6 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - http://pan.hongshiite.top/ 1.0版本
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
-
-## Donate
-[捐赠作者](https://imwcr.cn/?donate)<br />
-建议大家自己搭建自己用，搭建公益的没必要，只有投入没有回报。
 
 ## Tips
 - 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限**问题
@@ -95,58 +94,22 @@ define('DbConfig', array(
 ```
 ---
 ### 数据库设置
-要使用账号记录功能，请在`MySQL`中创建`bdwp`表
-```
-CREATE TABLE `bdwp` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`userip` TEXT NOT NULL COMMENT '用户ip',
-	`filename` TEXT NOT NULL COMMENT '文件名',
-	`size` TEXT NOT NULL COMMENT '文件大小',
-	`md5` TEXT NOT NULL COMMENT '文件效验码',
-	`path` TEXT NOT NULL COMMENT '文件路径',
-	`server_ctime` TEXT NOT NULL COMMENT '文件创建时间',
-	`realLink` TEXT NOT NULL COMMENT '文件下载地址',
-	`ptime` datetime NOT NULL COMMENT '解析时间',
-	PRIMARY KEY (`id`)
-) ENGINE = MyISAM;
-```
-要使用SVIP自动切换功能，请在`MySQL`中创建`bdwp_svip`表
-```
-CREATE TABLE `bdwp_svip` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`name` TEXT NOT NULL COMMENT '账号名称',
-	`svip_bduss` TEXT NOT NULL COMMENT '会员bduss',
-	`add_time` datetime NOT NULL COMMENT '会员账号加入时间',
-	`is_using` boolean NOT NULL COMMENT '是否正在使用(非零表示真)',
-	PRIMARY KEY (`id`)
-) ENGINE = MyISAM;
-```
-要使用黑/白名单功能，请在`MySQL`中创建`bdwp_ip`表
-```
-CREATE TABLE `bdwp_ip` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `ip` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'ip地址',
-  `remark` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '备注',
-  `add_time` datetime NOT NULL COMMENT '白黑名单添加时间',
-  `type` tinyint(4) NOT NULL COMMENT '状态(0:允许,-1:禁止)',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
-```
+请在`MySQL`中导入`bdwp.sql`文件。
+
 ## Demo
 [暂不开放](http://imwcr.cn/api/bdwp/)<br />
-演示服务器曾在 2020-09-30 19:17:55 遭到20GbpsDDoS攻击。<br />
 因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
+
 ## New Changes
-- 当前版本：`1.4.3`
-- 更新日期：2020-10-20
+- 当前版本：`1.4.5`
+- 更新日期：2021-01-25
 - 修改内容
-  - 后台增加MySQL数据库，保存8小时内解析文件。
-  - 限制同一IP及设备的解析次数。
+  - 开源赞助版源码
 
 # About
 #### baiduwp JavaScript版
 最开始Pandownload网页版复活版是由[TkzcM](https://github.com/TkzcM)大佬制作的，随后发布在[吾爱破解](https://www.52pojie.cn/thread-1238874-1-1.html)上。<br/>
-B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的视频登上了热门，导致PanDL.Live大量用户涌入。随后在8.10这个网站就关闭了，原因是服务器成本太高，所以停止了服务。<br/>
+B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的视频登上了热门，导致PanDL.Live大量用户涌入。随后在8.10这个网站就关闭了。<br/>
 但这位作者在github上开源了这份代码，于是我就下载下来研究，发现有不稳定的情况（不知道是不是我设置有问题），于是我就尝试把代码转写成PHP语言，发现效果好很多。
 
 #### B站教程
