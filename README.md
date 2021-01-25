@@ -5,6 +5,9 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
+# http://www.dupan.cc/ （站长QQ33703259） 所公布的源码添加了后台并加密，添加的bduss会被上传网站后台，请勿下载使用
+# 稍候公布赞助版源码
+
 ## Blacklists
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
 - https://pan.biubixin.com/ 1.4.2版本
@@ -17,9 +20,6 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - http://pan.hongshiite.top/ 1.0版本
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。
-
-### 我希望保留版权的目的只是想给那些想要学习这方面的人一个机会，再说保留这个对你自己又没有坏处。
-### 源码我也没有收费，保留原作者版权也是MIT协议所规定的。这也是对作者的一种尊重，让作者有继续开发的动力。
 
 ## Donate
 [捐赠作者](https://imwcr.cn/?donate)<br />
