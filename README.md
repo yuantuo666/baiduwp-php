@@ -6,7 +6,9 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
 # http://www.dupan.cc/ （站长QQ33703259） 所公布的源码添加了后台并加密，添加的bduss会被上传网站后台，请勿下载使用
-# 稍候公布赞助版源码
+首先在这里道个歉，这个项目收费确实有点不妥。<br />
+现在已经公布了所有源码，可以通过github的commits查看以前的源码，从未添加过后台，也没有加密。<br />
+后台的赞助版是dupan.cc站长所修改的，添加的bduss会被上传dupan.cc服务器，请勿下载使用！！！！
 
 ## Blacklists
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
