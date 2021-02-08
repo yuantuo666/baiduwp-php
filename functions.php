@@ -119,18 +119,12 @@ function CheckPassword()
 	if (IsCheckPassword) {
 		if (!isset($_POST["Password"])) {
 			if (isset($_SESSION["Password"]) and $_SESSION["Password"] === Password) {
-				echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
-					: '<script>Swal.fire("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
-				$_SESSION['ShowAlert'] = true;
-				return;
+				return true;
 			}
 		} else {
 			if ($_POST["Password"] === Password) {
 				$_SESSION['Password'] = $_POST["Password"];
-				echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
-					: '<script>Swal.fire("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
-				$_SESSION['ShowAlert'] = true;
-				return;
+				return true;
 			}
 		}
 		die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
