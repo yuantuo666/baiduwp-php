@@ -5,10 +5,12 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
-# http://www.dupan.cc/ （站长QQ33703259） 所发布的源码已被篡改，添加了后台并加密，添加的bduss会被上传网站后台，请勿下载使用
-首先在这里道个歉，这个项目收费确实有点不妥。<br />
+## warning!!
+http://www.dupan.cc/ （站长QQ33703259） 所发布的源码已被篡改，添加了后台并加密，添加的bduss会被上传网站后台，请勿使用<br />
+
 现在已经公布了所有源码，可以通过github的commits查看以前的源码，从未添加过后台，也没有加密。<br />
-dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用篡改的源码，在后台添加的bduss会被上传dupan.cc服务器，请勿下载使用！！！！
+dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用篡改的源码，在后台添加的bduss会被上传dupan.cc服务器，请勿使用！！！！<br />
+目前此网站已无法访问。
 
 ## Donate
 [捐赠作者](https://imwcr.cn/?donate)<br />
