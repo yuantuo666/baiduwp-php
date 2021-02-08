@@ -49,7 +49,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 	} else {
 		//密码错误
 		$_SESSION["admin_login"] = false;
-		echo "<script>swal('管理员密码错误，如果忘记密码请进入config.php查看')</script>";
+		echo "<script>Swal.fire('管理员密码错误，如果忘记密码请进入 config.php 查看');</script>";
 	}
 }
 if ($is_login) connectdb();
@@ -149,8 +149,8 @@ function GetSvipTablePage(string $page)
 		<td>" . $Result["name"] . "</td>
 		<td>" . $state . "</td>
 		<td>" . $Result["add_time"] . "</td>
-		<td><a href=\"javascript:swal('" . $Result["svip_bduss"] . "')\">" . substr($Result["svip_bduss"], 0, 20) . "……</a></td>
-		<td><a href=\"javascript:swal('" . $Result["svip_stoken"] . "')\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>
+		<td><a href=\"javascript:Swal.fire('" . $Result["svip_bduss"] . "')\">" . substr($Result["svip_bduss"], 0, 20) . "……</a></td>
+		<td><a href=\"javascript:Swal.fire('" . $Result["svip_stoken"] . "')\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>
 		</tr>";
 		$AllRow .= $EachRow;
 	}
@@ -192,15 +192,21 @@ function GetIPTablePage(string $page)
 	<meta name="author" content="Yuan_Tuo" />
 	<meta name="version" content="<?php echo programVersion; ?>" />
 	<title>Setting</title>
-	<link rel="icon" href="resource/favicon.ico" />
+	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Auto" href="static/colorMode/auto.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Dark" href="static/colorMode/dark.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Light" href="static/colorMode/light.css" />
+	<link rel="stylesheet" href="static/colorMode/index.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
-	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
-	<script src="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
+	<script src="static/colorMode/index.js"></script>
 </head>
 
 <body>
@@ -294,13 +300,13 @@ function GetIPTablePage(string $page)
 								$add_time = date("Y-m-d H:i:s");
 								$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$name','$BDUSS','$STOKEN','$add_time',1,'')";
 								$Result = mysqli_query($conn, $sql);
-								if ($Result != false) echo "<script>swal('新增成功');</script>";
+								if ($Result != false) echo "<script>Swal.fire('新增成功');</script>";
 								else {
 									$Error = addslashes(mysqli_error($conn));
-									echo "<script>swal('添加失败','$Error');</script>";
+									echo "<script>Swal.fire('添加失败','$Error');</script>";
 								}
 							} else {
-								echo "<script>swal('请检查BDUSS是否填写正确')</script>";
+								echo "<script>Swal.fire('请检查BDUSS是否填写正确')</script>";
 							}
 						}
 						if (isset($_POST["MULTI_BDUSS"])) {
@@ -330,9 +336,9 @@ function GetIPTablePage(string $page)
 								} else {
 									$Msg = "成功导入" . $sccess_result . "条数据";
 								}
-								echo "<script>swal('$Msg');</script>";
+								echo "<script>Swal.fire('$Msg');</script>";
 							} else {
-								echo "<script>swal('请检查BDUSS是否填写正确')</script>";
+								echo "<script>Swal.fire('请检查BDUSS是否填写正确')</script>";
 							}
 						}
 
@@ -419,7 +425,7 @@ function GetIPTablePage(string $page)
 										$.get("setting.php?m=API&act=SvipSettingFirstAccount&id=" + String(id), function(data, status) {
 											if (status == "success") {
 												var json = JSON.parse(data);
-												swal(json.msg);
+												Swal.fire(json.msg);
 												if (json.refresh == true) setTimeout("location.reload();", 3000);
 											}
 										});
@@ -471,13 +477,13 @@ function GetIPTablePage(string $page)
 								$sql = "INSERT INTO `" . $dbtable . "_ip`( `ip`, `remark`, `type`, `add_time`) VALUES ('$ip','$remark',$type,'$add_time')";
 								echo $sql;
 								$Result = mysqli_query($conn, $sql);
-								if ($Result != false) echo "<script>swal('新增成功');</script>";
+								if ($Result != false) echo "<script>Swal.fire('新增成功');</script>";
 								else {
 									$Error = addslashes(mysqli_error($conn));
-									echo "<script>swal('添加失败','$Error');</script>";
+									echo "<script>Swal.fire('添加失败','$Error');</script>";
 								}
 							} else {
-								echo "<script>swal('请检查IP和账号种类是否填写正确')</script>";
+								echo "<script>Swal.fire('请检查IP和账号种类是否填写正确')</script>";
 							}
 						}
 					?>
@@ -554,13 +560,13 @@ function GetIPTablePage(string $page)
 						//先处理是否有新增加数据
 						if (isset($_POST["DownloadTimes"])) {
 							$origin_config = file_get_contents("config.php");
-							$update_config = str_replace('$DownloadTimes=' . DownloadTimes . ';', '$DownloadTimes=' . $_POST["DownloadTimes"] . ';', $origin_config);
+							$update_config = str_replace('const DownloadTimes = ' . DownloadTimes . ';', 'const DownloadTimes = ' . $_POST["DownloadTimes"] . ';', $origin_config);
 							$len = file_put_contents('config.php', $update_config);
 
 							if ($len != false) {
-								echo "<script>swal('成功！成功写入config.php共 $len 个字符。刷新页面后可看到修改的内容。');</script>";
+								echo "<script>Swal.fire('成功！成功写入 config.php 共 $len 个字符。刷新页面后可看到修改的内容。');</script>";
 							} else {
-								echo "<script>swal('写入失败，请检查config.php文件状态及当前用户权限。或者手动修改config.php中相关设置。')</script>";
+								echo "<script>Swal.fire('写入失败，请检查 config.php 文件状态及当前用户权限。或者手动修改 config.php 中相关设置。');</script>";
 							}
 						}
 					?>
@@ -629,7 +635,7 @@ function GetIPTablePage(string $page)
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 											//存在数据
 											$AllCount = $Result["AllCount"];
-											$AllSize = formatSize((int)$Result["AllSize"]); //格式化获取到的文件大小 
+											$AllSize = formatSize((int)$Result["AllSize"]); //格式化获取到的文件大小
 											echo "今日解析 $AllCount 个，共 $AllSize";
 											?>
 										</p>

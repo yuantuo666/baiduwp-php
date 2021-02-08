@@ -60,37 +60,43 @@ if (DEBUG) {
 	<meta name="description" content="PanDownload 网页版，百度网盘分享链接在线解析工具。" />
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
 	<title>PanDownload 复刻版</title>
-	<link rel="icon" href="resource/favicon.ico" />
+	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Auto" href="static/colorMode/auto.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Dark" href="static/colorMode/dark.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Light" href="static/colorMode/light.css" />
+	<link rel="stylesheet" href="static/colorMode/index.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
-	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
-	<script src="https://cdn.staticfile.org/bootstrap-sweetalert/1.0.1/sweetalert.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
+	<script src="static/colorMode/index.js"></script>
 	<script src="static/functions.js"></script>
 	<script defer src="static/ready.js"></script>
 	<script>
 		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
-			swal({
-					title: "继续解析？",
-					text: "为保证服务稳定，每个IP每天有<?php echo DownloadTimes; ?>次免费解析次数，是否继续？",
-					type: "warning",
-					showCancelButton: true,
-					confirmButtonClass: "btn-success",
-					confirmButtonText: "Yes, do it!",
-					closeOnConfirm: false
-				},
-				function() {
+			Swal.fire({
+				title: "继续解析？",
+				html: "为保证服务稳定，每个IP每天有<?php echo DownloadTimes; ?>次免费解析次数，是否继续？",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Yes, do it!",
+				reverseButtons: true
+			}).then(function(e) {
+				if (e.isConfirmed) {
 					dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
-				});
+				}
+			});
 		}
 	</script>
 </head>
 
 <body>
-	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+	<nav class="navbar navbar-expand-sm navbar-dark">
 		<div class="container">
 			<a class="navbar-brand" href="./"><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO" />PanDownload</a>
 			<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
@@ -112,7 +118,7 @@ if (DEBUG) {
 			var_dump($_POST);
 			echo '</pre>';
 		}
-		if (isset($_GET["help"])) { // 帮助页 
+		if (isset($_GET["help"])) { // 帮助页
 		?>
 			<div class="row justify-content-center">
 				<div class="col-md-7 col-sm-8 col-11">
@@ -120,76 +126,76 @@ if (DEBUG) {
 						<h5 class="alert-heading">提示</h5>
 						<hr />
 						<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。<br />
-							<div class="page-inner">
-								<section class="normal" id="section-">
-									<div id="IDM"><a class="anchor" href="#IDM"></a>
-										<h4>IDM（推荐）</h4>
+						<div class="page-inner">
+							<section class="normal" id="section-">
+								<div id="IDM"><a class="anchor" href="#IDM"></a>
+									<h4>IDM（推荐）</h4>
+								</div>
+								<ol>
+									<li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
+									<li><b>右键复制下载链接</b>（直接点击 或 右键调用 IDM 将传入浏览器的 UA，将会导致下载失败），在 IDM 新建任务，粘贴链接即可下载。</li>
+								</ol>
+								<div id="ADM"><a class="anchor" href="#ADM"></a>
+									<h4>ADM Pro（Android推荐）</h4>
+									<ol>
+										<li>设置 -> 下载中 -> 浏览器标识 -> 自定义 浏览器标识</li>
+										<li>填入 <b>LogStatistic</b></li>
+										<li>切换到浏览器（ADM留在后台），长按“下载链接”，选择复制链接地址</li>
+										<li>然后在ADM里点击开始即可</li>
+									</ol>
+									<div id="Chrome"><a class="anchor" href="#Chrome"></a>
+										<h4>Chrome 浏览器</h4>
 									</div>
 									<ol>
-										<li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
-										<li><b>右键复制下载链接</b>（直接点击 或 右键调用 IDM 将传入浏览器的 UA，将会导致下载失败），在 IDM 新建任务，粘贴链接即可下载。</li>
+										<li>安装浏览器扩展程序 <a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg" target="_blank">User-Agent Switcher for Chrome</a></li>
+										<li>右键点击扩展图标 -> 选项</li>
+										<li>New User-Agent name 填入 百度网盘分享下载</li>
+										<li>New User-Agent String 填入 <b>LogStatistic</b></li>
+										<li>Group 填入 百度网盘</li>
+										<li>Append? 选择 Replace</li>
+										<li>Indicator Flag 填入 Log，点击 Add 保存</li>
+										<li>保存后点击扩展图标，出现“百度网盘”，进入并选择“百度网盘分享下载”。</li>
 									</ol>
-									<div id="ADM"><a class="anchor" href="#ADM"></a>
-										<h4>ADM Pro（Android推荐）</h4>
-										<ol>
-											<li>设置 -> 下载中 -> 浏览器标识 -> 自定义 浏览器标识</li>
-											<li>填入 <b>LogStatistic</b></li>
-											<li>切换到浏览器（ADM留在后台），长按“下载链接”，选择复制链接地址</li>
-											<li>然后在ADM里点击开始即可</li>
-										</ol>
-										<div id="Chrome"><a class="anchor" href="#Chrome"></a>
-											<h4>Chrome 浏览器</h4>
-										</div>
-										<ol>
-											<li>安装浏览器扩展程序 <a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg" target="_blank">User-Agent Switcher for Chrome</a></li>
-											<li>右键点击扩展图标 -> 选项</li>
-											<li>New User-Agent name 填入 百度网盘分享下载</li>
-											<li>New User-Agent String 填入 <b>LogStatistic</b></li>
-											<li>Group 填入 百度网盘</li>
-											<li>Append? 选择 Replace</li>
-											<li>Indicator Flag 填入 Log，点击 Add 保存</li>
-											<li>保存后点击扩展图标，出现“百度网盘”，进入并选择“百度网盘分享下载”。</li>
-										</ol>
-										<blockquote>
-											<p>Chrome 应用商店打不开或者其他 Chromium 内核的浏览器，<a href="resource/UserAgentSwitcher.crx" target="_blank">请点此下载</a></p>
-											<p><a href="https://appcenter.browser.qq.com/search/detail?key=User-Agent%20Switcher%20for%20Chrome&amp;id=djflhoibgkdhkhhcedjiklpkjnoahfmg%20&amp;title=User-Agent%20Switcher%20for%20Chrome" target="_blank">QQ浏览器插件下载</a></p>
-										</blockquote>
-										<div id="Pure"><a class="anchor" href="#Pure"></a>
-											<h4>Pure 浏览器（Android）</h4>
-										</div>
-										<ol>
-											<li>设置 –> 浏览设置 -> 浏览器标识(UA)</li>
-											<li>添加自定义 UA：<b>LogStatistic</b></li>
-										</ol>
-										<div id="Alook"><a class="anchor" href="#Alook"></a>
-											<h4>Alook 浏览器（IOS）</h4>
-										</div>
-										<ol>
-											<li>设置 -> 通用设置 -> 浏览器标识 -> 移动版浏览器标识 -> 自定义 -><br />填入 <b>LogStatistic</b></li>
-										</ol>
-										<div id="Copyright"><a class="anchor" href="#Copyright"></a>
-											<h4>关于此项目</h4>
-										</div>
-										<ol>
-											<li>本项目与PanDownload无关。</li>
-											<li>本项目仅以学习为目的，不得用于其他用途。</li>
-											<li>当前项目版本：<?php echo programVersion; ?></li>
-											<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-											<li><a href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
-										</ol>
-								</section>
-								<script>
-									$('.anchor').attr('target', '_self').prepend(`<svg viewBox="0 0 16 16" version="1.1" width="16" height="16"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5
+									<blockquote>
+										<p>Chrome 应用商店打不开或者其他 Chromium 内核的浏览器，<a href="resource/UserAgentSwitcher.crx" target="_blank">请点此下载</a></p>
+										<p><a href="https://appcenter.browser.qq.com/search/detail?key=User-Agent%20Switcher%20for%20Chrome&amp;id=djflhoibgkdhkhhcedjiklpkjnoahfmg%20&amp;title=User-Agent%20Switcher%20for%20Chrome" target="_blank">QQ浏览器插件下载</a></p>
+									</blockquote>
+									<div id="Pure"><a class="anchor" href="#Pure"></a>
+										<h4>Pure 浏览器（Android）</h4>
+									</div>
+									<ol>
+										<li>设置 –> 浏览设置 -> 浏览器标识(UA)</li>
+										<li>添加自定义 UA：<b>LogStatistic</b></li>
+									</ol>
+									<div id="Alook"><a class="anchor" href="#Alook"></a>
+										<h4>Alook 浏览器（IOS）</h4>
+									</div>
+									<ol>
+										<li>设置 -> 通用设置 -> 浏览器标识 -> 移动版浏览器标识 -> 自定义 -><br />填入 <b>LogStatistic</b></li>
+									</ol>
+									<div id="Copyright"><a class="anchor" href="#Copyright"></a>
+										<h4>关于此项目</h4>
+									</div>
+									<ol>
+										<li>本项目与PanDownload无关。</li>
+										<li>本项目仅以学习为目的，不得用于其他用途。</li>
+										<li>当前项目版本：<?php echo programVersion; ?></li>
+										<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
+										<li><a href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
+									</ol>
+							</section>
+							<script>
+								$('.anchor').attr('target', '_self').prepend(`<svg viewBox="0 0 16 16" version="1.1" width="16" height="16"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5
 									3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"/></svg>`);
-								</script>
-							</div>
+							</script>
+						</div>
 						</p>
 					</div>
 				</div>
 			</div>
 	</div>
 	<?php } elseif (isset($_POST["surl"]) && isset($_POST["pwd"])) { // 解析链接页面
-			echo '<script>setTimeout("sweetAlert(\'提示\',\'当前页面已失效，请刷新重新获取。\',\'info\');",300000);</script>';
+			echo '<script>setTimeout(() => Swal.fire(\'提示\',\'当前页面已失效，请刷新重新获取。\',\'info\'), 300000);</script>';
 			CheckPassword();
 			$surl = $_POST["surl"];
 			$pwd = $_POST["pwd"];
@@ -253,7 +259,7 @@ if (DEBUG) {
 					else { // 终于正常了
 						$filecontent = '<nav aria-label="breadcrumb">
 						<ol class="breadcrumb my-4">
-							<li class="breadcrumb-item active" aria-current="page">全部文件</li>
+							<li class="breadcrumb-item" aria-current="page">全部文件</li>
 						<li class="ml-auto">已全部加载，共' . count($filejson["list"]) . '个</li>
 						</ol>
 						</nav>
@@ -430,7 +436,7 @@ if (DEBUG) {
 										</div>
 									</div>
 									<script>
-										setTimeout("location.reload();", 2000);
+										setTimeout(() => location.reload(), 2000);
 									</script>
 					<?php exit;
 										} else {
@@ -522,11 +528,13 @@ if (DEBUG) {
 											<div class="modal-body">
 												<div class="form-group">
 													<p><label class="control-label">Json-RPC Url</label>
-														<input name="url" id="url" class="form-control" placeholder="http://127.0.0.1:6800/jsonrpc"></p>
+														<input name="url" id="url" class="form-control" placeholder="http://127.0.0.1:6800/jsonrpc">
+													</p>
 												</div>
 												<div class="form-group">
 													<p><label class="control-label">Token</label>
-														<input name="token" id="token" class="form-control" placeholder="If none keep empty"></p>
+														<input name="token" id="token" class="form-control" placeholder="If none keep empty">
+													</p>
 												</div>
 											</div>
 											<div class="modal-footer">
@@ -560,11 +568,11 @@ if (DEBUG) {
 					else dl_error("获取下载链接失败", "未知错误！<br>错误号：" . $json4["errno"], true); // 未知错误
 				} else dl_error("参数有误", "POST 传参出现问题！请不要自行构建表单提交！"); // 参数不齐
 			} else dl_error("方法错误", "请不要直接访问此页面或使用 GET 方式访问！"); // 方法错误
-		} else { // 首页 
+		} else { // 首页
 	?>
 	<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 		<div class="card">
-			<div class="card-header bg-dark text-light">
+			<div class="card-header">
 				<text id="parsingtooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询信息">百度网盘在线解析</text>
 				<span style="float: right;" id="sviptooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询SVIP账号状态"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
 			</div>
@@ -583,7 +591,7 @@ if (DEBUG) {
 						echo $return;
 					} // 密码
 					?>
-					<button type="submit" class="mt-4 mb-3 form-control btn btn-success btn-block">打开</button>
+					<button type="submit" class="mt-4 mb-3 btn btn-success btn-block">打开</button>
 				</form>
 			</div>
 		</div>
@@ -594,59 +602,54 @@ if (DEBUG) {
 				$("#sviptooltip").tooltip(); //初始化
 				$("#parsingtooltip").tooltip(); //初始化
 
-				$.get("api.php?m=LastParse", function(data, status) {
-					if (status == "success") {
-						var json = JSON.parse(data);
-						if (json.error == 0) {
+				async function getAPI(method) { // 获取 API 数据
+					try {
+						const response = await fetch(`api.php?m=${method}`, { // fetch API
+							credentials: 'same-origin' // 发送验证信息 (cookies)
+						});
+						if (response.ok) { // 判断是否出现 HTTP 异常
+							return {
+								success: true,
+								data: await response.json() // 如果正常，则获取 JSON 数据
+							}
+						} else { // 若不正常，返回异常信息
+							return {
+								success: false,
+								msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+							};
+						}
+					} catch (reason) { // 若与服务器连接异常
+						return {
+							success: false,
+							msg: '连接服务器过程中出现异常，消息：' + reason.message
+						};
+					}
+				}
+
+				getAPI('LastParse').then(function(response) {
+					if (response.success) {
+						const data = response.data;
+						if (data.error == 0) {
 							//请求成功
-							if (json.svipstate == 1) {
+							if (data.svipstate == 1) {
 								$("#svipstate-point").addClass("point-success");
 							} else {
 								$("#svipstate-point").addClass("point-danger");
 							}
 						}
-						$("#svipstate").text(json.sviptips);
-						$("#sviptooltip").attr("data-original-title", json.msg);
+						$("#svipstate").text(data.sviptips);
+						$("#sviptooltip").attr("data-original-title", data.msg);
 					}
 				});
 
-				$.get("api.php?m=ParseCount", function(data, status) {
-					if (status == "success") {
-						var json = JSON.parse(data);
-						$("#parsingtooltip").attr("data-original-title", json.msg);
+				getAPI('ParseCount').then(function(response){
+					if (response.success) {
+						$("#parsingtooltip").attr("data-original-title", response.data.msg);
 					}
 				});
 
 			});
 		</script>
-		<style>
-			/*
-			设计圆点
-			*/
-			.point {
-				display: inline-block;
-				width: 5px;
-				height: 5px;
-				border-radius: 500px;
-				margin: 0px 5px;
-				/*调整圆点的位置*/
-				background-color: #ddd;
-				vertical-align: baseline;
-			}
-
-			.point-lg {
-				width: 12px;
-				height: 12px;
-			}
-
-			.point-success {
-				background-color: #28a745;
-			}
-
-			.point-danger {
-				background-color: #dc3545;
-			}
-		</style>
 	</div>
 <?php
 		}

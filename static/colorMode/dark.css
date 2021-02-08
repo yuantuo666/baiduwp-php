@@ -1,0 +1,21 @@
+:root {
+	--background-color: #0d1117;
+	--topbar-background: #161b22;
+	--topbar-color: white;
+	--bar-background: #161b22;
+	--bar-color: white;
+	--item-background: #21262d;
+	--reverse-background: #424242;
+	--high-reverse-background: #686868;
+	--main-color: white;
+	--reverse-color: black;
+	--default-green: #238636;
+	--active-green: #2ea043;
+	--light-green: #56d364;
+	--green-background: #132e1f;
+	--default-blue: #58a6ff;
+	--blue-background: #121d2f;
+	--red-background: #36191c;
+	--default-red: #da3633;
+	--light-red: #f85149;
+}
