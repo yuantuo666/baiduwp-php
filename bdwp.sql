@@ -34,7 +34,7 @@ CREATE TABLE `bdwp` (
   `ptime` datetime NOT NULL COMMENT '解析时间',
   `paccount` int(11) NOT NULL COMMENT '解析账号id',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5050 DEFAULT CHARSET=utf8mb4;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -51,7 +51,7 @@ CREATE TABLE `bdwp_ip` (
   `add_time` datetime NOT NULL COMMENT '白黑名单添加时间',
   `type` tinyint(4) NOT NULL COMMENT '状态(0:允许,-1:禁止)',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +70,7 @@ CREATE TABLE `bdwp_svip` (
   `state` tinyint(4) NOT NULL COMMENT '会员状态(0:正常,-1:限速)',
   `is_using` datetime NOT NULL COMMENT '是否正在使用(非零表示真)',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=255 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
