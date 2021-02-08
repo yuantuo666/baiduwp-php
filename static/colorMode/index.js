@@ -14,6 +14,7 @@ if (colorMode === null) {
 	document.querySelector('#Swal2-Light').disabled = false;
 } else {
 	Swal.fire('错误', '色彩模式配置出现错误，已重置配置！<br/>即将刷新页面……', 'error').then(function () {
+		localStorage.removeItem('colorMode');
 		location.reload();
 	});
 }
