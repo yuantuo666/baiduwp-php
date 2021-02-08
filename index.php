@@ -104,6 +104,7 @@ if (DEBUG) {
 				<ul class="navbar-nav">
 					<li class="nav-item"><a class="nav-link" href="./">首页</a></li>
 					<li class="nav-item"><a class="nav-link" href="?help" target="_blank">下载帮助</a></li>
+					<li class="nav-item"><a class="nav-link" href="usersettings.php" target="_blank">用户设置</a></li>
 					<li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
 				</ul>
 			</div>
