@@ -5,10 +5,12 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
-# http://www.dupan.cc/ （站长QQ33703259） 所发布的源码已被篡改，添加了后台并加密，添加的bduss会被上传网站后台，请勿下载使用
-首先在这里道个歉，这个项目收费确实有点不妥。<br />
+## warning!!
+http://www.dupan.cc/ （站长QQ33703259） 所发布的源码已被篡改，添加了后台并加密，添加的bduss会被上传网站后台，请勿使用<br />
+
 现在已经公布了所有源码，可以通过github的commits查看以前的源码，从未添加过后台，也没有加密。<br />
-dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用篡改的源码，在后台添加的bduss会被上传dupan.cc服务器，请勿下载使用！！！！
+dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用篡改的源码，在后台添加的bduss会被上传dupan.cc服务器，请勿使用！！！！<br />
+目前此网站已无法访问。
 
 ## Donate
 [捐赠作者](https://imwcr.cn/?donate)<br />
@@ -41,23 +43,26 @@ dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用�
 # Setting
 请在 `config.php` 中找到以下内容：
 ```
-define('BDUSS', '①');
-define('STOKEN', '②');
-define('SVIP_BDUSS', '③');
-define('IsCheckPassword', ④);
-define('Password', '⑤');
+const BDUSS = '①';
+const STOKEN = '②';
+const SVIP_BDUSS = '③';
 
-define('APP_ID', '⑥');
-define('DEBUG', ⑦);
+const IsCheckPassword = ④;
+const Password = '⑤';
+const Footer = '';
 
-define('USING_DB', ⑧);
-define('DbConfig', array(
-	"servername" => "⑨",
-	"username" => "⑩",
-	"password" => "⑪",
-	"dbname" => "⑫",
-	"dbtable" => "⑬"
-));
+const APP_ID = '⑥';
+const DEBUG = ⑦;
+
+//连接数据库
+const USING_DB =  ⑧;
+const DbConfig = array(
+    "servername" => "⑨",
+    "username" => "⑩",
+    "password" => "⑪",
+    "dbname" => "⑫",
+    "dbtable" => "⑬"
+);
 ```
 - 【必填】请在①②填入`你自己的百度账号信息`*(SVIP也可)*，用于获取下载列表，获取 cookie 方法见 [PD官网](https://pandownload.com/faq/cookie.html)
 - 【必填】在③中必须填入`SVIP的BDUSS`，用于获取下载链接，获取cookie方法同上。
@@ -69,29 +74,7 @@ define('DbConfig', array(
 - 在⑨-⑬是数据库设置
 
 - 详细信息可见 `config.php` 的注释
----
-### 演示案例
-例如，你的BDUSS是 `123` ，STOKEN是 `456` ，SVIP的BDUSS是 `789` ，`开启` 密码并且设置为 `666` ，启用数据库。（数据库相关信息：服务器地址`localhost`、账号`root`、密码`root`、数据库名`bdwp`）<br />
-那么应该将 `config.php` 中设置成以下的代码：
-```
-define('BDUSS', '123');
-define('STOKEN', '456');
-define('SVIP_BDUSS', '789');
-define('IsCheckPassword', true);
-define('Password', '666');
-
-define('APP_ID', '25565');
-define('DEBUG', false);
-
-define('USING_DB', true);
-define('DbConfig', array(
-	"servername" => "localhost",
-	"username" => "root",
-	"password" => "root",
-	"dbname" => "bdwp",
-	"dbtable" => "bdwp"
-));
-```
+（将在下一版本增加后台配置功能）
 ---
 ### 数据库设置
 请在`MySQL`中导入`bdwp.sql`文件。
@@ -102,9 +85,9 @@ define('DbConfig', array(
 
 ## New Changes
 - 当前版本：`1.4.5`
-- 更新日期：2021-01-25
+- 更新日期：2021-02-08
 - 修改内容
-  - 开源赞助版源码
+  - 由LC优化代码
 
 # About
 #### baiduwp JavaScript版
