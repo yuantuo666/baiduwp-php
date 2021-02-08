@@ -120,7 +120,7 @@ function CheckPassword()
 		if (!isset($_POST["Password"])) {
 			if (isset($_SESSION["Password"]) and $_SESSION["Password"] === Password) {
 				echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
-					: '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
+					: '<script>Swal.fire("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
 				$_SESSION['ShowAlert'] = true;
 				return;
 			}
@@ -128,14 +128,14 @@ function CheckPassword()
 			if ($_POST["Password"] === Password) {
 				$_SESSION['Password'] = $_POST["Password"];
 				echo (isset($_POST["dir"]) || isset($_SESSION["ShowAlert"])) ? ''
-					: '<script>sweetAlert("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
+					: '<script>Swal.fire("重要提示","请勿将密码告诉他人！此项目仅供测试使用！","info");</script>';
 				$_SESSION['ShowAlert'] = true;
 				return;
 			}
 		}
 		die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
 			<div class="alert alert-danger" role="alert"><h5 class="alert-heading">错误</h5><hr><p class="card-text">密码错误！</p></div></div>
-			</div></div><script>sweetAlert("错误","密码错误！","error");</script></body></html>');
+			</div></div><script>Swal.fire("错误","密码错误！","error");</script></body></html>');
 	}
 }
 // 解析分享链接
