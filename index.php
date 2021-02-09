@@ -524,7 +524,8 @@ if (DEBUG) {
 								$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="' . Language["PassWord"] . '"></div>';
 								if (isset($_SESSION["Password"])) {
 									if ($_SESSION["Password"] === Password) {
-										$return = '<div class="form-group my-4">您的设备在短期内已经验证过，无需再次输入密码。</div>';
+										$return = '<div>您的设备在短期内已经验证过，无需再次输入密码。</div>'
+											. '<div>Your device has been verified in a short period of time, and there is no need to enter the password again.</div>';
 									}
 								}
 								echo $return;
