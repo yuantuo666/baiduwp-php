@@ -9,7 +9,7 @@ if (version_compare(PHP_VERSION, '7.0.0', '<')) {
 	header('Refresh: 5;url=https://www.php.net/downloads.php');
 	die("HTTP 503 服务不可用！\r\nPHP 版本过低！无法正常运行程序！\r\n请安装 7.0.0 或以上版本的 PHP！\r\n将在五秒内跳转到 PHP 官方下载页面！");
 }
-if (!(file_exists('config.php') && file_exists('functions.php'))) {
+if (!(file_exists('config.php') && file_exists('functions.php') && file_exists('language.php'))) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
@@ -17,9 +17,15 @@ if (!(file_exists('config.php') && file_exists('functions.php'))) {
 }
 // 导入配置和函数
 require('config.php');
+require('language.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
+if (DEBUG) {
+	error_reporting(E_ALL);
+} else {
+	error_reporting(0); //关闭错误报告
+}
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -93,9 +99,9 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="./">首页</a></li>
-					<li class="nav-item"><a class="nav-link" href="?help" target="_blank">下载帮助</a></li>
-					<li class="nav-item"><a class="nav-link" href="usersettings.php" target="_blank">用户设置</a></li>
+					<li class="nav-item"><a class="nav-link" href="./"><?php echo Language["IndexButton"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="?help" target="_blank"><?php echo Language["HelpButton"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="usersettings.php" target="_blank"><?php echo Language["UserSettings"]; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
 				</ul>
 			</div>
@@ -103,49 +109,71 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	</nav>
 	<div class="container">
 		<div class="card">
-			<div class="card-header">用户设置</div>
+			<div class="card-header"><?php echo Language["UserSettings"]; ?></div>
 			<div class="card-body">
 				<div>
-					<h3>色彩模式</h3>
+					<h3><?php echo Language["ColorMode"]; ?></h3>
 					<div id="ColorMode-Setting-View">
-						<span>浏览器设置：</span><span id="Browser-ColorMode"></span>
-						<span>当前设置：</span><span id="Setting-ColorMode"></span>
+						<span><?php echo Language["BrowserSettings"]; ?></span><span id="Browser-ColorMode"></span>
+						<span><?php echo Language["CurrentSetting"]; ?></span><span id="Setting-ColorMode"></span>
 					</div>
-					<div>
-						<button class="btn ColorMode-Button" data-colorMode="auto" id="ColorMode-Auto-Button">跟随浏览器</button>
-						<button class="btn ColorMode-Button" data-colorMode="dark" id="ColorMode-Dark-Button">深色模式</button>
-						<button class="btn ColorMode-Button" data-colorMode="light" id="ColorMode-Light-Button">浅色模式</button>
-					</div>
+					<div><select id="ColorMode-Select" class="form-control">
+							<option value="auto"><button class="btn ColorMode-Button" data-colorMode="auto" id="ColorMode-Auto-Button"><?php echo Language["FollowBrowser"]; ?></button></option>
+							<option value="dark"><button class="btn ColorMode-Button" data-colorMode="dark" id="ColorMode-Dark-Button"><?php echo Language["DarkMode"]; ?></button></option>
+							<option value="light"><button class="btn ColorMode-Button" data-colorMode="light" id="ColorMode-Light-Button"><?php echo Language["LightMode"]; ?></button></option>
+						</select></div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<script>
-		$('.ColorMode-Button').each(function() {
-			if (this.dataset.colormode === 'auto') {
-				this.addEventListener('click', function() {
-					localStorage.removeItem('colorMode');
-					location.reload();
-				});
-			} else {
-				this.addEventListener('click', function() {
-					localStorage.setItem('colorMode', this.dataset.colormode);
-					location.reload();
-				});
+		if (localStorage.getItem('colorMode') === null) { // 判断用户设置的颜色
+			$('#Setting-ColorMode').text('<?php echo Language["FollowBrowser"]; ?>'); // 跟随浏览器
+			$('option[value=auto]')[0].selected = true;
+		} else if (localStorage.getItem('colorMode') === 'dark') { // 深色模式
+			$('#Setting-ColorMode').text('<?php echo Language["DarkMode"]; ?>');
+			$('option[value=dark]')[0].selected = true;
+		} else if (localStorage.getItem('colorMode') === 'light') { // 浅色模式
+			$('#Setting-ColorMode').text('<?php echo Language["LightMode"]; ?>');
+			$('option[value=light]')[0].selected = true;
+		}
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) { // 获取浏览器设置
+			$('#Browser-ColorMode').text('<?php echo Language["DarkMode"]; ?>'); // 深色模式
+		} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+			$('#Browser-ColorMode').text('<?php echo Language["LightMode"]; ?>'); // 浅色模式
+		}
+		window.matchMedia('(prefers-color-scheme: dark)').addListener(function(e) { // 当色彩模式改变为深色模式
+			if (e.matches) {
+				$('#Browser-ColorMode').text('<?php echo Language["DarkMode"]; ?>');
 			}
 		});
-		if (localStorage.getItem('colorMode') === null) {
-			$('#Setting-ColorMode').text('跟随浏览器');
-		} else if (localStorage.getItem('colorMode') === 'dark') {
-			$('#Setting-ColorMode').text('深色模式');
-		} else if (localStorage.getItem('colorMode') === 'light') {
-			$('#Setting-ColorMode').text('浅色模式');
-		}
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			$('#Browser-ColorMode').text('深色模式');
-		} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-			$('#Browser-ColorMode').text('浅色模式');
-		}
+		window.matchMedia('(prefers-color-scheme: light)').addListener(function(e) { // 当色彩模式改变为浅色模式
+			if (e.matches) {
+				$('#Browser-ColorMode').text('<?php echo Language["LightMode"]; ?>');
+			}
+		});
+		$('#ColorMode-Select').on('change', function() {
+			if (this.value === 'auto') {
+				localStorage.removeItem('colorMode');
+				location.reload();
+			} else {
+				localStorage.setItem('colorMode', this.value);
+				location.reload();
+			}
+		});
+		// $('.ColorMode-Button').each(function() { // 更改颜色模式的按钮的事件
+		// 	if (this.dataset.colormode === 'auto') {
+		// 		this.addEventListener('click', function() {
+		// 			localStorage.removeItem('colorMode');
+		// 			location.reload();
+		// 		});
+		// 	} else {
+		// 		this.addEventListener('click', function() {
+		// 			localStorage.setItem('colorMode', this.dataset.colormode);
+		// 			location.reload();
+		// 		});
+		// 	}
+		// });
 	</script>
 </body>
 

@@ -39,6 +39,10 @@ dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用�
   - 耐心等待baidu解封账号
   - 更换后台SVIP账号
   - 更换服务器IP
+- 使用了较新的 JavaScript 和 CSS 特性，旧版浏览器对此的支持性很差，使用新版的现代浏览器才能正常使用！建议使用的浏览器：
+  - `Microsoft Edge 88+` (最新版更好，Edge 的更新功能还不够方便吗？) [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
+  - `Google Chrome 88+` (最新版更好，Chrome 的更新功能还不够方便吗？) [点此访问 Chrome 官网](https://www.google.cn/chrome/)
+  - `Firefox 85+` (最新版更好，Firefox 的更新功能还不够方便吗？) [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
 # Setting
 请在 `config.php` 中找到以下内容：

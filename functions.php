@@ -18,15 +18,15 @@ if (!defined('init')) { // 直接访问处理程序
 	http_response_code(403);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 3;url=./');
-	define('init', true);
-	if (file_exists('config.php')) {
-		require('config.php');
-		die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的有关文件！\r\n禁止直接访问！");
-	} else {
+	if (!file_exists('config.php')) {
 		http_response_code(503);
+		header('Content-Type: text/plain; charset=utf-8');
 		header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
 		die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
 	}
+	define('init', true);
+	require('config.php');
+	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的有关文件！\r\n禁止直接访问！");
 }
 
 // main
@@ -73,7 +73,7 @@ function getSubstr(string $str, string $leftStr, string $rightStr)
 {
 	$left = strpos($str, $leftStr); // echo '左边:'.$left;
 	$right = strpos($str, $rightStr, $left); // echo '<br>右边:'.$right;
-	if ($left < 0 or $right < $left) return '';
+	if ($left < 0 || $right < $left) return '';
 	$left += strlen($leftStr);
 	return substr($str, $left, $right - $left);
 }
@@ -118,35 +118,18 @@ function CheckPassword()
 { // 校验密码
 	if (IsCheckPassword) {
 		if (!isset($_POST["Password"])) {
-			if (isset($_SESSION["Password"]) and $_SESSION["Password"] === Password) {
+			if (isset($_SESSION["Password"]) && $_SESSION["Password"] === Password) {
 				return true;
 			}
-		} else {
-			if ($_POST["Password"] === Password) {
-				$_SESSION['Password'] = $_POST["Password"];
-				return true;
-			}
+		} else if ($_POST["Password"] === Password) {
+			$_SESSION['Password'] = $_POST["Password"];
+			return true;
 		}
-		die('<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11">
-			<div class="alert alert-danger" role="alert"><h5 class="alert-heading">错误</h5><hr><p class="card-text">密码错误！</p></div></div>
-			</div></div><script>Swal.fire("错误","密码错误！","error");</script></body></html>');
+		dl_error("密码错误", "请检查你输入的密码！");
 	}
 }
 // 解析分享链接
-function verifyPwd(string $surl_1, string $pwd)
-{ // 验证提取码
-	$url = 'https://pan.baidu.com/share/verify?channel=chunlei&clienttype=0&web=1&app_id=250528&surl=' . $surl_1;
-	$data = "pwd=$pwd";
-	$header = array("User-Agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
-	$result = json_decode(post($url, $data, $header), true); // -12 提取码错误
-	if (DEBUG) {
-		echo '<pre>verifyPwd():';
-		var_dump($result);
-		echo '</pre>';
-	}
-	if ($result["errno"] === 0) return $result["randsk"];
-	else return 1;
-}
+// 改用微信接口，不需要使用verifyPwd获取randsk
 function getSign(string $surl, $randsk)
 {
 	if ($randsk === 1) return 1;
@@ -239,25 +222,32 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 }
 function dl_error(string $title, string $content, bool $jumptip = false)
 {
+	if ($jumptip) {
+		$content .= '<br>请打开调试模式，并将错误信息复制提交issue到<a href="https://github.com/yuantuo666/baiduwp-php">github项目</a>。';
+	}
+	if (Language["LanguageName"] != "Chinese") {
+		$content = "To know more about it, you can translate the information following.<br />Raw Title:$title<br />Raw Message:$content<br /><br />If you still have question, please copy the information and sent to the email(yuantuo666@gmail.com) for help.";
+		$title = "An error happened.";
+	}
 	echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 	<h5 class="alert-heading">' . $title . '</h5><hr /><p class="card-text">' . $content;
-	if ($jumptip) {
-		echo '<br>请打开调试模式，并将错误信息复制提交issue到<a href="https://github.com/yuantuo666/baiduwp-php">github项目</a>。';
-	}
 	echo '</p></div></div></div>';
 	return 0;
 }
-function get_BDCLND($surl)
+function get_BDCLND($surl, $Pwd)
 {
-	$header = head("https://pan.baidu.com/s/" . $surl, []);
-	$bdclnd = preg_match('/BDCLND=(.+?);/', $header, $matches);
+	$header = array('User-Agent: netdisk');
+	$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; //使用新方法获取，减少花费的时间
+	$result = head($url, $header);
+	$bdclnd = GetSubstr($result, 'BDCLND=', ';');
+
 	if ($bdclnd) {
 		if (DEBUG) {
 			echo '<pre>get_BDCLND():';
-			var_dump($matches[1]);
+			var_dump($bdclnd);
 			echo '</pre>';
 		}
-		return $matches[1];
+		return $bdclnd;
 	} else {
 		if (DEBUG) {
 			echo '<pre>get_BDCLND():';
@@ -290,4 +280,20 @@ function connectdb(bool $isAPI = false)
 	mysqli_query($conn, "set sql_mode = ''");
 	mysqli_query($conn, "set character set 'utf8'");
 	mysqli_query($conn, "set names 'utf8'");
+}
+function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password)
+{
+	$Url = 'https://pan.baidu.com/share/wxlist?channel=weixin&version=2.2.2&clienttype=25&web=1';
+
+	$Root = ($IsRoot) ? "1" : "0";
+	$Dir = urlencode($Dir);
+	$Data = "shorturl=$Shorturl&dir=$Dir&root=$Root&pwd=$Password&page=1&num=2000&order=time";
+	$header = array("User-Agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
+	$result = json_decode(post($Url, $Data, $header), true);
+	if (DEBUG) {
+		echo '<pre>GetList():';
+		var_dump($result);
+		echo '</pre>';
+	}
+	return $result;
 }

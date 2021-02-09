@@ -3,7 +3,7 @@
  *
  * 许多函数来源于github，详见项目里的Thanks
  *
- * @version 1.4.2
+ * @version 1.4.5
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -35,10 +35,10 @@ function dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
 		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="bdstoken" value="${bdstoken}"/><input type="hidden" name="filesize" value="${filesize}"/>`);
 	$(document.body).append(form); form.submit();
 }
-function OpenDir(path, pwd, share_id, uk, surl, randsk) {
+function OpenDir(path, pwd, share_id, uk, surl, randsk, sign, timestamp, bdstoken) {
 	var form = $('<form method="post"></form>');
 	form.append(`<input type="hidden" name="dir" value="${path}"/><input type="hidden" name="pwd" value="${pwd}"/><input type="hidden" name="surl" value="${surl}"/>
-		<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="randsk" value="${randsk}"/>`);
+	<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="sign" value="${sign}"/><input type="hidden" name="timestamp" value="${timestamp}"/><input type="hidden" name="bdstoken" value="${bdstoken}"/>`);
 	$(document.body).append(form); form.submit();
 }
 function getIconClass(filename) {
@@ -51,9 +51,9 @@ function getIconClass(filename) {
 		apple: ["ipa"],
 		android: ["apk"],
 		file_alt: ["txt", "rtf"],
-		file_excel: ["xls", "xlsx"], // xlsm 等以及模板？
-		file_word: ["doc", "docx"],
-		file_powerpoint: ["ppt", "pptx"],
+		file_excel: ["xls", "xlsx", "xlsm", "xlsb", "csv", "xltx", "xlt", "xltm", "xlam"],
+		file_word: ["doc", "docx", "docm", "dotx"],
+		file_powerpoint: ["ppt", "pptx", "potx", "pot", "potm", "ppsx", "pps", "ppam", "ppa"],
 		file_pdf: ["pdf"],
 	};
 	var point = filename.lastIndexOf(".");

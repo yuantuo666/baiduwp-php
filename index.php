@@ -4,11 +4,8 @@
  * PanDownload 网页复刻版，PHP 语言版主文件
  *
  * 功能描述：使用百度 SVIP 账号获取真实下载地址，与 Pandownload 原版无关。
- * 本项目是依据 [baiduwp](https://github.com/TkzcM/baiduwp "baiduwp") 的 JavaScript 版本改写而来，仅供大家学习参考。
  *
  * 希望在使用时能够保留导航栏的 Made by Yuan_Tuo 感谢！
- *
- * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
@@ -27,7 +24,7 @@ if (version_compare(PHP_VERSION, '7.0.0', '<')) {
 	header('Refresh: 5;url=https://www.php.net/downloads.php');
 	die("HTTP 503 服务不可用！\r\nPHP 版本过低！无法正常运行程序！\r\n请安装 7.0.0 或以上版本的 PHP！\r\n将在五秒内跳转到 PHP 官方下载页面！");
 }
-if (!(file_exists('config.php') && file_exists('functions.php'))) {
+if (!(file_exists('config.php') && file_exists('functions.php') && file_exists('language.php'))) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
@@ -38,6 +35,7 @@ $system_start_time = microtime(true);
 // 导入配置和函数
 require('config.php');
 require('functions.php');
+require('language.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
@@ -59,7 +57,7 @@ if (DEBUG) {
 	<meta name="version" content="<?php echo programVersion; ?>" />
 	<meta name="description" content="PanDownload 网页版，百度网盘分享链接在线解析工具。" />
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
-	<title>PanDownload 复刻版</title>
+	<title><?php echo Language["Sitename"]; ?></title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Auto" href="static/colorMode/auto.css" />
@@ -80,11 +78,11 @@ if (DEBUG) {
 	<script>
 		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
 			Swal.fire({
-				title: "继续解析？",
-				html: "为保证服务稳定，每个IP每天有<?php echo DownloadTimes; ?>次免费解析次数，是否继续？",
+				title: "<?php echo Language["ConfirmTitle"]; ?>",
+				html: "<?php echo Language["ConfirmText"]; ?>",
 				icon: "warning",
 				showCancelButton: true,
-				confirmButtonText: "Yes, do it!",
+				confirmButtonText: "<?php echo Language["ConfirmmButtonText"]; ?>",
 				reverseButtons: true
 			}).then(function(e) {
 				if (e.isConfirmed) {
@@ -102,9 +100,9 @@ if (DEBUG) {
 			<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="./">首页</a></li>
-					<li class="nav-item"><a class="nav-link" href="?help" target="_blank">下载帮助</a></li>
-					<li class="nav-item"><a class="nav-link" href="usersettings.php" target="_blank">用户设置</a></li>
+					<li class="nav-item"><a class="nav-link" href="./"><?php echo Language["IndexButton"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="?help" target="_blank"><?php echo Language["HelpButton"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="usersettings.php" target="_blank"><?php echo Language["UserSettings"]; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
 				</ul>
 			</div>
@@ -120,110 +118,54 @@ if (DEBUG) {
 			echo '</pre>';
 		}
 		if (isset($_GET["help"])) { // 帮助页
-		?>
-			<div class="row justify-content-center">
-				<div class="col-md-7 col-sm-8 col-11">
-					<div class="alert alert-primary" role="alert">
-						<h5 class="alert-heading">提示</h5>
-						<hr />
-						<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。<br />
-						<div class="page-inner">
-							<section class="normal" id="section-">
-								<div id="IDM"><a class="anchor" href="#IDM"></a>
-									<h4>IDM（推荐）</h4>
-								</div>
-								<ol>
-									<li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
-									<li><b>右键复制下载链接</b>（直接点击 或 右键调用 IDM 将传入浏览器的 UA，将会导致下载失败），在 IDM 新建任务，粘贴链接即可下载。</li>
-								</ol>
-								<div id="ADM"><a class="anchor" href="#ADM"></a>
-									<h4>ADM Pro（Android推荐）</h4>
-									<ol>
-										<li>设置 -> 下载中 -> 浏览器标识 -> 自定义 浏览器标识</li>
-										<li>填入 <b>LogStatistic</b></li>
-										<li>切换到浏览器（ADM留在后台），长按“下载链接”，选择复制链接地址</li>
-										<li>然后在ADM里点击开始即可</li>
-									</ol>
-									<div id="Chrome"><a class="anchor" href="#Chrome"></a>
-										<h4>Chrome 浏览器</h4>
-									</div>
-									<ol>
-										<li>安装浏览器扩展程序 <a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg" target="_blank">User-Agent Switcher for Chrome</a></li>
-										<li>右键点击扩展图标 -> 选项</li>
-										<li>New User-Agent name 填入 百度网盘分享下载</li>
-										<li>New User-Agent String 填入 <b>LogStatistic</b></li>
-										<li>Group 填入 百度网盘</li>
-										<li>Append? 选择 Replace</li>
-										<li>Indicator Flag 填入 Log，点击 Add 保存</li>
-										<li>保存后点击扩展图标，出现“百度网盘”，进入并选择“百度网盘分享下载”。</li>
-									</ol>
-									<blockquote>
-										<p>Chrome 应用商店打不开或者其他 Chromium 内核的浏览器，<a href="resource/UserAgentSwitcher.crx" target="_blank">请点此下载</a></p>
-										<p><a href="https://appcenter.browser.qq.com/search/detail?key=User-Agent%20Switcher%20for%20Chrome&amp;id=djflhoibgkdhkhhcedjiklpkjnoahfmg%20&amp;title=User-Agent%20Switcher%20for%20Chrome" target="_blank">QQ浏览器插件下载</a></p>
-									</blockquote>
-									<div id="Pure"><a class="anchor" href="#Pure"></a>
-										<h4>Pure 浏览器（Android）</h4>
-									</div>
-									<ol>
-										<li>设置 –> 浏览设置 -> 浏览器标识(UA)</li>
-										<li>添加自定义 UA：<b>LogStatistic</b></li>
-									</ol>
-									<div id="Alook"><a class="anchor" href="#Alook"></a>
-										<h4>Alook 浏览器（IOS）</h4>
-									</div>
-									<ol>
-										<li>设置 -> 通用设置 -> 浏览器标识 -> 移动版浏览器标识 -> 自定义 -><br />填入 <b>LogStatistic</b></li>
-									</ol>
-									<div id="Copyright"><a class="anchor" href="#Copyright"></a>
-										<h4>关于此项目</h4>
-									</div>
-									<ol>
-										<li>本项目与PanDownload无关。</li>
-										<li>本项目仅以学习为目的，不得用于其他用途。</li>
-										<li>当前项目版本：<?php echo programVersion; ?></li>
-										<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-										<li><a href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
-									</ol>
-							</section>
-							<script>
-								$('.anchor').attr('target', '_self').prepend(`<svg viewBox="0 0 16 16" version="1.1" width="16" height="16"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5
-									3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"/></svg>`);
-							</script>
-						</div>
-						</p>
-					</div>
-				</div>
-			</div>
-	</div>
-	<?php } elseif (isset($_POST["surl"]) && isset($_POST["pwd"])) { // 解析链接页面
-			echo '<script>setTimeout(() => Swal.fire(\'提示\',\'当前页面已失效，请刷新重新获取。\',\'info\'), 300000);</script>';
+			echo Language["HelpPage"];
+		} elseif (isset($_POST["surl"])) { // 解析链接页面
+			echo '<script>setTimeout("sweetAlert(\'' . Language["TipTitle"] . '\',\'' . Language["TimeoutTip"] . '\',\'info\');",300000);</script>';
 			CheckPassword();
-			$surl = $_POST["surl"];
-			$pwd = $_POST["pwd"];
+			$surl = $_POST["surl"]; //含有1
+			$pwd = (!empty($_POST["pwd"])) ? $_POST["pwd"] : "";
+			$dir = (!empty($_POST["dir"])) ? $_POST["dir"] : "";
+			$IsRoot = ($dir == "") ? true : false;
+			$Filejson = GetList($surl, $dir, $IsRoot, $pwd); //解析子目录时，需添加1
+			if ($Filejson["errno"] == 0) {
+				//解析正常
+
+			} else {
+				//解析异常
+
+				$ErrorMessage = [
+					"mis_105" => "你所解析的文件不存在~",
+					"mispw_9" => "验证码错误",
+					"mis_2" => "不存在此目录",
+					3 => "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！",
+					0 => "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。",
+					10 => "啊哦，来晚了，该分享文件已过期"
+				];
+			}
+
+
 			if (isset($_POST["dir"])) {
 				//文件夹页面
 				if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
-				elseif ($pwd !== '') $randsk = verifyPwd($surl, $pwd);
-				else $randsk = get_BDCLND('1' . $surl);
+				else $randsk = get_BDCLND('1' . $surl, $pwd);
 				$shareid = $_POST["share_id"];
-				$root = getSign($surl, $randsk);
-				if ($root !== 1) {
-					$uk = $_POST["uk"];
-					$sign = $root["sign"];
-					$timestamp = $root["timestamp"];
-					$bdstoken = $root["bdstoken"];
+				//$root = getSign($surl, $randsk);第二次不需要再次获取
+				if ($randsk !== 1) {
+					$uk = $_POST["uk"]; //分享者信息
+					$sign = $_POST["sign"];
+					$timestamp = $_POST["timestamp"];
+					$bdstoken = $_POST["bdstoken"];
 					$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
-					if ($filejson["errno"] != 0) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-						<h5 class="alert-heading">文件夹存在问题</h5><hr /><p class="card-text">此文件夹存在问题，无法访问！</p></div></div></div>'; // 鬼知道发生了啥
+					if ($filejson["errno"] != 0) dl_error("文件夹存在问题", "此文件夹存在问题，无法访问！", true); // 鬼知道发生了啥
 					else { // 终于正常了
 						//面包屑导航
 						$filecontent = '<nav aria-label="breadcrumb"><ol class="breadcrumb my-4">
-							<li class="breadcrumb-item"><a href="javascript:OpenRoot(\'1' . $surl . '\',\'' . $pwd . '\');">全部文件</a></li>';
+						<li class="breadcrumb-item"><a href="javascript:OpenRoot(\'1' . $surl . '\',\'' . $pwd . '\');">' . Language["AllFiles"] . '</a></li>';
 						$dir_list = explode("/", $_POST["dir"]);
 						for ($i = 1; $i <= count($dir_list) - 2; $i++) {
 							if ($i == 1 and strstr($dir_list[$i], "sharelink")) continue;
 							$fullsrc = strstr($_POST["dir"], $dir_list[$i], true) . $dir_list[$i];
-							$filecontent .= '<li class="breadcrumb-item"><a href="javascript:OpenDir(\'' . $fullsrc . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\');">' . $dir_list[$i] . '</a></li>';
+							$filecontent .= '<li class="breadcrumb-item"><a href="javascript:OpenDir(\'' . $fullsrc . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $dir_list[$i] . '</a></li>';
 						}
 						$filecontent .= '<li class="breadcrumb-item active">' . $dir_list[$i] . '</li>'
 							. '<li class="ml-auto">已全部加载，共' . count($filejson["list"]) . '个</li></ol></nav>';
@@ -235,18 +177,16 @@ if (DEBUG) {
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
 								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
-								<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
 						echo $filecontent . "</ul></div>";
 					}
-				} else echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-					<h5 class="alert-heading">提示</h5><hr /><p class="card-text">提取码错误或文件失效！</p></div></div></div>';
+				} else dl_error("解析错误", "解析子文件夹时，提取码错误或文件失效！");
 			} else {
 				//根页面
 				$surl_1 = substr($surl, 1);
 				if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
-				elseif ($pwd !== '') $randsk = verifyPwd($surl_1, $pwd);
-				else $randsk = get_BDCLND($surl);
+				else $randsk = get_BDCLND($surl, $pwd);
 				$root = getSign($surl_1, $randsk);
 				$filejson = FileList($root);
 				if ($filejson !== 1) {
@@ -255,12 +195,11 @@ if (DEBUG) {
 					$shareid = $root["shareid"];
 					$uk = $root["uk"];
 					$bdstoken = $root["bdstoken"];
-					if ($filejson["errno"] != 0) echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-						<h5 class="alert-heading">链接存在问题</h5><hr /><p class="card-text">此链接存在问题，无法访问！</p></div></div></div>'; // 鬼知道发生了啥
+					if ($filejson["errno"] != 0)  dl_error("链接存在问题", "此链接存在问题，无法访问！", true); // 鬼知道发生了啥
 					else { // 终于正常了
 						$filecontent = '<nav aria-label="breadcrumb">
 						<ol class="breadcrumb my-4">
-							<li class="breadcrumb-item" aria-current="page">全部文件</li>
+							<li class="breadcrumb-item" aria-current="page">' . Language["AllFiles"] . '</li>
 						<li class="ml-auto">已全部加载，共' . count($filejson["list"]) . '个</li>
 						</ol>
 						</nav>
@@ -271,16 +210,15 @@ if (DEBUG) {
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
 								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
-								<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
 						echo $filecontent . "</ul></div>";
 					}
-				} else echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-					<h5 class="alert-heading">提示</h5><hr /><p class="card-text">提取码错误或文件失效！</p></div></div></div>';
+				} else dl_error("解析错误", "解析根页面时，提取码错误或文件失效！");
 			}
 		} elseif (isset($_GET["download"])) { // 解析下载地址页面
 			if (IsCheckPassword and (!isset($_SESSION["Password"]) or $_SESSION["Password"] != Password)) {
-				dl_error("密码错误", "密码错误或超时，请返回首页重新验证密码。"); // 密码错误
+				dl_error(Language["PasswordError"], "密码错误或超时，请返回首页重新验证密码。"); // 密码错误
 			} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"]) && isset($_POST["bdstoken"]) && isset($_POST["filesize"])) {
 					function getip()
@@ -308,7 +246,7 @@ if (DEBUG) {
 							if ($result["type"] == -1) {
 								//黑名单
 								$isipwhite = FALSE;
-								dl_error("账户错误", "当前ip已被加入黑名单，请联系站长解封");
+								dl_error(Language["AccountError"], "当前ip已被加入黑名单，请联系站长解封");
 								exit;
 							} elseif ($result["type"] == 0) {
 								//白名单
@@ -379,7 +317,7 @@ if (DEBUG) {
 									if ($result["Num"] >= DownloadTimes) {
 										//提示无权继续
 										// dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>您已于 <b>" . $result["ptime"] . "</b> 时解析过文件“<b>" . $result["filename"] . "</b>”。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-										dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+										dl_error(Language["NoChance"], "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
 										exit;
 									}
 								}
@@ -423,23 +361,23 @@ if (DEBUG) {
 										$mysql_query = mysqli_query($conn, $sql);
 										if ($mysql_query != false) {
 											//SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
-	?>
-									<div class="row justify-content-center">
-										<div class="col-md-7 col-sm-8 col-11">
-											<div class="alert alert-danger" role="alert">
-												<h5 class="alert-heading">请稍后，正在切换账号中~</h5>
-												<hr />
-												<p class="card-text">当前SVIP账号已经被限速</p>
-												<p class="card-text">正在自动切换新账号中</p>
-												<p class="card-text">预计需要2~3秒，请耐心等待</p>
-												</p>
+		?>
+											<div class="row justify-content-center">
+												<div class="col-md-7 col-sm-8 col-11">
+													<div class="alert alert-danger" role="alert">
+														<h5 class="alert-heading"><?php echo Language["SwitchWait"]; ?></h5>
+														<hr />
+														<p class="card-text">当前SVIP账号已经被限速</p>
+														<p class="card-text">正在自动切换新账号中</p>
+														<p class="card-text">预计需要2~3秒，请耐心等待</p>
+														</p>
+													</div>
+												</div>
 											</div>
-										</div>
-									</div>
-									<script>
-										setTimeout(() => location.reload(), 2000);
-									</script>
-					<?php exit;
+											<script>
+												setTimeout(() => location.reload(), 2000);
+											</script>
+							<?php exit;
 										} else {
 											//SVIP账号自动切换失败
 
@@ -453,8 +391,8 @@ if (DEBUG) {
 
 						// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
 						if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-							<h5 class="alert-heading">获取下载链接失败</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
-							<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
+						<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
+						<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
 						else {
 
 							//记录下使用者ip，下次进入时提示
@@ -465,101 +403,101 @@ if (DEBUG) {
 								$mysql_query = mysqli_query($conn, $sql);
 								if ($mysql_query == false) {
 									//保存错误
-									dl_error("数据库错误", "数据库错误，请联系站长修护");
+									dl_error(Language["DatabaseError"], "数据库错误，请联系站长修护");
 									exit;
 								}
 								echo "<script>var d=new Date();d.setDate(d.getDate()+1);d.setHours(0);d.setMinutes(0);d.setSeconds(0);document.cookie='SESSID=Nbef-cz-Zvbo_Uvp;expires='+d.toGMTString();</script>";
 								//为了防止一些换ip调用，这里写一个cookie
 							}
 
-					?>
-					<div class="row justify-content-center">
-						<div class="col-md-7 col-sm-8 col-11">
-							<div class="alert alert-primary" role="alert">
-								<h5 class="alert-heading">获取下载链接成功</h5>
-								<hr />
-								<p class="card-text"><?php if ($usingcache) echo "下载链接从数据库中提取，不消耗免费次数。";
-														elseif ($smallfile) echo "<span style=\"color:red;\">恭喜你，中奖啦！本次解析不消耗次数哦~</span>";
-														else echo "服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。"; ?></p>
-								<?php echo FileInfo($filename, $size, $md5, $server_ctime); ?>
-								<?php
-								echo '<hr><p class="card-text">在线预览：</p>';
-								if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic" or $smallfile) {
+							?>
+							<div class="row justify-content-center">
+								<div class="col-md-7 col-sm-8 col-11">
+									<div class="alert alert-primary" role="alert">
+										<h5 class="alert-heading"><?php echo Language["DownloadLinkSuccess"]; ?></h5>
+										<hr />
+										<p class="card-text"><?php if ($usingcache) echo "下载链接从数据库中提取，不消耗免费次数。";
+																elseif ($smallfile) echo "<span style=\"color:red;\">恭喜你，中奖啦！本次解析不消耗次数哦~</span>";
+																else echo "服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。"; ?></p>
+										<?php echo FileInfo($filename, $size, $md5, $server_ctime); ?>
+										<?php
+										echo '<hr><p class="card-text">' . Language["Rreview"] . '</p>';
+										if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic" or $smallfile) {
 
-									$type = substr($filename, -4);
-									if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
-										echo '<img src="https://' . $realLink . '" class="img-fluid rounded" style="width: 100%;">';
-									} elseif ($type == ".mp4") {
-										echo '<video src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</video>';
-									} elseif ($type == ".mp3" || $type == ".wav") {
-										echo '<audio src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</audio>';
-									} else {
-										echo '<p class="card-text">暂不支持当前文件。</p>';
-									}
-								} else {
-									echo '<p class="card-text">目前只支持<b>50MB以下文件</b>或<b>设置UA</b>后使用在线预览功能。</p>';
-								}
-								echo '<hr />';
-								if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
-								echo '
+											$type = substr($filename, -4);
+											if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
+												echo '<img src="https://' . $realLink . '" class="img-fluid rounded" style="width: 100%;">';
+											} elseif ($type == ".mp4") {
+												echo '<video src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</video>';
+											} elseif ($type == ".mp3" || $type == ".wav") {
+												echo '<audio src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</audio>';
+											} else {
+												echo '<p class="card-text">' . Language["NotSupportWithUA"] . '</p>';
+											}
+										} else {
+											echo '<p class="card-text">' . Language["NotSupportWithoutUA"] . '</p>';
+										}
+										echo '<hr />';
+										if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
+										echo '
 								<p class="card-text">
-									<a id="http" href="http://' . $realLink . '" style="display: none;">下载链接（不安全）</a>';
-								if ($smallfile) {
-									echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">下载链接（无需设置UA，8小时有效）</a>';
-								} else {
-									echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">下载链接（需设置UA，8小时有效）</a>';
-								}
-								echo '</p>';
-								?>
-								<p class="card-text">
-									<a href="javascript:void(0)" data-toggle="modal" data-target="#exampleModal">推送到Aria2</a>
-								</p>
-								<p class="card-text"><a href="?help" target="_blank">下载链接使用方法（必读）</a></p>
-								<p class="card-text">Tips:电脑端右键即可复制下载链接，手机端长按可复制下载链接。</p>
+									<a id="http" href="http://' . $realLink . '" style="display: none;">' . Language["DownloadLink"] . '（不安全）</a>';
+										if ($smallfile) {
+											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（无需设置UA，8小时有效）</a>';
+										} else {
+											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（需设置UA，8小时有效）</a>';
+										}
+										echo '</p>';
+										?>
+										<p class="card-text">
+											<a href="javascript:void(0)" data-toggle="modal" data-target="#exampleModal">推送到Aria2</a>
+										</p>
+										<p class="card-text"><a href="?help" target="_blank"><?php echo Language["DownloadLink"] . Language["HelpButton"]; ?>（必读）</a></p>
+										<p class="card-text"><?php echo Language["DownloadTip"]; ?></p>
 
-								<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-									<div class="modal-dialog" role="document">
-										<div class="modal-content">
-											<div class="modal-header">
-												<h5 class="modal-title" id="exampleModalLabel">Send to aria2</h5>
-												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-													<span aria-hidden="true">&times;</span>
-												</button>
-											</div>
-											<div class="modal-body">
-												<div class="form-group">
-													<p><label class="control-label">Json-RPC Url</label>
-														<input name="url" id="url" class="form-control" placeholder="http://127.0.0.1:6800/jsonrpc">
-													</p>
+										<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="exampleModalLabel"><?php echo Language["SendToAria2"]; ?></h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+														<div class="form-group">
+															<p><label class="control-label">Json-RPC Url</label>
+																<input name="url" id="url" class="form-control" placeholder="http://127.0.0.1:6800/jsonrpc">
+															</p>
+														</div>
+														<div class="form-group">
+															<p><label class="control-label">Token</label>
+																<input name="token" id="token" class="form-control" placeholder="If none keep empty">
+															</p>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal"><?php echo Language["Send"]; ?></button>
+														<button type="button" class="btn btn-success" onclick="checkVer()"><?php echo Language["CheckVersion"]; ?></button>
+														<button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo Language["Close"]; ?></button>
+													</div>
 												</div>
-												<div class="form-group">
-													<p><label class="control-label">Token</label>
-														<input name="token" id="token" class="form-control" placeholder="If none keep empty">
-													</p>
-												</div>
 											</div>
-											<div class="modal-footer">
-												<button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal">Send</button>
-												<button type="button" class="btn btn-success" onclick="checkVer()">Check Version</button>
-												<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-											</div>
+											<script>
+												$(function() {
+													if (getCookie('aria2url') != null) {
+														$('#url').attr('value', atou(getCookie('aria2url')))
+														if (getCookie('aria2token') != null) {
+															$('#token').attr('value', atou(getCookie('aria2token')))
+														}
+													}
+												})
+											</script>
 										</div>
 									</div>
-									<script>
-										$(function() {
-											if (getCookie('aria2url') != null) {
-												$('#url').attr('value', atou(getCookie('aria2url')))
-												if (getCookie('aria2token') != null) {
-													$('#token').attr('value', atou(getCookie('aria2token')))
-												}
-											}
-										})
-									</script>
 								</div>
 							</div>
-						</div>
-					</div>
-	<?php }
+			<?php }
 						// 成功！
 					} elseif ($json4["errno"] == -9) dl_error("文件不存在(-9)", "请返回首页重新解析。");
 					elseif ($json4["errno"] == 112) dl_error("链接超时(112)", "获取链接超时，每次解析列表后只有5min有效时间，请返回首页重新解析。"); // 链接超时
@@ -570,98 +508,98 @@ if (DEBUG) {
 				} else dl_error("参数有误", "POST 传参出现问题！请不要自行构建表单提交！"); // 参数不齐
 			} else dl_error("方法错误", "请不要直接访问此页面或使用 GET 方式访问！"); // 方法错误
 		} else { // 首页
-	?>
-	<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
-		<div class="card">
-			<div class="card-header">
-				<text id="parsingtooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询信息">百度网盘在线解析</text>
-				<span style="float: right;" id="sviptooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询SVIP账号状态"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
-			</div>
-			<div class="card-body">
-				<form name="form1" method="post" onsubmit="return validateForm()">
-					<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="请输入分享链接(完整也可)" oninput="Getpw()"></div>
-					<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="请输入提取码(没有留空)"></div>
-					<?php
-					if (IsCheckPassword) {
-						$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="请输入密码"></div>';
-						if (isset($_SESSION["Password"])) {
-							if ($_SESSION["Password"] === Password) {
-								$return = '<div class="form-group my-4">您的设备在短期内已经验证过，无需再次输入密码。</div>';
+			?>
+			<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
+				<div class="card">
+					<div class="card-header">
+						<text id="parsingtooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询信息"><?php echo Language["IndexTitle"]; ?></text>
+						<span style="float: right;" id="sviptooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询SVIP账号状态"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
+					</div>
+					<div class="card-body">
+						<form name="form1" method="post" onsubmit="return validateForm()">
+							<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="<?php echo Language["ShareLink"]; ?>" oninput="Getpw()"></div>
+							<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="<?php echo Language["SharePassword"]; ?>"></div>
+							<?php
+							if (IsCheckPassword) {
+								$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="' . Language["PassWord"] . '"></div>';
+								if (isset($_SESSION["Password"])) {
+									if ($_SESSION["Password"] === Password) {
+										$return = '<div class="form-group my-4">您的设备在短期内已经验证过，无需再次输入密码。</div>';
+									}
+								}
+								echo $return;
+							} // 密码
+							?>
+							<button type="submit" class="mt-4 mb-3 btn btn-success btn-block"><?php echo Language["Submit"]; ?></button>
+						</form>
+					</div>
+				</div>
+				<script>
+					//主页部分脚本
+					$(document).ready(function() {
+
+						$("#sviptooltip").tooltip(); //初始化
+						$("#parsingtooltip").tooltip(); //初始化
+
+						async function getAPI(method) { // 获取 API 数据
+							try {
+								const response = await fetch(`api.php?m=${method}`, { // fetch API
+									credentials: 'same-origin' // 发送验证信息 (cookies)
+								});
+								if (response.ok) { // 判断是否出现 HTTP 异常
+									return {
+										success: true,
+										data: await response.json() // 如果正常，则获取 JSON 数据
+									}
+								} else { // 若不正常，返回异常信息
+									return {
+										success: false,
+										msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+									};
+								}
+							} catch (reason) { // 若与服务器连接异常
+								return {
+									success: false,
+									msg: '连接服务器过程中出现异常，消息：' + reason.message
+								};
 							}
 						}
-						echo $return;
-					} // 密码
-					?>
-					<button type="submit" class="mt-4 mb-3 btn btn-success btn-block">打开</button>
-				</form>
-			</div>
-		</div>
-		<script>
-			//主页部分脚本
-			$(document).ready(function() {
 
-				$("#sviptooltip").tooltip(); //初始化
-				$("#parsingtooltip").tooltip(); //初始化
-
-				async function getAPI(method) { // 获取 API 数据
-					try {
-						const response = await fetch(`api.php?m=${method}`, { // fetch API
-							credentials: 'same-origin' // 发送验证信息 (cookies)
+						getAPI('LastParse').then(function(response) {
+							if (response.success) {
+								const data = response.data;
+								if (data.error == 0) {
+									//请求成功
+									if (data.svipstate == 1) {
+										$("#svipstate-point").addClass("point-success");
+									} else {
+										$("#svipstate-point").addClass("point-danger");
+									}
+								}
+								$("#svipstate").text(data.sviptips);
+								$("#sviptooltip").attr("data-original-title", data.msg);
+							}
 						});
-						if (response.ok) { // 判断是否出现 HTTP 异常
-							return {
-								success: true,
-								data: await response.json() // 如果正常，则获取 JSON 数据
+
+						getAPI('ParseCount').then(function(response) {
+							if (response.success) {
+								$("#parsingtooltip").attr("data-original-title", response.data.msg);
 							}
-						} else { // 若不正常，返回异常信息
-							return {
-								success: false,
-								msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
-							};
-						}
-					} catch (reason) { // 若与服务器连接异常
-						return {
-							success: false,
-							msg: '连接服务器过程中出现异常，消息：' + reason.message
-						};
-					}
-				}
+						});
 
-				getAPI('LastParse').then(function(response) {
-					if (response.success) {
-						const data = response.data;
-						if (data.error == 0) {
-							//请求成功
-							if (data.svipstate == 1) {
-								$("#svipstate-point").addClass("point-success");
-							} else {
-								$("#svipstate-point").addClass("point-danger");
-							}
-						}
-						$("#svipstate").text(data.sviptips);
-						$("#sviptooltip").attr("data-original-title", data.msg);
-					}
-				});
-
-				getAPI('ParseCount').then(function(response){
-					if (response.success) {
-						$("#parsingtooltip").attr("data-original-title", response.data.msg);
-					}
-				});
-
-			});
-		</script>
-	</div>
-<?php
+					});
+				</script>
+			</div>
+		<?php
 		}
 		echo Footer; ?>
-</div>
+	</div>
 
-<?php
-$system_end_time = microtime(true);
-$system_runningtime = $system_end_time - $system_start_time;
-echo '<script>console.log("后端计算时间：' . $system_runningtime . '秒");</script>';
-?>
+	<?php
+	$system_end_time = microtime(true);
+	$system_runningtime = $system_end_time - $system_start_time;
+	echo '<script>console.log("后端计算时间：' . $system_runningtime . '秒");</script>';
+	?>
 </body>
 
 </html>
