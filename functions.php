@@ -15,15 +15,14 @@
  *
  */
 if (!defined('init')) { // 直接访问处理程序
-	http_response_code(403);
 	header('Content-Type: text/plain; charset=utf-8');
-	header('Refresh: 3;url=./');
 	if (!file_exists('config.php')) {
 		http_response_code(503);
-		header('Content-Type: text/plain; charset=utf-8');
 		header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
 		die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
 	}
+	http_response_code(403);
+	header('Refresh: 3;url=./');
 	define('init', true);
 	require('config.php');
 	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的有关文件！\r\n禁止直接访问！");

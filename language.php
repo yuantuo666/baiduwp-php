@@ -366,10 +366,12 @@ unset($qs);
 foreach($languages as &$value) {
 	if (array_key_exists($value, $lang)) {
 		define("Language", $lang[$value]);
+		header("Content-Language: $value");
 		break;
 	}
 }
 
 if (!defined('Language')) {
 	define("Language", $lang['en']);
+	header("Content-Language: en");
 }
