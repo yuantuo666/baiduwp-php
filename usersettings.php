@@ -81,13 +81,22 @@ if (DEBUG) {
 			color: black !important;
 		}
 
-		#Browser-ColorMode {
+		#Browser-ColorMode,
+		#Browser-Language {
 			margin-right: 2rem;
 
 		}
 
-		#ColorMode-Setting-View {
-			margin-bottom: 0.6rem;
+		.SaveTime {
+			margin-right: 0.8rem;
+		}
+
+		.card-item:not(:first-of-type) {
+			margin-top: 2rem;
+		}
+
+		select {
+			margin-top: 0.5rem;
 		}
 	</style>
 </head>
@@ -111,17 +120,31 @@ if (DEBUG) {
 		<div class="card">
 			<div class="card-header"><?php echo Language["UserSettings"]; ?></div>
 			<div class="card-body">
-				<div>
+				<div class="card-item">
 					<h3><?php echo Language["ColorMode"]; ?></h3>
 					<div id="ColorMode-Setting-View">
+						<span class="SaveTime"><?php echo Language["SaveForever"]; ?></span>
 						<span><?php echo Language["BrowserSettings"]; ?></span><span id="Browser-ColorMode"></span>
 						<span><?php echo Language["CurrentSetting"]; ?></span><span id="Setting-ColorMode"></span>
 					</div>
-					<div><select id="ColorMode-Select" class="form-control">
-							<option value="auto"><button class="btn ColorMode-Button" data-colorMode="auto" id="ColorMode-Auto-Button"><?php echo Language["FollowBrowser"]; ?></button></option>
-							<option value="dark"><button class="btn ColorMode-Button" data-colorMode="dark" id="ColorMode-Dark-Button"><?php echo Language["DarkMode"]; ?></button></option>
-							<option value="light"><button class="btn ColorMode-Button" data-colorMode="light" id="ColorMode-Light-Button"><?php echo Language["LightMode"]; ?></button></option>
-						</select></div>
+					<select id="ColorMode-Select" class="form-control">
+						<option value="auto"><?php echo Language["FollowBrowser"]; ?></option>
+						<option value="dark"><?php echo Language["DarkMode"]; ?></option>
+						<option value="light"><?php echo Language["LightMode"]; ?></option>
+					</select>
+				</div>
+				<div class="card-item">
+					<h3><?php echo Language["LanguageChoose"]; ?></h3>
+					<div id="LanguageChoose">
+						<span class="SaveTime"><?php echo Language["Save365"]; ?></span>
+						<span><?php echo Language["BrowserSettings"]; ?></span><span id="Browser-Language"><?php echo BrowserLanguage; ?></span>
+						<span><?php echo Language["CurrentDisplayed"]; ?></span><span id="Displayed-Language"><?php echo Lang; ?></span>
+					</div>
+					<select id="Language-Select" class="form-control">
+						<option value="auto"><?php echo Language["FollowBrowser"]; ?></option>
+						<option value="zh-CN">简体中文</option>
+						<option value="en">English</option>
+					</select>
 				</div>
 			</div>
 		</div>
@@ -129,13 +152,24 @@ if (DEBUG) {
 	<script>
 		if (localStorage.getItem('colorMode') === null) { // 判断用户设置的颜色
 			$('#Setting-ColorMode').text('<?php echo Language["FollowBrowser"]; ?>'); // 跟随浏览器
-			$('option[value=auto]')[0].selected = true;
+			$('#ColorMode-Select option[value=auto]')[0].selected = true;
 		} else if (localStorage.getItem('colorMode') === 'dark') { // 深色模式
 			$('#Setting-ColorMode').text('<?php echo Language["DarkMode"]; ?>');
-			$('option[value=dark]')[0].selected = true;
+			$('#ColorMode-Select option[value=dark]')[0].selected = true;
 		} else if (localStorage.getItem('colorMode') === 'light') { // 浅色模式
 			$('#Setting-ColorMode').text('<?php echo Language["LightMode"]; ?>');
-			$('option[value=light]')[0].selected = true;
+			$('#ColorMode-Select option[value=light]')[0].selected = true;
+		}
+		const LanguageSetting = '<?php echo $_COOKIE['Language']; ?>';
+		if (LanguageSetting === '') { // 判断用户设置的语言
+			$('#Language-Select option[value=auto]').text('<?php echo Language["CurrentSetting"]; ?>' + $('#Language-Select option[value=auto]').text());
+			$('#Language-Select option[value=auto]')[0].selected = true;
+		} else if (LanguageSetting === 'zh-CN') { // zh-CN
+			$('#Language-Select option[value="zh-CN"]').text('<?php echo Language["CurrentSetting"]; ?>' + $('#Language-Select option[value="zh-CN"]').text());
+			$('#Language-Select option[value="zh-CN"]')[0].selected = true;
+		} else if (LanguageSetting === 'en') { // en
+			$('#Language-Select option[value="en"]').text('<?php echo Language["CurrentSetting"]; ?>' + $('#Language-Select option[value="en"]').text());
+			$('#Language-Select option[value="en"]')[0].selected = true;
 		}
 		if (window.matchMedia('(prefers-color-scheme: dark)').matches) { // 获取浏览器设置
 			$('#Browser-ColorMode').text('<?php echo Language["DarkMode"]; ?>'); // 深色模式
@@ -161,19 +195,15 @@ if (DEBUG) {
 				location.reload();
 			}
 		});
-		// $('.ColorMode-Button').each(function() { // 更改颜色模式的按钮的事件
-		// 	if (this.dataset.colormode === 'auto') {
-		// 		this.addEventListener('click', function() {
-		// 			localStorage.removeItem('colorMode');
-		// 			location.reload();
-		// 		});
-		// 	} else {
-		// 		this.addEventListener('click', function() {
-		// 			localStorage.setItem('colorMode', this.dataset.colormode);
-		// 			location.reload();
-		// 		});
-		// 	}
-		// });
+		$('#Language-Select').on('change', function() {
+			if (this.value === 'auto') {
+				document.cookie = 'Language=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+				location.reload();
+			} else {
+				document.cookie = `Language=${this.value}; expires=${new Date(Date.now() + 31536000000)}`;
+				location.reload();
+			}
+		});
 	</script>
 </body>
 

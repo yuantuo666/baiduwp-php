@@ -38,9 +38,13 @@ $lang = [
 		"ColorMode" => "色彩模式",
 		"BrowserSettings" => "浏览器设置：",
 		"CurrentSetting" => "当前设置：",
-		"FollowBrowser" => "跟随浏览器",
+		"FollowBrowser" => "跟随浏览器（默认）",
 		"DarkMode" => "深色模式",
 		"LightMode" => "浅色模式",
+		"LanguageChoose" => "选择语言",
+		"SaveForever" => '将会永久保存。',
+		"Save365" => '将会保存 365 天，每次访问此项目会自动续期。',
+		"CurrentDisplayed" => "当前显示：",
 		"HelpPage" => '
 	<div class="row justify-content-center">
 		<div class="col-md-7 col-sm-8 col-11">
@@ -152,9 +156,13 @@ $lang = [
 		"ColorMode" => "色彩模式",
 		"BrowserSettings" => "浏览器设置：",
 		"CurrentSetting" => "当前设置：",
-		"FollowBrowser" => "跟随浏览器",
+		"FollowBrowser" => "跟随浏览器（默认）",
 		"DarkMode" => "深色模式",
 		"LightMode" => "浅色模式",
+		"LanguageChoose" => "选择语言",
+		"SaveForever" => '将会永久保存。',
+		"Save365" => '将会保存 365 天，每次访问此项目会自动续期。',
+		"CurrentDisplayed" => "当前显示：",
 		"HelpPage" => '
 	<div class="row justify-content-center">
 		<div class="col-md-7 col-sm-8 col-11">
@@ -266,9 +274,13 @@ $lang = [
 		"ColorMode" => "Color mode",
 		"BrowserSettings" => "Browser settings: ",
 		"CurrentSetting" => "Current setting: ",
-		"FollowBrowser" => "Follow browser",
+		"FollowBrowser" => "Follow browser (default)",
 		"DarkMode" => "Dark mode",
 		"LightMode" => "Light mode",
+		"LanguageChoose" => "Choose a language",
+		"SaveForever" => 'Will be saved forever.',
+		"Save365" => 'It will be saved for 365 days and will be automatically renewed every time you visit this item.',
+		"CurrentDisplayed" => "Current displayed: ",
 		"HelpPage" => '
 	<div class="row justify-content-center">
 		<div class="col-md-7 col-sm-8 col-11">
@@ -346,32 +358,53 @@ $lang = [
 	],
 ];
 
-$languages = [];
-$qs = [];
+define('BrowserLanguage', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 
-define('BrowserLanguages', explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"]));
-foreach (BrowserLanguages as &$value) {
-	if (preg_match('#([A-Za-z0-9\-]{1,8});q=(\d(.\d{1,3})?)#', $value, $matches)) {
-		$qs[$matches[2]] = $matches[1];
-	} else {
+function setLanguage() {
+	global $lang;
+	$languages = [];
+	$qs = [];
+
+	define('BrowserLanguages', explode(",", BrowserLanguage));
+	foreach (BrowserLanguages as &$value) {
+		if (preg_match('#([A-Za-z0-9\-]{1,8});q=(\d(.\d{1,3})?)#', $value, $matches)) {
+			$qs[$matches[2]] = $matches[1];
+		} else {
+			array_push($languages, $value);
+		}
+	}
+	krsort($qs);
+	foreach (array_values($qs) as &$value) {
 		array_push($languages, $value);
 	}
-}
-krsort($qs);
-foreach(array_values($qs) as &$value) {
-	array_push($languages, $value);
-}
-unset($qs);
+	unset($qs);
 
-foreach($languages as &$value) {
-	if (array_key_exists($value, $lang)) {
-		define("Language", $lang[$value]);
-		header("Content-Language: $value");
-		break;
+	foreach ($languages as &$value) {
+		if (array_key_exists($value, $lang)) {
+			define('Lang', $value);
+			break;
+		}
 	}
 }
 
-if (!defined('Language')) {
-	define("Language", $lang['en']);
-	header("Content-Language: en");
+if (isset($_COOKIE['Language'])) {
+	if (array_key_exists($_COOKIE['Language'], $lang)) {
+		define('Lang', $_COOKIE['Language']);
+		setcookie('Language', $_COOKIE['Language'], time() + 31536000);
+	} else {
+		setcookie('Language', '', time() - 31536000);
+		setLanguage();
+		echo "<div>There was a problem with your language configuration and it has been reset for you. <a href=\"usersettings.php\" target=\"_blank\">Click here to select language.</div>";
+	}
+} else {
+	setLanguage();
 }
+
+
+if (!defined('Lang')) {
+	define('Lang', $value);
+	echo "<div>This project is not available in your language, the following is the English version. <a href=\"usersettings.php\" target=\"_blank\">Click here to select language.</div>";
+}
+
+define("Language", $lang[Lang]);
+header('Content-Language: ' . Lang);
