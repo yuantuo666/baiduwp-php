@@ -115,23 +115,27 @@ function formatSize(float $size, int $times = 0)
 }
 function CheckPassword(bool $IsReturnBool = false, bool $ReverseReturn = false)
 { // 校验密码
-	$return = false;
-	if (IsCheckPassword) {
-		if (!isset($_POST["Password"])) {
-			if (isset($_SESSION["Password"]) && $_SESSION["Password"] === Password) {
+	if (IsCheckPassword) { // 若校验密码
+		$return = false;
+		if (!isset($_POST["Password"])) { // 若未传入 Password
+			if (isset($_SESSION["Password"]) && $_SESSION["Password"] === Password) { // 若 SESSION 中密码正确
 				$return = true;
 			}
-		} else if ($_POST["Password"] === Password) {
-			$_SESSION['Password'] = $_POST["Password"];
+		} else if ($_POST["Password"] === Password) { // 若传入密码正确
+			$_SESSION['Password'] = $_POST["Password"]; // 设置 SESSION
 			$return = true;
 		}
 		if ($IsReturnBool) { // 若 $IsReturnBool 为 true 则只返回 true/false，不执行 dl_error
-			if ($ReverseReturn) { // 若 $ReverseReturn 为 true 则反转结果，及验证成功为 false，失败为 true
+			if ($ReverseReturn) { // 若 $ReverseReturn 为 true 则反转结果，即验证成功为 false，失败为 true
 				return !$return;
 			}
 			return $return;
 		}
-		dl_error("密码错误", "请检查你输入的密码！");
+		if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
+			dl_error("密码错误", "请检查你输入的密码！");
+		}
+	} else { // 若不校验密码则永远 true
+		return true;
 	}
 }
 // 解析分享链接
