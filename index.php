@@ -24,7 +24,13 @@ if (version_compare(PHP_VERSION, '7.0.0', '<')) {
 	header('Refresh: 5;url=https://www.php.net/downloads.php');
 	die("HTTP 503 服务不可用！\r\nPHP 版本过低！无法正常运行程序！\r\n请安装 7.0.0 或以上版本的 PHP！\r\n将在五秒内跳转到 PHP 官方下载页面！");
 }
-if (!(file_exists('config.php') && file_exists('functions.php') && file_exists('language.php'))) {
+if (!file_exists('config.php')) {
+	http_response_code(503);
+	header('Content-Type: text/plain; charset=utf-8');
+	header('Refresh: 5;url=install.php');
+	die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序");
+}
+if (!(file_exists('functions.php') && file_exists('language.php'))) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
@@ -57,7 +63,7 @@ if (DEBUG) {
 	<meta name="version" content="<?php echo programVersion; ?>" />
 	<meta name="description" content="PanDownload 网页版，百度网盘分享链接在线解析工具。" />
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
-	<title><?php echo Language["Sitename"]; ?></title>
+	<title><?php echo Sitename; ?></title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Auto" href="static/colorMode/auto.css" />
@@ -127,7 +133,7 @@ if (DEBUG) {
 			$dir = (!empty($_POST["dir"])) ? $_POST["dir"] : "";
 			$IsRoot = ($dir == "") ? true : false;
 			$Filejson = GetList($surl, $dir, $IsRoot, $pwd); //解析子目录时，需添加1
-			if ($Filejson["errno"] == 0) {
+			if ($Filejson["errno"] == 0) { //一种新的解析方法，暂未完工
 				//解析正常
 
 			} else {

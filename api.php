@@ -105,6 +105,40 @@ switch ($method) {
 			EchoInfo(-1, array("msg" => "未开启数据库功能"));
 		}
 		break;
+		case "CheckMySQLConnect":
+			//检查数据库连接是否正常
+			$servername = (!empty($_POST["servername"])) ? $_POST["servername"] : "";
+			$username = (!empty($_POST["username"])) ? $_POST["username"] : "";
+			$password = (!empty($_POST["password"])) ? $_POST["password"] : "";
+			$dbname = (!empty($_POST["dbname"])) ? $_POST["dbname"] : "";
+			$dbtable = (!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "";
+	
+			$conn = mysqli_connect($servername, $username, $password);
+			$GLOBALS['conn'] = $conn;
+			// Check connection
+			if (!$conn) {
+				EchoInfo(-1, array("msg" => mysqli_connect_error()));
+			} else {
+				//连接成功，检查数据库是否存在
+				$sql = "SELECT * FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '$dbname';"; //查询是否有此数据库
+				$mysql_query = mysqli_query($conn, $sql);
+				if (mysqli_fetch_assoc($mysql_query)) {
+					//存在数据库
+					EchoInfo(0, array("msg" => "数据库连接成功，存在 $dbname 数据库"));
+				} else {
+					//不存在数据库，需创建
+					$sql = "CREATE DATABASE `$dbname` character set utf8;"; //查询是否有此数据库
+					$mysql_query = mysqli_query($conn, $sql);
+					if ($mysql_query) {
+						//创建成功
+						EchoInfo(0, array("msg" => "成功连接并创建数据库 $dbname 。"));
+					} else {
+						//创建失败
+						EchoInfo(-1, array("msg" => "数据库连接成功，但创建数据库失败。<br />请手动创建 $dbname 数据库后再次检查连接。<br />"));
+					}
+				}
+			}
+			break;
 	default:
 		EchoInfo(-1, array("msg" => "无传入数据"));
 		break;

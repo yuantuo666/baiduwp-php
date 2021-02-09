@@ -1,10 +1,23 @@
 <?php
-// Language["TipTitle"]
-// <?php echo Language["HelpButton"];
+/**
+ * PanDownload 网页复刻版，语言文件
+ * 
+ * 功能描述：为一些页面添加必要的语言翻译
+ *
+ * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
+ *
+ * @version 1.4.5
+ *
+ * @author Yuan_Tuo <yuantuo666@gmail.com>
+ * @link https://imwcr.cn/
+ * @link https://space.bilibili.com/88197958
+ *
+ */
+
 $lang = [
 	"zh-CN" => [
 		"LanguageName" => "Chinese",
-		"Sitename" => "PanDownload 复刻版",
+		// "Sitename" => "PanDownload 复刻版", 已将该设置移动到config.php中
 		"ConfirmTitle" => "继续解析？",
 		"ConfirmText" => "为保证服务稳定，每个IP每天有" . DownloadTimes . "次免费解析次数，是否继续？",
 		"ConfirmmButtonText" => "确定",
@@ -240,7 +253,7 @@ $lang = [
 	],
 	"en" => [
 		"LanguageName" => "English",
-		"Sitename" => "PanDownload 复刻版",
+		// "Sitename" => "PanDownload 复刻版",
 		"ConfirmTitle" => "Continue?",
 		"ConfirmText" => "You have " . DownloadTimes . " download times, continue?",
 		"ConfirmmButtonText" => "Yes",
