@@ -120,7 +120,7 @@ if (DEBUG) {
 		if (isset($_GET["help"])) { // 帮助页
 			echo Language["HelpPage"];
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
-			echo '<script>setTimeout("sweetAlert(\'' . Language["TipTitle"] . '\',\'' . Language["TimeoutTip"] . '\',\'info\');",300000);</script>';
+			echo '<script>setTimeout(() => Swal.fire(\'' . Language["TipTitle"] . '\',\'' . Language["TimeoutTip"] . '\',\'info\'), 300000);</script>';
 			CheckPassword();
 			$surl = $_POST["surl"]; //含有1
 			$pwd = (!empty($_POST["pwd"])) ? $_POST["pwd"] : "";
@@ -217,7 +217,7 @@ if (DEBUG) {
 				} else dl_error("解析错误", "解析根页面时，提取码错误或文件失效！");
 			}
 		} elseif (isset($_GET["download"])) { // 解析下载地址页面
-			if (IsCheckPassword and (!isset($_SESSION["Password"]) or $_SESSION["Password"] != Password)) {
+			if (CheckPassword(true, true)) {
 				dl_error(Language["PasswordError"], "密码错误或超时，请返回首页重新验证密码。"); // 密码错误
 			} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"]) && isset($_POST["bdstoken"]) && isset($_POST["filesize"])) {

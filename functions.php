@@ -113,16 +113,23 @@ function formatSize(float $size, int $times = 0)
 		return sprintf('%.2f', $size) . $unit;
 	}
 }
-function CheckPassword()
+function CheckPassword(bool $IsReturnBool = false, bool $ReverseReturn = false)
 { // 校验密码
+	$return = false;
 	if (IsCheckPassword) {
 		if (!isset($_POST["Password"])) {
 			if (isset($_SESSION["Password"]) && $_SESSION["Password"] === Password) {
-				return true;
+				$return = true;
 			}
 		} else if ($_POST["Password"] === Password) {
 			$_SESSION['Password'] = $_POST["Password"];
-			return true;
+			$return = true;
+		}
+		if ($IsReturnBool) { // 若 $IsReturnBool 为 true 则只返回 true/false，不执行 dl_error
+			if ($ReverseReturn) { // 若 $ReverseReturn 为 true 则反转结果，及验证成功为 false，失败为 true
+				return !$return;
+			}
+			return $return;
 		}
 		dl_error("密码错误", "请检查你输入的密码！");
 	}
