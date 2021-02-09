@@ -34,8 +34,8 @@ if (!(file_exists('config.php') && file_exists('functions.php') && file_exists('
 $system_start_time = microtime(true);
 // 导入配置和函数
 require('config.php');
-require('functions.php');
 require('language.php');
+require('functions.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
