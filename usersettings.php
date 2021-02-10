@@ -5,8 +5,6 @@
  *
  * 用户可在此设置
  *
- * @version 1.4.5
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958

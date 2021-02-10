@@ -5,7 +5,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
-## warning!!
+## Warning!!
 http://www.dupan.cc/ （站长QQ33703259） 所发布的源码已被篡改，添加了后台并加密，添加的bduss会被上传网站后台，请勿使用<br />
 
 现在已经公布了所有源码，可以通过github的commits查看以前的源码，从未添加过后台，也没有加密。<br />
@@ -40,56 +40,23 @@ dupan.cc所提供的源码已经被dupan.cc站长恶意修改并加密。使用�
   - 更换后台SVIP账号
   - 更换服务器IP
 - 使用了较新的 JavaScript 和 CSS 特性，旧版浏览器对此的支持性很差，使用新版的现代浏览器才能正常使用！建议使用的浏览器：
-  - `Microsoft Edge 88+` (最新版更好，Edge 的更新功能还不够方便吗？) [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
-  - `Google Chrome 88+` (最新版更好，Chrome 的更新功能还不够方便吗？) [点此访问 Chrome 官网](https://www.google.cn/chrome/)
-  - `Firefox 85+` (最新版更好，Firefox 的更新功能还不够方便吗？) [点此访问 Firefox 官网](https://www.firefox.com.cn/)
+  - `Microsoft Edge 88+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
+  - `Google Chrome 88+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
+  - `Firefox 85+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
 # Setting
-请在 `config.php` 中找到以下内容：
-```
-const BDUSS = '①';
-const STOKEN = '②';
-const SVIP_BDUSS = '③';
-
-const IsCheckPassword = ④;
-const Password = '⑤';
-const Footer = '';
-
-const APP_ID = '⑥';
-const DEBUG = ⑦;
-
-//连接数据库
-const USING_DB =  ⑧;
-const DbConfig = array(
-    "servername" => "⑨",
-    "username" => "⑩",
-    "password" => "⑪",
-    "dbname" => "⑫",
-    "dbtable" => "⑬"
-);
-```
-- 【必填】请在①②填入`你自己的百度账号信息`*(SVIP也可)*，用于获取下载列表，获取 cookie 方法见 [PD官网](https://pandownload.com/faq/cookie.html)
-- 【必填】在③中必须填入`SVIP的BDUSS`，用于获取下载链接，获取cookie方法同上。
-- 请在④中选择是否需要密码(`TRUE`或者`FALSE`)
-- 若开启了密码，请在⑤中设置是首页密码
-- 在⑥中是获取文件的Dlink时使用的app_id
-- 在⑦中是是否开启DEBUG调试模式
-- 在⑧中是是否使用数据库，限制每日下载ip
-- 在⑨-⑬是数据库设置
-
-- 详细信息可见 `config.php` 的注释
-（将在下一版本增加后台配置功能）
----
-### 数据库设置
-请在`MySQL`中导入`bdwp.sql`文件。
+首先Clone项目或进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件。<br />
+然后访问 `install.php` 文件并填写相关信息。<br />
+如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确。<br />
+最后点击提交即可。<br />
 
 ## Demo
 [暂不开放](http://imwcr.cn/api/bdwp/)<br />
 因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 
 ## New Changes
-- 当前版本：`1.4.5`
-- 更新日期：2021-02-08
+- 当前版本：`1.4.6`
+- 更新日期：2021-02-10
 - 修改内容
   - 由LC优化代码
 

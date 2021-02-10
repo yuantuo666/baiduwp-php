@@ -9,7 +9,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.4.5
+ * @version 1.4.6
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -529,7 +529,7 @@ if (DEBUG) {
 								$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="' . Language["PassWord"] . '"></div>';
 								if (isset($_SESSION["Password"])) {
 									if ($_SESSION["Password"] === Password) {
-										$return = '<div>'.Language["PassWordVerified"].'</div>';
+										$return = '<div>' . Language["PassWordVerified"] . '</div>';
 									}
 								}
 								echo $return;

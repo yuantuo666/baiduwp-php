@@ -7,7 +7,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.4.5
+ * @version 1.4.6
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -130,24 +130,25 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						</div>
 						<hr />
 						<h5 class="card-title">解析账号设置</h5>
+						<p>需要在此设置账号的 cookie ，获取 cookie 方法见 <a href="https://pandownload.com/faq/cookie.html">PD官网</a></p>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">普通账号BDUSS</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="BDUSS">
+								<input class="form-control" name="BDUSS" placeholder="例：liMlp3bFN1NWpVM**********PYjItRlJhNFNTSn5rNW5vQ0FrVzRYRTkyWHBiQVFBQUFBJCQAAAAAAAAAAA……">
 								<small class="form-text text-muted">用来获取文件列表及信息，不需要SVIP也可。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">普通账号STOKEN</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="STOKEN">
+								<input class="form-control" name="STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613">
 								<small class="form-text text-muted">用来获取文件列表及信息，不需要SVIP也可。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">超级会员账号BDUSS</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="SVIP_BDUSS">
+								<input class="form-control" name="SVIP_BDUSS" placeholder="例：W4tanVHelU2VGpxb**********0ZTZlUm1saEVtYnpTWjByfmxheWwxRFRtNlphQVFBQUFBJCQAAAAAAAAAAA……">
 								<small class="form-text text-muted">用来获取文件告诉下载地址，必须为SVIP账号，否则将获取到限速地址。</small>
 							</div>
 						</div>
@@ -208,7 +209,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<a href="javascript:CheckMySQLConnect();" class="btn btn-primary">检查数据库连接</a>
 						</div>
 						<hr />
-
+						<p>此操作将会清空你设置的数据库。如果你曾经使用过本项目，请备份好数据后再点击提交。</p>
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
 						<br><br>
 
@@ -340,7 +341,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				//已经获取到所需信息，先导入数据库，再写配置到config.php
 
 				//处理post数据
-				$Sitename = (!empty($POST["Sitename"])) ? $_POST["Sitename"] : "";
+				$Sitename = (!empty($_POST["Sitename"])) ? $_POST["Sitename"] : "";
 				$IsCheckPassword = (!empty($_POST["IsCheckPassword"])) ? $_POST["IsCheckPassword"] : "";
 				$Password = (!empty($_POST["Password"])) ? $_POST["Password"] : "";
 				$ADMIN_PASSWORD = (!empty($_POST["ADMIN_PASSWORD"])) ? $_POST["ADMIN_PASSWORD"] : "";

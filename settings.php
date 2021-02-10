@@ -1,11 +1,11 @@
 <?php
 
 /**
- * PanDownload 网页复刻版，PHP 语言版Setting文件
+ * PanDownload 网页复刻版，PHP 语言版Settings文件
  *
  * 设置及后台功能
  *
- * @version 1.4.5
+ * @version 1.4.6
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -191,14 +191,11 @@ function GetIPTablePage(string $page)
 	<meta name="referrer" content="same-origin" />
 	<meta name="author" content="Yuan_Tuo" />
 	<meta name="version" content="<?php echo programVersion; ?>" />
-	<title>Setting</title>
+	<title><?php echo Sitename; ?> - Settings</title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Auto" href="static/colorMode/auto.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="static/colorMode/dark.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Light" href="static/colorMode/light.css" />
-	<link rel="stylesheet" href="static/colorMode/index.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-nightfall.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
@@ -206,7 +203,7 @@ function GetIPTablePage(string $page)
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
-	<script src="static/colorMode/index.js"></script>
+	<script src="static/color.js"></script>
 </head>
 
 <body>
@@ -238,7 +235,7 @@ function GetIPTablePage(string $page)
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
-								<li class="breadcrumb-item"><a href="setting.php">后台管理</a></li>
+								<li class="breadcrumb-item"><a href="settings.php">后台管理</a></li>
 								<li class="breadcrumb-item">数据分析</li>
 							</ol>
 						</nav>
@@ -279,7 +276,7 @@ function GetIPTablePage(string $page)
 								<script>
 									function AnalyseLoadmore() {
 										newpage = Number($("#AnalyseTable").attr("page")) + 1;
-										$.get("setting.php?m=API&act=AnalyseGetTable&page=" + String(newpage), function(data, status) {
+										$.get("settings.php?m=API&act=AnalyseGetTable&page=" + String(newpage), function(data, status) {
 											if (status == "success") {
 												$("#AnalyseTable").append(data);
 												$("#AnalyseTable").attr("page", newpage);
@@ -346,7 +343,7 @@ function GetIPTablePage(string $page)
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
-								<li class="breadcrumb-item"><a href="setting.php">后台管理</a></li>
+								<li class="breadcrumb-item"><a href="settings.php">后台管理</a></li>
 								<li class="breadcrumb-item">会员账号</li>
 							</ol>
 						</nav>
@@ -413,7 +410,7 @@ function GetIPTablePage(string $page)
 								<script>
 									function SvipLoadmore() {
 										newpage = Number($("#SvipTable").attr("page")) + 1;
-										$.get("setting.php?m=API&act=SvipGetTable&page=" + String(newpage), function(data, status) {
+										$.get("settings.php?m=API&act=SvipGetTable&page=" + String(newpage), function(data, status) {
 											if (status == "success") {
 												$("#SvipTable").append(data);
 												$("#SvipTable").attr("page", newpage);
@@ -422,7 +419,7 @@ function GetIPTablePage(string $page)
 									}
 
 									function SettingFirstAccount(id) {
-										$.get("setting.php?m=API&act=SvipSettingFirstAccount&id=" + String(id), function(data, status) {
+										$.get("settings.php?m=API&act=SvipSettingFirstAccount&id=" + String(id), function(data, status) {
 											if (status == "success") {
 												var json = JSON.parse(data);
 												Swal.fire(json.msg);
@@ -434,7 +431,7 @@ function GetIPTablePage(string $page)
 								<br><br><br>
 								<!-- 新增会员数据 -->
 								<h5 class="card-title">新增会员数据</h5>
-								<form action="setting.php?m=svip" method="post">
+								<form action="settings.php?m=svip" method="post">
 									<div class="form-group">
 										<label>账号名称</label>
 										<input type="text" class="form-control form-control-sm" name="name">
@@ -452,7 +449,7 @@ function GetIPTablePage(string $page)
 								<!-- 新增会员数据 -->
 								<br><br>
 								<h5 class="card-title">批量导入svip</h5>
-								<form action="setting.php?m=svip" method="post">
+								<form action="settings.php?m=svip" method="post">
 									<div class="form-group">
 										<label>账号名称</label>
 										<input type="text" class="form-control form-control-sm" name="name">
@@ -490,7 +487,7 @@ function GetIPTablePage(string $page)
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
-								<li class="breadcrumb-item"><a href="setting.php">后台管理</a></li>
+								<li class="breadcrumb-item"><a href="settings.php">后台管理</a></li>
 								<li class="breadcrumb-item">IP黑/白名单</li>
 							</ol>
 						</nav>
@@ -524,7 +521,7 @@ function GetIPTablePage(string $page)
 								<script>
 									function IPLoadmore() {
 										newpage = Number($("#IPTable").attr("page")) + 1;
-										$.get("setting.php?m=API&act=IPGetTable&page=" + String(newpage), function(data, status) {
+										$.get("settings.php?m=API&act=IPGetTable&page=" + String(newpage), function(data, status) {
 											if (status == "success") {
 												$("#IPTable").append(data);
 												$("#IPTable").attr("page", newpage);
@@ -535,7 +532,7 @@ function GetIPTablePage(string $page)
 								<br><br><br>
 								<!-- 新增IP -->
 								<h5 class="card-title">新增IP</h5>
-								<form action="setting.php?m=iplist" method="post">
+								<form action="settings.php?m=iplist" method="post">
 									<div class="form-group">
 										<label>IP地址</label>
 										<input type="text" class="form-control form-control-sm" name="ip">
@@ -573,7 +570,7 @@ function GetIPTablePage(string $page)
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
-								<li class="breadcrumb-item"><a href="setting.php">后台管理</a></li>
+								<li class="breadcrumb-item"><a href="settings.php">后台管理</a></li>
 								<li class="breadcrumb-item">下载次数限制修改</li>
 							</ol>
 						</nav>
@@ -592,7 +589,7 @@ function GetIPTablePage(string $page)
 								<br><br><br>
 								<!-- 修改下载次数 -->
 								<h5 class="card-title">修改下载次数</h5>
-								<form action="setting.php?m=DownloadTimes" method="post">
+								<form action="settings.php?m=DownloadTimes" method="post">
 									<div class="form-group">
 										<label>下载次数</label>
 										<input type="text" class="form-control form-control-sm" name="DownloadTimes">
@@ -606,7 +603,7 @@ function GetIPTablePage(string $page)
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
-								<li class="breadcrumb-item"><a href="setting.php">后台管理</a></li>
+								<li class="breadcrumb-item"><a href="settings.php">后台管理</a></li>
 								<li class="breadcrumb-item">概览</li>
 							</ol>
 						</nav>

@@ -7,8 +7,6 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.4.5
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
@@ -65,7 +63,7 @@ $lang = [
 			<div class="alert alert-primary" role="alert">
 				<h5 class="alert-heading">提示</h5>
 				<hr />
-				<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。<br />
+				<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。你可以在下方选择你喜欢的方式进行下载。<br />
 					<div class="page-inner">
 						<section class="normal" id="section-">
 							<div id="IDM"><a class="anchor" href="#IDM"></a>
@@ -73,7 +71,7 @@ $lang = [
 							</div>
 							<ol>
 								<li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
-								<li><b>右键复制下载链接</b>（直接点击 或 右键调用 IDM 将传入浏览器的 UA，将会导致下载失败），在 IDM 新建任务，粘贴链接即可下载。</li>
+								<li><b>右键复制下载链接</b>（如果 直接点击 或 右键调用IDM 将传入浏览器的 UA 导致下载失败），在 IDM 新建任务，粘贴链接即可下载。</li>
 							</ol>
 							<div id="ADM"><a class="anchor" href="#ADM"></a>
 								<h4>ADM Pro（Android推荐）</h4>
@@ -119,9 +117,10 @@ $lang = [
 								<ol>
 									<li>本项目与PanDownload无关。</li>
 									<li>本项目仅以学习为目的，不得用于其他用途。</li>
-									<li>当前项目版本：<?php echo programVersion; ?></li>
+									<li>当前项目版本：' . programVersion . '</li>
 									<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-									<li><a href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
+									<li>项目作者：<a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+									<li>项目协作者：<a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 								</ol>
 						</section>
 						<script>
@@ -237,9 +236,10 @@ $lang = [
 								<ol>
 									<li>本项目与PanDownload无关。</li>
 									<li>本项目仅以学习为目的，不得用于其他用途。</li>
-									<li>当前项目版本：<?php echo programVersion; ?></li>
+									<li>当前项目版本：' . programVersion . '</li>
 									<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-									<li><a href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
+									<li>项目作者：<a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+									<li>项目协作者：<a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 								</ol>
 						</section>
 						<script>
