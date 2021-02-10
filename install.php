@@ -395,6 +395,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
                 $update_config = str_replace('<Sitename>', $Sitename, $update_config);
                 $update_config = str_replace('<IsCheckPassword>', $IsCheckPassword, $update_config);
+                $update_config = str_replace('<Password>', $Password, $update_config);
+                $update_config = str_replace('<ADMIN_PASSWORD>', $ADMIN_PASSWORD, $update_config);
                 $update_config = str_replace('<DownloadTimes>', $DownloadTimes, $update_config);
                 $update_config = str_replace('<Footer>', $Footer, $update_config);
 

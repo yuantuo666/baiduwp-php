@@ -66,11 +66,8 @@ if (DEBUG) {
 	<title><?php echo Sitename; ?></title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Auto" href="static/colorMode/auto.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="static/colorMode/dark.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Light" href="static/colorMode/light.css" />
-	<link rel="stylesheet" href="static/colorMode/index.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-nightfall.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
@@ -78,7 +75,7 @@ if (DEBUG) {
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
-	<script src="static/colorMode/index.js"></script>
+	<script src="static/color.js"></script>
 	<script src="static/functions.js"></script>
 	<script defer src="static/ready.js"></script>
 	<script>
@@ -100,7 +97,7 @@ if (DEBUG) {
 </head>
 
 <body>
-	<nav class="navbar navbar-expand-sm navbar-dark">
+	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<div class="container">
 			<a class="navbar-brand" href="./"><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO" />PanDownload</a>
 			<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
@@ -108,7 +105,7 @@ if (DEBUG) {
 				<ul class="navbar-nav">
 					<li class="nav-item"><a class="nav-link" href="./"><?php echo Language["IndexButton"]; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="?help" target="_blank"><?php echo Language["HelpButton"]; ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="usersettings.php" target="_blank"><?php echo Language["UserSettings"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="?usersettings"><?php echo Language["UserSettings"]; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
 				</ul>
 			</div>
@@ -125,6 +122,8 @@ if (DEBUG) {
 		}
 		if (isset($_GET["help"])) { // 帮助页
 			echo Language["HelpPage"];
+		} elseif (isset($_GET["usersettings"])) { //用户设置页面
+			require("usersettings.php");
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
 			echo '<script>setTimeout(() => Swal.fire(\'' . Language["TipTitle"] . '\',\'' . Language["TimeoutTip"] . '\',\'info\'), 300000);</script>';
 			CheckPassword();
@@ -220,10 +219,10 @@ if (DEBUG) {
 						}
 						echo $filecontent . "</ul></div>";
 					}
-				} else dl_error("解析错误", "解析根页面时，提取码错误或文件失效！");
+				} else dl_error("解析错误", "解析根页面时出错！\r\n可能原因：①提取码错误；②文件失效；③服务器未连接互联网；④服务器未安装curl（或其php插件）；⑤服务器IP被百度封禁。");
 			}
 		} elseif (isset($_GET["download"])) { // 解析下载地址页面
-			if (CheckPassword(true, true)) {
+			if (!CheckPassword(true)) {
 				dl_error(Language["PasswordError"], "密码错误或超时，请返回首页重新验证密码。"); // 密码错误
 			} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (isset($_POST["fs_id"]) && isset($_POST["time"]) && isset($_POST["sign"]) && isset($_POST["randsk"]) && isset($_POST["share_id"]) && isset($_POST["uk"]) && isset($_POST["bdstoken"]) && isset($_POST["filesize"])) {
@@ -517,7 +516,7 @@ if (DEBUG) {
 			?>
 			<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 				<div class="card">
-					<div class="card-header">
+					<div class="card-header bg-dark text-light">
 						<text id="parsingtooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询信息"><?php echo Language["IndexTitle"]; ?></text>
 						<span style="float: right;" id="sviptooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询SVIP账号状态"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
 					</div>
@@ -530,8 +529,7 @@ if (DEBUG) {
 								$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="' . Language["PassWord"] . '"></div>';
 								if (isset($_SESSION["Password"])) {
 									if ($_SESSION["Password"] === Password) {
-										$return = '<div>您的设备在短期内已经验证过，无需再次输入密码。</div>'
-											. '<div>Your device has been verified in a short period of time, and there is no need to enter the password again.</div>';
+										$return = '<div>'.Language["PassWordVerified"].'</div>';
 									}
 								}
 								echo $return;

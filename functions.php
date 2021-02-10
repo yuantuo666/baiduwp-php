@@ -113,7 +113,7 @@ function formatSize(float $size, int $times = 0)
 		return sprintf('%.2f', $size) . $unit;
 	}
 }
-function CheckPassword(bool $IsReturnBool = false, bool $ReverseReturn = false)
+function CheckPassword(bool $IsReturnBool = false)
 { // 校验密码
 	if (IsCheckPassword) { // 若校验密码
 		$return = false;
@@ -126,9 +126,6 @@ function CheckPassword(bool $IsReturnBool = false, bool $ReverseReturn = false)
 			$return = true;
 		}
 		if ($IsReturnBool) { // 若 $IsReturnBool 为 true 则只返回 true/false，不执行 dl_error
-			if ($ReverseReturn) { // 若 $ReverseReturn 为 true 则反转结果，即验证成功为 false，失败为 true
-				return !$return;
-			}
 			return $return;
 		}
 		if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
