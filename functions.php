@@ -244,7 +244,8 @@ function get_BDCLND($surl, $Pwd)
 	$header = array('User-Agent: netdisk');
 	$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; //使用新方法获取，减少花费的时间
 	$result = head($url, $header);
-	$bdclnd = GetSubstr($result, 'BDCLND=', ';');
+	if (strstr($result, "BDCLND") == false) $bdclnd = false; //修复：部分链接不存在bdclnd
+	else $bdclnd = GetSubstr($result, 'BDCLND=', ';');
 
 	if ($bdclnd) {
 		if (DEBUG) {

@@ -403,8 +403,9 @@ if (DEBUG) {
 							//记录下使用者ip，下次进入时提示
 							if (USING_DB and !$usingcache) {
 								$ptime = date("Y-m-d H:i:s");
-
-								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$filename','$size','$md5','$path','$server_ctime','$realLink','$ptime','$id')";
+								$Sqlfilename = htmlspecialchars($filename); //防止出现一些刁钻的文件名无法处理
+								$Sqlpath = htmlspecialchars($path);
+								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink','$ptime','$id')";
 								$mysql_query = mysqli_query($conn, $sql);
 								if ($mysql_query == false) {
 									//保存错误
