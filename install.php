@@ -209,7 +209,17 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<a href="javascript:CheckMySQLConnect();" class="btn btn-primary">检查数据库连接</a>
 						</div>
 						<hr />
-						<p>此操作将会清空你设置的数据库。如果你曾经使用过本项目，请备份好数据后再点击提交。</p>
+						<div class="form-group form-check">
+							<input type="checkbox" class="form-check-input" id="AgreeCheck">
+							<label class="form-check-label" for="AgreeCheck">
+								<p class="text-danger">我同意 在首页及其他页面保留作者版权信息</p>
+							</label>
+						</div>
+						<div class="form-group form-check">
+							<input type="checkbox" class="form-check-input" id="AgreeCheck2">
+							<label class="form-check-label" for="AgreeCheck2">我已备份好相关数据</label>
+							<small class="form-text text-muted">安装操作将会清空 MySQL数据库 及 本地Config.php文件。如果你曾使用过本项目，请备份好数据后再点击提交。</small>
+						</div>
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
 						<br><br>
 
@@ -229,6 +239,26 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									$("div#DbConfig").slideUp();
 								} else {
 									$("div#DbConfig").slideDown();
+								}
+							});
+							$("#AgreeCheck").on('click', function() {
+								item = $(this).prop("checked");
+								if (item == true) {
+									//提示
+									Swal.fire({
+										title: "同意保留版权",
+										html: "保留版权只是想给那些想要学习 PHP 语言的人一个机会，保留版权这个对站长又没有坏处<hr />源码也全部开源在 <a href='https://github.com/yuantuo666/baiduwp-php' target='_blank'>Github</a> 上<br>可以通过Commits查看所有旧版本源码<hr />保留原作者版权也是MIT协议所规定的，这也是对作者的一种尊重，让作者有继续开发的动力，而不是每天都在发邮件处理版权问题",
+										icon: "warning",
+										showCancelButton: true,
+										confirmButtonText: "我同意",
+										reverseButtons: true
+									}).then(function(e) {
+										if (e.isConfirmed) {
+											$("#AgreeCheck").prop("checked", true);
+										} else {
+											$("#AgreeCheck").prop("checked", false);
+										}
+									});
 								}
 							});
 
@@ -322,7 +352,24 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 										return 0;
 									}
 								}
-								$("#SettingForm").submit();
+								AgreeCheck = $("#AgreeCheck").prop("checked");
+								AgreeCheck2 = $("#AgreeCheck2").prop("checked");
+								if (AgreeCheck == false) {
+									Swal.fire({
+										title: "请同意保留版权信息",
+										html: "请同意保留版权信息，再点击提交。"
+									})
+									return 0;
+								}
+								if (AgreeCheck2 == false) {
+									Swal.fire({
+										title: "请确认备份数据",
+										html: "请确认备份数据，再点击提交。"
+									})
+									return 0;
+								}
+
+								$("#SettingForm").submit(); //提交表格
 							}
 						</script>
 				</div>
@@ -359,30 +406,34 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$dbname = (!empty($_POST["DbConfig_dbname"])) ? $_POST["DbConfig_dbname"] : "";
 				$dbtable = (!empty($_POST["DbConfig_dbtable"])) ? $_POST["DbConfig_dbtable"] : "";
 
-				//连接数据库
-				$conn = mysqli_connect($servername, $username, $password, $dbname);
-				// Check connection
-				if (!$conn) {
-					die("数据库连接错误，详细信息：" . mysqli_connect_error());
-				}
-				//打开sql文件
-				$SQLfile = file_get_contents("./install/bdwp.sql");
-				if ($SQLfile == false) die("无法打开bdwp.sql文件");
+				if ($USING_DB == "true") {
+					//连接数据库
+					$conn = mysqli_connect($servername, $username, $password, $dbname);
+					// Check connection
+					if (!$conn) {
+						die("数据库连接错误，详细信息：" . mysqli_connect_error());
+					}
+					//打开sql文件
+					$SQLfile = file_get_contents("./install/bdwp.sql");
+					if ($SQLfile == false) die("无法打开bdwp.sql文件");
 
-				$SQLfile = str_replace('<dbtable>', $dbtable, $SQLfile);
+					$SQLfile = str_replace('<dbtable>', $dbtable, $SQLfile);
 
-				$sccess_result = 0;
-				if (mysqli_multi_query($conn, $SQLfile)) {
-					do {
-						$sccess_result = $sccess_result + 1;
-					} while (mysqli_more_results($conn) && mysqli_next_result($conn));
-				}
+					$sccess_result = 0;
+					if (mysqli_multi_query($conn, $SQLfile)) {
+						do {
+							$sccess_result = $sccess_result + 1;
+						} while (mysqli_more_results($conn) && mysqli_next_result($conn));
+					}
 
-				$affect_row = mysqli_affected_rows($conn);
-				if ($affect_row == -1) {
-					die("数据库导入出错，错误在" . $sccess_result . "行");
+					$affect_row = mysqli_affected_rows($conn);
+					if ($affect_row == -1) {
+						die("数据库导入出错，错误在" . $sccess_result . "行");
+					} else {
+						echo "数据库导入成功，成功导入" . $sccess_result . "条数据<br />";
+					}
 				} else {
-					echo "数据库导入成功，成功导入" . $sccess_result . "条数据<br />";
+					echo "不启用数据库<br />";
 				}
 				//修改文件
 				$raw_config = file_get_contents("./install/config_raw");
