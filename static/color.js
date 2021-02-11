@@ -1,16 +1,16 @@
 const colorMode = localStorage.getItem('colorMode'); // 获取色彩模式配置
 if (colorMode === null) { // 若没有配置（跟随浏览器）
-	if (window.matchMedia('(prefers-color-scheme: dark)').matches) {//暗色模式
+	if (window.matchMedia('(prefers-color-scheme: dark)').matches) {// 暗色模式
 		document.querySelector('#ColorMode-Dark').disabled = false;
 		document.querySelector('#Swal2-Dark').disabled = false;
-	} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {//浅色模式
+	} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {// 浅色模式
 		document.querySelector('#ColorMode-Dark').disabled = true;
 		document.querySelector('#Swal2-Light').disabled = false;
 	}
-} else if (colorMode === 'dark') {//暗色模式
+} else if (colorMode === 'dark') {// 暗色模式
 	document.querySelector('#ColorMode-Dark').disabled = false;
 	document.querySelector('#Swal2-Dark').disabled = false;
-} else if (colorMode === 'light') {//浅色模式
+} else if (colorMode === 'light') {// 浅色模式
 	document.querySelector('#ColorMode-Dark').disabled = true;
 	document.querySelector('#Swal2-Light').disabled = false;
 } else {

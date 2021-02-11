@@ -226,7 +226,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 						<script>
 							$("input[name='IsCheckPassword']").on('click', function() {
-								item = $(this).val(); //这里获取的是你点击的那个radio的值，而不是设置的值。（虽然效果是一样的
+								item = $(this).val(); // 这里获取的是你点击的那个radio的值，而不是设置的值。（虽然效果是一样的
 								if (item == "false") {
 									$("div#Password").slideUp();
 								} else {
@@ -244,7 +244,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							$("#AgreeCheck").on('click', function() {
 								item = $(this).prop("checked");
 								if (item == true) {
-									//提示
+									// 提示
 									Swal.fire({
 										title: "同意保留版权",
 										html: "保留版权对站长没有坏处，只是给那些想要学习 PHP 语言的人一个机会。<br/>保留原作者版权是MIT协议所规定的，这是对作者的一种尊重，让作者有继续开发的动力，而不是每天都在发邮件处理版权问题。<hr/>此项目在 GitHub 上开放源代码，所有历史版本及当前版本源代码均公开可查。",
@@ -307,19 +307,19 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									if (response.success) {
 										const data = response.data;
 										if (data.error == 0) {
-											//连接成功
+											// 连接成功
 											Swal.fire({
 												title: "数据库连接成功",
 												html: "请完成其他信息填写并提交。<br />详细信息：" + data.msg
 											});
-											$("input[name='DbConfig_servername']").attr("readonly", true); //禁用修改，防止提交后出错
+											$("input[name='DbConfig_servername']").attr("readonly", true); // 禁用修改，防止提交后出错
 											$("input[name='DbConfig_username']").attr("readonly", true);
 											$("input[name='DbConfig_password']").attr("readonly", true);
 											$("input[name='DbConfig_dbname']").attr("readonly", true);
 											SQLConnect = true;
 										} else {
 											;
-											//连接失败
+											// 连接失败
 											Swal.fire({
 												title: "数据库连接错误",
 												html: "请检查你的数据库设置，并重新提交。<br />详细信息：" + data.msg
@@ -335,7 +335,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
 
 								if (ADMIN_PASSWORDLength < 6) {
-									//密码过短
+									// 密码过短
 									Swal.fire({
 										title: "密码过短",
 										html: "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。"
@@ -344,7 +344,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								}
 								if (USING_DB == "true") {
 									if (!SQLConnect) {
-										//暂未连接数据库
+										// 暂未连接数据库
 										Swal.fire({
 											title: "暂未连接数据库",
 											html: "请先点击检查数据库连接按钮，再提交数据。"
@@ -369,7 +369,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									return 0;
 								}
 
-								$("#SettingForm").submit(); //提交表格
+								$("#SettingForm").submit(); // 提交表格
 							}
 						</script>
 				</div>
@@ -385,9 +385,9 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				<div class="card-body">
 					安装结果：
 				<?php
-				//已经获取到所需信息，先导入数据库，再写配置到config.php
+				// 已经获取到所需信息，先导入数据库，再写配置到config.php
 
-				//处理post数据
+				// 处理post数据
 				$Sitename = (!empty($_POST["Sitename"])) ? $_POST["Sitename"] : "";
 				$IsCheckPassword = (!empty($_POST["IsCheckPassword"])) ? $_POST["IsCheckPassword"] : "";
 				$Password = (!empty($_POST["Password"])) ? $_POST["Password"] : "";
@@ -407,13 +407,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$dbtable = (!empty($_POST["DbConfig_dbtable"])) ? $_POST["DbConfig_dbtable"] : "";
 
 				if ($USING_DB == "true") {
-					//连接数据库
+					// 连接数据库
 					$conn = mysqli_connect($servername, $username, $password, $dbname);
 					// Check connection
 					if (!$conn) {
 						die("数据库连接错误，详细信息：" . mysqli_connect_error());
 					}
-					//打开sql文件
+					// 打开sql文件
 					$SQLfile = file_get_contents("./install/bdwp.sql");
 					if ($SQLfile == false) die("无法打开bdwp.sql文件");
 
@@ -435,7 +435,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				} else {
 					echo "不启用数据库<br />";
 				}
-				//修改文件
+				// 修改文件
 				$raw_config = file_get_contents("./install/config_raw");
 				if ($raw_config == false) die("无法打开config_raw文件");
 

@@ -136,7 +136,7 @@ async function addUri() {
 	const headerOption = ['User-Agent: LogStatistic']
 	let post
 	let postVer
-	if (token != "") {//构造post请求
+	if (token != "") {// 构造post请求
 		postVer = JSON.stringify({
 			jsonrpc: '2.0',
 			method: 'aria2.getVersion',

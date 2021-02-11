@@ -36,7 +36,7 @@ if (!(file_exists('functions.php') && file_exists('language.php'))) {
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
 	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
-//保存启动时间
+// 保存启动时间
 $system_start_time = microtime(true);
 // 导入配置和函数
 require('config.php');
@@ -45,11 +45,11 @@ require('functions.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
-//隐藏错误代码，保护信息安全
+// 隐藏错误代码，保护信息安全
 if (DEBUG) {
 	error_reporting(E_ALL);
 } else {
-	error_reporting(0); //关闭错误报告
+	error_reporting(0); // 关闭错误报告
 }
 ?>
 <!DOCTYPE html>
@@ -122,48 +122,47 @@ if (DEBUG) {
 		}
 		if (isset($_GET["help"])) { // 帮助页
 			echo Language["HelpPage"];
-		} elseif (isset($_GET["usersettings"])) { //用户设置页面
+		} elseif (isset($_GET["usersettings"])) { // 用户设置页面
 			require("usersettings.php");
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
 			echo '<script>setTimeout(() => Swal.fire(\'' . Language["TipTitle"] . '\',\'' . Language["TimeoutTip"] . '\',\'info\'), 300000);</script>';
 			CheckPassword();
-			$surl = $_POST["surl"]; //含有1
+			$surl = $_POST["surl"]; // 含有1
 			$pwd = (!empty($_POST["pwd"])) ? $_POST["pwd"] : "";
 			$dir = (!empty($_POST["dir"])) ? $_POST["dir"] : "";
 			$IsRoot = ($dir == "") ? true : false;
-			$Filejson = GetList($surl, $dir, $IsRoot, $pwd); //解析子目录时，需添加1
-			if ($Filejson["errno"] == 0) { //一种新的解析方法，暂未完工
-				//解析正常
+			$Filejson = GetList($surl, $dir, $IsRoot, $pwd); // 解析子目录时，需添加1
+			// if ($Filejson["errno"] == 0) { // 一种新的解析方法，暂未完工
+			// 	// 解析正常
+			// } else {
+			// 	// 解析异常
 
-			} else {
-				//解析异常
-
-				$ErrorMessage = [
-					"mis_105" => "你所解析的文件不存在~",
-					"mispw_9" => "验证码错误",
-					"mis_2" => "不存在此目录",
-					3 => "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！",
-					0 => "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。",
-					10 => "啊哦，来晚了，该分享文件已过期"
-				];
-			}
+			// 	$ErrorMessage = [
+			// 		"mis_105" => "你所解析的文件不存在~",
+			// 		"mispw_9" => "验证码错误",
+			// 		"mis_2" => "不存在此目录",
+			// 		3 => "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！",
+			// 		0 => "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。",
+			// 		10 => "啊哦，来晚了，该分享文件已过期"
+			// 	];
+			// }
 
 
 			if (isset($_POST["dir"])) {
-				//文件夹页面
+				// 文件夹页面
 				if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
 				else $randsk = get_BDCLND('1' . $surl, $pwd);
 				$shareid = $_POST["share_id"];
 				//$root = getSign($surl, $randsk);第二次不需要再次获取
 				if ($randsk !== 1) {
-					$uk = $_POST["uk"]; //分享者信息
+					$uk = $_POST["uk"]; // 分享者信息
 					$sign = $_POST["sign"];
 					$timestamp = $_POST["timestamp"];
 					$bdstoken = $_POST["bdstoken"];
 					$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
 					if ($filejson["errno"] != 0) dl_error("文件夹存在问题", "此文件夹存在问题，无法访问！", true); // 鬼知道发生了啥
 					else { // 终于正常了
-						//面包屑导航
+						// 面包屑导航
 						$filecontent = '<nav aria-label="breadcrumb"><ol class="breadcrumb my-4">
 						<li class="breadcrumb-item"><a href="javascript:OpenRoot(\'1' . $surl . '\',\'' . $pwd . '\');">' . Language["AllFiles"] . '</a></li>';
 						$dir_list = explode("/", $_POST["dir"]);
@@ -176,7 +175,7 @@ if (DEBUG) {
 							. '<li class="ml-auto">已全部加载，共' . count($filejson["list"]) . '个</li></ol></nav>';
 
 						$filecontent .= '<div><ul class="list-group">';
-						for ($i = 0; $i < count($filejson["list"]); $i++) { //开始输出文件列表
+						for ($i = 0; $i < count($filejson["list"]); $i++) { // 开始输出文件列表
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
@@ -188,7 +187,7 @@ if (DEBUG) {
 					}
 				} else dl_error("解析错误", "解析子文件夹时，提取码错误或文件失效！");
 			} else {
-				//根页面
+				// 根页面
 				$surl_1 = substr($surl, 1);
 				if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
 				else $randsk = get_BDCLND($surl, $pwd);
@@ -243,18 +242,18 @@ if (DEBUG) {
 					if (USING_DB) {
 						connectdb();
 
-						//查询数据库中是否存在已经保存的数据
+						// 查询数据库中是否存在已经保存的数据
 						$sql = "SELECT * FROM `" . $dbtable . "_ip` WHERE `ip`='$ip';";
 						$mysql_query = mysqli_query($conn, $sql);
 						if ($result = mysqli_fetch_assoc($mysql_query)) {
-							//存在 判断类型
+							// 存在 判断类型
 							if ($result["type"] == -1) {
-								//黑名单
+								// 黑名单
 								$isipwhite = FALSE;
 								dl_error(Language["AccountError"], "当前ip已被加入黑名单，请联系站长解封");
 								exit;
 							} elseif ($result["type"] == 0) {
-								//白名单
+								// 白名单
 								echo "<script>console.log('当前IP为白名单~');</script>";
 								$isipwhite = TRUE;
 							}
@@ -269,15 +268,15 @@ if (DEBUG) {
 					$uk = $_POST["uk"];
 					$bdstoken = $_POST["bdstoken"];
 					$filesize = $_POST["filesize"];
-					$smallfile = ((int)$filesize < 52428800) ? true : false; //如果是小文件 那么可以不需要传入SVIP的BDUSS 仅需普通用户的即可
-					$smallfile = false; //小文件竟然也会限速，醉了，现在先不搞这个
+					$smallfile = ((int)$filesize < 52428800) ? true : false; // 如果是小文件 那么可以不需要传入SVIP的BDUSS 仅需普通用户的即可
+					$smallfile = false; // 小文件竟然也会限速，醉了，现在先不搞这个
 					// 文件小于50MB可以使用这种方法获取：
-					// $nouarealLink="";//重置
+					// $nouarealLink="";// 重置
 					// if((int)$filesize<=52428800){
 					//     $json5 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk ,$bdstoken,true);
 					//     if ($json5["errno"] == 0) {
 					//         $nouadlink = $json5["list"][0]["dlink"];
-					//         //开始获取真实链接
+					//         // 开始获取真实链接
 					//     	$headerArray = array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36', 'Cookie: BDUSS=' . BDUSS . ';');
 					//     	$getRealLink = head($nouadlink, $headerArray); // 禁止重定向
 					//     	$getRealLink = strstr($getRealLink, "Location");
@@ -288,7 +287,7 @@ if (DEBUG) {
 					$json4 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk, $bdstoken, false, APP_ID);
 					if ($json4["errno"] == 0) {
 						$dlink = $json4["list"][0]["dlink"];
-						//获取文件相关信息
+						// 获取文件相关信息
 						$md5 = $json4["list"][0]["md5"];
 						$filename = $json4["list"][0]["server_filename"];
 						$size = $json4["list"][0]["size"];
@@ -298,7 +297,7 @@ if (DEBUG) {
 						if (USING_DB) {
 							connectdb();
 
-							//查询数据库中是否存在已经保存的数据
+							// 查询数据库中是否存在已经保存的数据
 							$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL 8 HOUR);";
 							$mysql_query = mysqli_query($conn, $sql);
 						}
@@ -306,35 +305,35 @@ if (DEBUG) {
 							$realLink = $result["realLink"];
 							$usingcache = true;
 						} else {
-							// //判断cookie   取消这个判断 下载次数限制在后台控制
+							// // 判断cookie   取消这个判断 下载次数限制在后台控制
 							// if (!$isipwhite and !empty($_COOKIE["SESSID"]) and !$smallfile) {
-							// 	//提示无权继续
+							// 	// 提示无权继续
 							// 	dl_error("免费次数不足", "<p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
 							// 	exit;
 							// }
 							if (USING_DB) {
-								//判断今天内是否获取过文件
-								if (!$isipwhite and !$smallfile) { //白名单和小文件跳过
-									//获取解析次数
+								// 判断今天内是否获取过文件
+								if (!$isipwhite and !$smallfile) { // 白名单和小文件跳过
+									// 获取解析次数
 									$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
 									$mysql_query = mysqli_query($conn, $sql);
 									$result = mysqli_fetch_assoc($mysql_query);
 									if ($result["Num"] >= DownloadTimes) {
-										//提示无权继续
+										// 提示无权继续
 										// dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>您已于 <b>" . $result["ptime"] . "</b> 时解析过文件“<b>" . $result["filename"] . "</b>”。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
 										dl_error(Language["NoChance"], "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
 										exit;
 									}
 								}
-								//获取SVIP BDUSS
+								// 获取SVIP BDUSS
 
-								$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; //时间倒序输出第一项未被限速账号
+								$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
 								$Result = mysqli_query($conn, $sql);
 								if ($Result =  mysqli_fetch_assoc($Result)) {
 									$SVIP_BDUSS = $Result["svip_bduss"];
 									$id = $Result["id"];
 								} else {
-									//数据库中所有SVIP账号已经用完，启用本地SVIP账号
+									// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
 									$SVIP_BDUSS = SVIP_BDUSS;
 									$id = "-1";
 								}
@@ -345,9 +344,9 @@ if (DEBUG) {
 
 
 
-							//开始获取真实链接
+							// 开始获取真实链接
 							if ($smallfile) $headerArray = array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36', 'Cookie: BDUSS=' . BDUSS . ';');
-							else $headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . $SVIP_BDUSS . ';'); //仅此处用到SVIPBDUSS
+							else $headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . $SVIP_BDUSS . ';'); // 仅此处用到SVIPBDUSS
 
 							$getRealLink = head($dlink, $headerArray); // 禁止重定向
 							$getRealLink = strstr($getRealLink, "Location");
@@ -358,14 +357,14 @@ if (DEBUG) {
 
 
 							if (USING_DB) {
-								//判断账号是否限速，如果限速就将其标记，切换账号
+								// 判断账号是否限速，如果限速就将其标记，切换账号
 								if (strstr('https://' . $realLink, "//qdall") or $realLink == "") {
-									//限速
+									// 限速
 									if ($id != "-1") {
 										$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= -1 WHERE `id`=$id";
 										$mysql_query = mysqli_query($conn, $sql);
 										if ($mysql_query != false) {
-											//SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
+											// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
 		?>
 											<div class="row justify-content-center">
 												<div class="col-md-7 col-sm-8 col-11">
@@ -384,11 +383,11 @@ if (DEBUG) {
 											</script>
 							<?php exit;
 										} else {
-											//SVIP账号自动切换失败
+											// SVIP账号自动切换失败
 
 										}
 									} else {
-										//本地账号也限速
+										// 本地账号也限速
 									}
 								}
 							}
@@ -400,20 +399,20 @@ if (DEBUG) {
 						<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
 						else {
 
-							//记录下使用者ip，下次进入时提示
+							// 记录下使用者ip，下次进入时提示
 							if (USING_DB and !$usingcache) {
 								$ptime = date("Y-m-d H:i:s");
-								$Sqlfilename = htmlspecialchars($filename); //防止出现一些刁钻的文件名无法处理
+								$Sqlfilename = htmlspecialchars($filename); // 防止出现一些刁钻的文件名无法处理
 								$Sqlpath = htmlspecialchars($path);
 								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink','$ptime','$id')";
 								$mysql_query = mysqli_query($conn, $sql);
 								if ($mysql_query == false) {
-									//保存错误
+									// 保存错误
 									dl_error(Language["DatabaseError"], "数据库错误，请联系站长修护");
 									exit;
 								}
 								echo "<script>var d=new Date();d.setDate(d.getDate()+1);d.setHours(0);d.setMinutes(0);d.setSeconds(0);document.cookie='SESSID=Nbef-cz-Zvbo_Uvp;expires='+d.toGMTString();</script>";
-								//为了防止一些换ip调用，这里写一个cookie
+								// 为了防止一些换ip调用，这里写一个cookie
 							}
 
 							?>
@@ -541,11 +540,11 @@ if (DEBUG) {
 					</div>
 				</div>
 				<script>
-					//主页部分脚本
+					// 主页部分脚本
 					$(document).ready(function() {
 
-						$("#sviptooltip").tooltip(); //初始化
-						$("#parsingtooltip").tooltip(); //初始化
+						$("#sviptooltip").tooltip(); // 初始化
+						$("#parsingtooltip").tooltip(); // 初始化
 
 						async function getAPI(method) { // 获取 API 数据
 							try {
@@ -575,7 +574,7 @@ if (DEBUG) {
 							if (response.success) {
 								const data = response.data;
 								if (data.error == 0) {
-									//请求成功
+									// 请求成功
 									if (data.svipstate == 1) {
 										$("#svipstate-point").addClass("point-success");
 									} else {

@@ -143,7 +143,7 @@ function getSign(string $surl, $randsk)
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
 	);
-	//如果不修改这里,则要修改配置文件ini
+	// 如果不修改这里,则要修改配置文件ini
 	$result = get($url, $header);
 	if (preg_match('/yunData.setData\((\{.*?\})\);/', $result, $matches)) {
 		$result = json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
@@ -190,9 +190,9 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 { // 获取下载链接
 
 	if ($isnoualink) {
-		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken=' . $bdstoken; //获取直链 50MB以内
+		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken=' . $bdstoken; // 获取直链 50MB以内
 	} else {
-		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; //获取下载链接
+		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
 	}
 
 	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . urldecode($randsk) . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
@@ -209,7 +209,7 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 	}
 	return $result;
 
-	//没有 referer 就 112 ，然后没有 sekey 参数就 118    -20出现验证码
+	// 没有 referer 就 112 ，然后没有 sekey 参数就 118    -20出现验证码
 	// 		参数				类型		描述
 	// list					json array	文件信息列表
 	// names				json		如果查询共享目录，该字段为共享目录文件上传者的uk和账户名称
@@ -242,9 +242,9 @@ function dl_error(string $title, string $content, bool $jumptip = false)
 function get_BDCLND($surl, $Pwd)
 {
 	$header = array('User-Agent: netdisk');
-	$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; //使用新方法获取，减少花费的时间
+	$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; // 使用新方法获取，减少花费的时间
 	$result = head($url, $header);
-	if (strstr($result, "BDCLND") == false) $bdclnd = false; //修复：部分链接不存在bdclnd
+	if (strstr($result, "BDCLND") == false) $bdclnd = false; // 修复：部分链接不存在bdclnd
 	else $bdclnd = GetSubstr($result, 'BDCLND=', ';');
 
 	if ($bdclnd) {
@@ -275,7 +275,7 @@ function connectdb(bool $isAPI = false)
 	// Check connection
 	if (!$conn) {
 		if ($isAPI) {
-			//api特殊处理
+			// api特殊处理
 			EchoInfo(-1, array("msg" => "数据库连接失败：" . mysqli_connect_error(), "sviptips" => "Error"));
 			exit;
 		} else {

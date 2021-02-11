@@ -32,22 +32,22 @@ require('functions.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
-//隐藏错误代码，保护信息安全
+// 隐藏错误代码，保护信息安全
 if (DEBUG) {
 	error_reporting(E_ALL);
 } else {
-	error_reporting(0); //关闭错误报告
+	error_reporting(0); // 关闭错误报告
 }
 $method = (!empty($_GET["m"])) ? $_GET["m"] : "";
 $is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
 if (!$is_login and !empty($_POST["setting_password"])) {
-	//开始验证密码
+	// 开始验证密码
 	if ($_POST["setting_password"] === ADMIN_PASSWORD) {
-		//密码正确
+		// 密码正确
 		$_SESSION["admin_login"] = true;
 		$is_login = true;
 	} else {
-		//密码错误
+		// 密码错误
 		$_SESSION["admin_login"] = false;
 		echo "<script>Swal.fire('管理员密码错误，如果忘记密码请进入 config.php 查看');</script>";
 	}
@@ -67,19 +67,19 @@ if ($method == "API" and $is_login) {
 		case "SvipSettingFirstAccount":
 			$id = (!empty($_GET["id"])) ? $_GET["id"] : "";
 			if ($id == "") {
-				//参数错误
+				// 参数错误
 				EchoInfo(-1, array("msg" => "传入参数错误"));
 			} else {
-				//开始处理
-				//这里最新的时间表示可用账号，按顺序排序
+				// 开始处理
+				// 这里最新的时间表示可用账号，按顺序排序
 				$is_using = date("Y-m-d H:i:s");
 				$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
 				$mysql_query = mysqli_query($conn, $sql);
 				if ($mysql_query != false) {
-					//成功
+					// 成功
 					EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为首选账号。3s后将刷新该页面。", "refresh" => true));
 				} else {
-					//失败
+					// 失败
 					EchoInfo(-1, array("msg" => "修改失败"));
 				}
 			}
@@ -113,7 +113,7 @@ function GetAnalyseTablePage(string $page)
 	$sql = "SELECT * FROM `$dbtable` ORDER BY `ptime` DESC LIMIT $StartNum,$EachPageNum";
 	$mysql_query = mysqli_query($conn, $sql);
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
-		//存在数据
+		// 存在数据
 		$EachRow = "<tr>
 		<th>" . $Result["id"] . "</th>
 		<td>暂未开发</td>
@@ -139,7 +139,7 @@ function GetSvipTablePage(string $page)
 	$sql = "SELECT * FROM `" . $dbtable . "_svip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
 	$mysql_query = mysqli_query($conn, $sql);
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
-		//存在数据
+		// 存在数据
 		$is_using = ($Result["is_using"] != "0000-00-00 00:00:00") ? $Result["is_using"] : "";
 		$state = ($Result["state"] == -1) ? "限速" : "正常";
 		$EachRow = "<tr>
@@ -155,7 +155,7 @@ function GetSvipTablePage(string $page)
 		$AllRow .= $EachRow;
 	}
 	return $AllRow;
-} //name 账号名称	svip_bduss 会员bduss	svip_stoken 会员stoken	add_time 会员账号加入时间	state 会员状态(0:正常,-1:限速)	is_using 是否正在使用(非零表示真)
+} // name 账号名称	svip_bduss 会员bduss	svip_stoken 会员stoken	add_time 会员账号加入时间	state 会员状态(0:正常,-1:限速)	is_using 是否正在使用(非零表示真)
 function GetIPTablePage(string $page)
 {
 	if ($page <= 0) exit;
@@ -167,7 +167,7 @@ function GetIPTablePage(string $page)
 	$sql = "SELECT * FROM `" . $dbtable . "_ip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
 	$mysql_query = mysqli_query($conn, $sql);
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
-		//存在数据
+		// 存在数据
 		$type = ($Result["type"] == -1) ? "黑名单" : "白名单";
 		$EachRow = "<tr>
 		<th>" . $Result["id"] . "</th>
@@ -228,7 +228,7 @@ function GetIPTablePage(string $page)
 					</div>
 				</div>
 			<?php } else {
-				//登录后操作
+				// 登录后操作
 			?>
 				<div class="col-md-12 col-sm-12 col-12">
 					<?php if ($method == "analyse") { ?>
@@ -287,13 +287,13 @@ function GetIPTablePage(string $page)
 							</div>
 						</div>
 					<?php } elseif ($method == "svip") {
-						//先处理是否有新增加数据
+						// 先处理是否有新增加数据
 						if (isset($_POST["BDUSS"])) {
 							$BDUSS = (!empty($_POST["BDUSS"])) ? trim($_POST["BDUSS"]) : "";
 							$STOKEN = (!empty($_POST["STOKEN"])) ? $_POST["STOKEN"] : "";
 							$name = (!empty($_POST["name"])) ? $_POST["name"] : "";
 							if ($BDUSS != "" and strlen($BDUSS) == 192) {
-								//开始录入
+								// 开始录入
 								$add_time = date("Y-m-d H:i:s");
 								$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$name','$BDUSS','$STOKEN','$add_time',1,'')";
 								$Result = mysqli_query($conn, $sql);
@@ -310,7 +310,7 @@ function GetIPTablePage(string $page)
 							$BDUSS = (!empty($_POST["MULTI_BDUSS"])) ? trim($_POST["MULTI_BDUSS"]) : "";
 							$name = (!empty($_POST["name"])) ? $_POST["name"] : "";
 							if ($BDUSS != "") {
-								//开始录入
+								// 开始录入
 								$allsql = "";
 								$add_time = date("Y-m-d H:i:s");
 
@@ -355,7 +355,7 @@ function GetIPTablePage(string $page)
 							<div class="card-body">
 								<h5 class="card-title">默认账号</h5>
 								<?php
-								$sql = "SELECT * FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; //时间倒序输出第一项未被限速账号
+								$sql = "SELECT * FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
 								$Result = mysqli_query($conn, $sql);
 
 								if ($Result =  mysqli_fetch_assoc($Result)) {
@@ -365,12 +365,12 @@ function GetIPTablePage(string $page)
 									$is_using = $Result["is_using"];
 									$state = ($Result["state"] == -1) ? "限速" : "正常";
 
-									$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE `paccount`=$id"; //时间倒序输出第一项未被限速账号
+									$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE `paccount`=$id"; // 时间倒序输出第一项未被限速账号
 									$Result = mysqli_query($conn, $sql);
 
 									if ($Result = mysqli_fetch_assoc($Result)) {
 										$AllCount = $Result["AllCount"];
-										$AllSize = ($AllCount == "0") ? "无数据" : formatSize((int)$Result["AllSize"]); //格式化获取到的文件大小
+										$AllSize = ($AllCount == "0") ? "无数据" : formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
 										$ParseCountMsg =  "累计解析次数：$AllCount 个<br />累计解析大小：$AllSize";
 									}
 
@@ -463,13 +463,13 @@ function GetIPTablePage(string $page)
 							</div>
 						</div>
 					<?php } elseif ($method == "iplist") {
-						//先处理是否有新增加数据
+						// 先处理是否有新增加数据
 						if (isset($_POST["ip"])) {
 							$ip = (!empty($_POST["ip"])) ? trim($_POST["ip"]) : "";
 							$remark = (!empty($_POST["remark"])) ? $_POST["remark"] : "";
 							$type = $_POST["type"];
 							if ($ip != "") {
-								//开始录入
+								// 开始录入
 								$add_time = date("Y-m-d H:i:s");
 								$sql = "INSERT INTO `" . $dbtable . "_ip`( `ip`, `remark`, `type`, `add_time`) VALUES ('$ip','$remark',$type,'$add_time')";
 								$Result = mysqli_query($conn, $sql);
@@ -553,7 +553,7 @@ function GetIPTablePage(string $page)
 							</div>
 						</div>
 					<?php } elseif ($method == "DownloadTimes") {
-						//先处理是否有新增加数据
+						// 先处理是否有新增加数据
 						if (isset($_POST["DownloadTimes"])) {
 							$origin_config = file_get_contents("config.php");
 							$update_config = str_replace('const DownloadTimes = ' . DownloadTimes . ';', 'const DownloadTimes = ' . $_POST["DownloadTimes"] . ';', $origin_config);
@@ -620,18 +620,18 @@ function GetIPTablePage(string $page)
 											<?php
 											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable`";
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-											//存在数据
+											// 存在数据
 											$AllCount = $Result["AllCount"];
-											$AllSize = formatSize((int)$Result["AllSize"]); //格式化获取到的文件大小
+											$AllSize = formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
 											echo "累计解析 $AllCount 个，共 $AllSize";
 											?>
 											<br />
 											<?php
-											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());"; //获取今天的解析量
+											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());"; // 获取今天的解析量
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-											//存在数据
+											// 存在数据
 											$AllCount = $Result["AllCount"];
-											$AllSize = formatSize((int)$Result["AllSize"]); //格式化获取到的文件大小
+											$AllSize = formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
 											echo "今日解析 $AllCount 个，共 $AllSize";
 											?>
 										</p>
