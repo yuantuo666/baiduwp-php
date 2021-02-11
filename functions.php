@@ -7,8 +7,6 @@
  *
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
- * @version 1.4.5
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
@@ -113,7 +111,7 @@ function formatSize(float $size, int $times = 0)
 		return sprintf('%.2f', $size) . $unit;
 	}
 }
-function CheckPassword(bool $IsReturnBool = false, bool $ReverseReturn = false)
+function CheckPassword(bool $IsReturnBool = false)
 { // 校验密码
 	if (IsCheckPassword) { // 若校验密码
 		$return = false;
@@ -126,9 +124,6 @@ function CheckPassword(bool $IsReturnBool = false, bool $ReverseReturn = false)
 			$return = true;
 		}
 		if ($IsReturnBool) { // 若 $IsReturnBool 为 true 则只返回 true/false，不执行 dl_error
-			if ($ReverseReturn) { // 若 $ReverseReturn 为 true 则反转结果，即验证成功为 false，失败为 true
-				return !$return;
-			}
 			return $return;
 		}
 		if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
@@ -148,7 +143,7 @@ function getSign(string $surl, $randsk)
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
 	);
-	//如果不修改这里,则要修改配置文件ini
+	// 如果不修改这里,则要修改配置文件ini
 	$result = get($url, $header);
 	if (preg_match('/yunData.setData\((\{.*?\})\);/', $result, $matches)) {
 		$result = json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
@@ -195,9 +190,9 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 { // 获取下载链接
 
 	if ($isnoualink) {
-		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken=' . $bdstoken; //获取直链 50MB以内
+		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken=' . $bdstoken; // 获取直链 50MB以内
 	} else {
-		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; //获取下载链接
+		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
 	}
 
 	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . urldecode($randsk) . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
@@ -214,7 +209,7 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 	}
 	return $result;
 
-	//没有 referer 就 112 ，然后没有 sekey 参数就 118    -20出现验证码
+	// 没有 referer 就 112 ，然后没有 sekey 参数就 118    -20出现验证码
 	// 		参数				类型		描述
 	// list					json array	文件信息列表
 	// names				json		如果查询共享目录，该字段为共享目录文件上传者的uk和账户名称
@@ -247,9 +242,10 @@ function dl_error(string $title, string $content, bool $jumptip = false)
 function get_BDCLND($surl, $Pwd)
 {
 	$header = array('User-Agent: netdisk');
-	$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; //使用新方法获取，减少花费的时间
+	$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; // 使用新方法获取，减少花费的时间
 	$result = head($url, $header);
-	$bdclnd = GetSubstr($result, 'BDCLND=', ';');
+	if (strstr($result, "BDCLND") == false) $bdclnd = false; // 修复：部分链接不存在bdclnd
+	else $bdclnd = GetSubstr($result, 'BDCLND=', ';');
 
 	if ($bdclnd) {
 		if (DEBUG) {
@@ -279,7 +275,7 @@ function connectdb(bool $isAPI = false)
 	// Check connection
 	if (!$conn) {
 		if ($isAPI) {
-			//api特殊处理
+			// api特殊处理
 			EchoInfo(-1, array("msg" => "数据库连接失败：" . mysqli_connect_error(), "sviptips" => "Error"));
 			exit;
 		} else {

@@ -60,19 +60,3 @@ form input, form button {
 	width: 12px;
 	height: 12px;
 }
-
-.form-control {
-	border: none !important;
-}
-
-.btn-success {
-	border: none !important;
-}
-
-.alert-danger {
-	border: none !important;
-}
-
-.alert-primary {
-	border: none !important;
-}
