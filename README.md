@@ -16,7 +16,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 [捐赠作者](https://imwcr.cn/?donate)
 
 ## Blacklists
-- http://down.5nb.me/ 1.4.5版本（站长拒不修改）
+<!-- - http://down.5nb.me/ 1.4.5版本（站长拒不修改） -->
 - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码
 - https://pan.qiafan.vip/ 1.4.5版本 无密码
 - http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259）
