@@ -5,7 +5,7 @@
  *
  * 设置及后台功能
  *
- * @version 1.4.6
+ * @version 2.0.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -472,7 +472,6 @@ function GetIPTablePage(string $page)
 								//开始录入
 								$add_time = date("Y-m-d H:i:s");
 								$sql = "INSERT INTO `" . $dbtable . "_ip`( `ip`, `remark`, `type`, `add_time`) VALUES ('$ip','$remark',$type,'$add_time')";
-								echo $sql;
 								$Result = mysqli_query($conn, $sql);
 								if ($Result != false) echo "<script>Swal.fire('新增成功');</script>";
 								else {

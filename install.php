@@ -7,7 +7,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 1.4.6
+ * @version 2.0.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -58,7 +58,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<div class="container">
 		<nav>
 			<ol class="breadcrumb my-4">
-				<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
+				<li class="breadcrumb-item"><a href="./">baiduwp-php</a></li>
 				<li class="breadcrumb-item"><a href="install.php">安装程序</a></li>
 				<li class="breadcrumb-item">设置页面</li>
 			</ol>
@@ -212,13 +212,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group form-check">
 							<input type="checkbox" class="form-check-input" id="AgreeCheck">
 							<label class="form-check-label" for="AgreeCheck">
-								<p class="text-danger">我同意 在首页及其他页面保留作者版权信息</p>
+								<p class="text-danger">我同意在首页及其他页面<strong>保留作者版权信息</strong></p>
 							</label>
 						</div>
 						<div class="form-group form-check">
 							<input type="checkbox" class="form-check-input" id="AgreeCheck2">
 							<label class="form-check-label" for="AgreeCheck2">我已备份好相关数据</label>
-							<small class="form-text text-muted">安装操作将会清空 MySQL数据库 及 本地Config.php文件。如果你曾使用过本项目，请备份好数据后再点击提交。</small>
+							<small class="form-text text-muted">安装操作将会清空 MySQL数据库 及 本地config.php文件。如果你曾使用过本项目，请备份好数据后再点击提交。</small>
 						</div>
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
 						<br><br>
@@ -247,11 +247,11 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									//提示
 									Swal.fire({
 										title: "同意保留版权",
-										html: "保留版权只是想给那些想要学习 PHP 语言的人一个机会，保留版权这个对站长又没有坏处<hr />源码也全部开源在 <a href='https://github.com/yuantuo666/baiduwp-php' target='_blank'>Github</a> 上<br>可以通过Commits查看所有旧版本源码<hr />保留原作者版权也是MIT协议所规定的，这也是对作者的一种尊重，让作者有继续开发的动力，而不是每天都在发邮件处理版权问题",
+										html: "保留版权对站长没有坏处，只是给那些想要学习 PHP 语言的人一个机会。<br/>保留原作者版权是MIT协议所规定的，这是对作者的一种尊重，让作者有继续开发的动力，而不是每天都在发邮件处理版权问题。<hr/>此项目在 GitHub 上开放源代码，所有历史版本及当前版本源代码均公开可查。",
 										icon: "warning",
 										showCancelButton: true,
 										confirmButtonText: "我同意",
-										reverseButtons: true
+										footer: '<a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">GitHub 上的源代码仓库</a>'
 									}).then(function(e) {
 										if (e.isConfirmed) {
 											$("#AgreeCheck").prop("checked", true);
@@ -467,7 +467,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				} else {
 					die("写入 config.php 文件失败，请检查 config.php 文件状态及当前用户权限。");
 				}
-				echo "恭喜你！你的安装成功了~<br /><a href='./index.php'>点此链接</a>前往主页查看。";
+				header('Refresh: 3;url=./');
+				echo "恭喜你！你的安装成功了~<br />浏览器将会在3s内自动跳转，若没有跳转可<a href='./'>点此链接</a>前往主页查看。";
 			}
 				?>
 				</div>
