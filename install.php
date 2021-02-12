@@ -122,6 +122,23 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							</div>
 						</div>
 						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">是否开启下载次数提示</label>
+							<div class="col-sm-10">
+								<div class="form-check  form-check-inline">
+									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload1" value="true" checked>
+									<label class="form-check-label" for="IsConfirmDownload1">
+										是
+									</label>
+								</div>
+								<div class="form-check  form-check-inline">
+									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload2" value="false">
+									<label class="form-check-label" for="IsConfirmDownload2">
+										否
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">页脚设置</label>
 							<div class="col-sm-10">
 								<textarea class="form-control" name="Footer" rows="3"></textarea>
@@ -395,6 +412,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$Password = (!empty($_POST["Password"])) ? $_POST["Password"] : "";
 				$ADMIN_PASSWORD = (!empty($_POST["ADMIN_PASSWORD"])) ? $_POST["ADMIN_PASSWORD"] : "";
 				$DownloadTimes = (!empty($_POST["DownloadTimes"])) ? $_POST["DownloadTimes"] : "";
+				$IsConfirmDownload = (!empty($_POST["IsConfirmDownload"])) ? $_POST["IsConfirmDownload"] : "";
 				$Footer = (!empty($_POST["Footer"])) ? $_POST["Footer"] : "";
 
 				$BDUSS = (!empty($_POST["BDUSS"])) ? $_POST["BDUSS"] : "";
@@ -449,6 +467,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<Password>', $Password, $update_config);
 				$update_config = str_replace('<ADMIN_PASSWORD>', $ADMIN_PASSWORD, $update_config);
 				$update_config = str_replace('<DownloadTimes>', $DownloadTimes, $update_config);
+				$update_config = str_replace('<IsConfirmDownload>', $IsConfirmDownload, $update_config);
 				$update_config = str_replace('<Footer>', $Footer, $update_config);
 
 				$update_config = str_replace('<BDUSS>', $BDUSS, $update_config);

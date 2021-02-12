@@ -80,18 +80,22 @@ if (DEBUG) {
 	<script defer src="static/ready.js"></script>
 	<script>
 		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
-			Swal.fire({
-				title: "<?php echo Language["ConfirmTitle"]; ?>",
-				html: "<?php echo Language["ConfirmText"]; ?>",
-				icon: "warning",
-				showCancelButton: true,
-				confirmButtonText: "<?php echo Language["ConfirmmButtonText"]; ?>",
-				reverseButtons: true
-			}).then(function(e) {
-				if (e.isConfirmed) {
-					dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
-				}
-			});
+			<?php
+			if (IsConfirmDownload)
+				echo 'Swal.fire({
+					title: "' . Language["ConfirmTitle"] . '",
+					html: "' . Language["ConfirmText"] . '",
+					icon: "warning",
+					showCancelButton: true,
+					confirmButtonText: "' . Language["ConfirmmButtonText"] . '",
+					reverseButtons: true
+				}).then(function(e) {
+					if (e.isConfirmed) {
+						dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
+					}
+				});';
+			else echo 'dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);';
+			?>
 		}
 	</script>
 </head>
