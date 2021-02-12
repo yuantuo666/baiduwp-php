@@ -79,7 +79,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">站点名称</label>
 							<div class="col-sm-10">
 								<input class="form-control" value="Pandownload 复刻版" name="Sitename">
-								<small class="form-text text-muted">设置你的站点名称，将在首页标题处显示。</small>
+								<small class="form-text">设置你的站点名称，将在首页标题处显示。</small>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -97,35 +97,35 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 										否
 									</label>
 								</div>
-								<small class="form-text text-muted">若开启，则在使用解析前必须输入设置的密码；若关闭（一般用于局域网搭建），则无需输入密码即可解析。</small>
+								<small class="form-text">若开启，则在使用解析前必须输入设置的密码；若关闭（一般用于局域网搭建），则无需输入密码即可解析。</small>
 							</div>
 						</div>
 						<div class="form-group row" id="Password">
 							<label class="col-sm-2 col-form-label">解析密码设置</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="Password">
-								<small class="form-text text-muted">在首页需要输入的密码，至少需要6位字符。</small>
+								<small class="form-text">在首页需要输入的密码，至少需要6位字符。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">管理员密码设置</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="ADMIN_PASSWORD">
-								<small class="form-text text-muted">用于登录管理后台(setting.php)的密码。</small>
+								<small class="form-text">用于登录管理后台(setting.php)的密码。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">下载次数限制修改</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="DownloadTimes" value="5">
-								<small class="form-text text-muted">设置每一个IP的下载次数。</small>
+								<small class="form-text">设置每一个IP的下载次数。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">页脚设置</label>
 							<div class="col-sm-10">
 								<textarea class="form-control" name="Footer" rows="3"></textarea>
-								<small class="form-text text-muted">通常用于设置隐藏的统计代码。</small>
+								<small class="form-text">通常用于设置隐藏的统计代码。</small>
 							</div>
 						</div>
 						<hr />
@@ -135,21 +135,21 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">普通账号BDUSS</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="BDUSS" placeholder="例：liMlp3bFN1NWpVM**********PYjItRlJhNFNTSn5rNW5vQ0FrVzRYRTkyWHBiQVFBQUFBJCQAAAAAAAAAAA……">
-								<small class="form-text text-muted">用来获取文件列表及信息，不需要SVIP也可。</small>
+								<small class="form-text">用来获取文件列表及信息，不需要SVIP也可。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">普通账号STOKEN</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613">
-								<small class="form-text text-muted">用来获取文件列表及信息，不需要SVIP也可。</small>
+								<small class="form-text">用来获取文件列表及信息，不需要SVIP也可。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">超级会员账号BDUSS</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="SVIP_BDUSS" placeholder="例：W4tanVHelU2VGpxb**********0ZTZlUm1saEVtYnpTWjByfmxheWwxRFRtNlphQVFBQUFBJCQAAAAAAAAAAA……">
-								<small class="form-text text-muted">用来获取文件告诉下载地址，必须为SVIP账号，否则将获取到限速地址。</small>
+								<small class="form-text">用来获取文件告诉下载地址，必须为SVIP账号，否则将获取到限速地址。</small>
 							</div>
 						</div>
 						<hr />
@@ -169,7 +169,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 										否
 									</label>
 								</div>
-								<small class="form-text text-muted">如需使用记录解析数据、设置黑\白名单、自动切换限速SVIP账号等功能，需开启数据库。</small>
+								<small class="form-text">如需使用记录解析数据、设置黑\白名单、自动切换限速SVIP账号等功能，需开启数据库。</small>
 							</div>
 						</div>
 						<div id="DbConfig">
@@ -177,7 +177,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								<label class="col-sm-2 col-form-label">数据库地址</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_servername" value="localhost">
-									<small class="form-text text-muted">填入MySQL数据库的地址。</small>
+									<small class="form-text">填入MySQL数据库的地址。</small>
 								</div>
 							</div>
 							<div class="form-group row">
@@ -196,14 +196,14 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								<label class="col-sm-2 col-form-label">数据库名</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_dbname">
-									<small class="form-text text-muted">如果此数据库不存在将会在检查连接时自动创建。</small>
+									<small class="form-text">如果此数据库不存在将会在检查连接时自动创建。</small>
 								</div>
 							</div>
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库表名前缀</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_dbtable" value="bdwp">
-									<small class="form-text text-muted">一般情况无需修改</small>
+									<small class="form-text">一般情况无需修改</small>
 								</div>
 							</div>
 							<a href="javascript:CheckMySQLConnect();" class="btn btn-primary">检查数据库连接</a>
@@ -218,9 +218,11 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group form-check">
 							<input type="checkbox" class="form-check-input" id="AgreeCheck2">
 							<label class="form-check-label" for="AgreeCheck2">我已备份好相关数据</label>
-							<small class="form-text text-muted">安装操作将会清空 MySQL数据库 及 本地config.php文件。如果你曾使用过本项目，请备份好数据后再点击提交。</small>
+							<small class="form-text">安装操作将会清空 MySQL数据库 及 本地config.php文件。如果你曾使用过本项目，请备份好数据后再点击提交。</small>
 						</div>
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
+						<small class="form-text">1. 由于新版本更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
+						<small class="form-text">2. 安装完成后请及时删除本安装文件。</small>
 						<br><br>
 
 
