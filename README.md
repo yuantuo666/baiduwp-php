@@ -25,7 +25,6 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
 - https://202.61.130.143/ 1.4.2版本
 - http://59.110.124.211:9090/ 1.0版本
-- http://39.105.69.60:82/ 1.0版本
 - http://yunpan.aoti.xyz:81/ 1.4.2版本
 - https://pan.jwls.live/ 1.4.3版本
 - https://bd.pkqjsq.top/ 1.4.3版本
@@ -34,6 +33,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 <!-- - http://pan.wbeu.cn/ 1.4.5版本 -->
 <!-- - https://pan.lie01.com/ 1.4.3版本 -->
 <!-- - https://www.bdwp.cf/ 1.4.3版本 -->
+<!-- - http://39.105.69.60:82/ 1.0版本 -->
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。<br />
 版权信息可添加**Github项目地址**或**我个人主页地址**，内容可自定，但访客**必须可见**。<br />
