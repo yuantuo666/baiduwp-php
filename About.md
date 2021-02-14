@@ -27,3 +27,6 @@ B站UP主影视后期系统教学(uid250610800)分享了这个网站，分享的
 
 ## baiduwp Spring Boot 版
 作者 muzi9527 以本项目为蓝本，改写了[baiduwp-springboot](https://github.com/muzi9527/baiduwp-springboot)（Spring Boot语言版）。
+
+## GO语言版本
+无意中发现有其他作者制作了GO语言版，分享一下： [baidunetdisk](https://github.com/canoziia/baidunetdisk) 和 [bdy.get](https://github.com/xeors/bdy.get) 
