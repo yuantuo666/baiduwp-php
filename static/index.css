@@ -60,3 +60,11 @@ form input, form button {
 	width: 12px;
 	height: 12px;
 }
+
+.point-success {
+	background-color: #28a745;
+}
+
+.point-danger {
+	background-color: #dc3545;
+}
