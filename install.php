@@ -72,7 +72,11 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			$Password =  Password;
 			$ADMIN_PASSWORD =  ADMIN_PASSWORD;
 			$DownloadTimes =  DownloadTimes;
-			$IsConfirmDownload =  IsConfirmDownload;
+			if (defined('IsConfirmDownload')) {
+				$IsConfirmDownload =  IsConfirmDownload; // 增加对旧版本升级的支持
+			} else {
+				$IsConfirmDownload =  "";
+			}
 			$Footer =  Footer;
 
 			$BDUSS =  BDUSS;
