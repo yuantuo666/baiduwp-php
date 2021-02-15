@@ -41,7 +41,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<meta name="author" content="LC" />
 	<title>PanDownload 复刻版 - 安装程序</title>
 	<link rel="icon" href="favicon.ico" />
-	<!-- <link rel="stylesheet" href="static/index.css" /> -->
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-nightfall.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
@@ -65,6 +64,49 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 		</nav>
 
 		<?php
+		// 如果已经安装过一次，读取相关基本设置
+		if (file_exists('config.php')) {
+			require('config.php');
+			$Sitename =  Sitename;
+			$IsCheckPassword =  IsCheckPassword;
+			$Password =  Password;
+			$ADMIN_PASSWORD =  ADMIN_PASSWORD;
+			$DownloadTimes =  DownloadTimes;
+			$IsConfirmDownload =  IsConfirmDownload;
+			$Footer =  Footer;
+
+			$BDUSS =  BDUSS;
+			$STOKEN =  STOKEN;
+			$SVIP_BDUSS =  SVIP_BDUSS;
+
+			$USING_DB =  USING_DB;
+			$servername =  DbConfig["servername"];
+			$username =  DbConfig["username"];
+			$password =  DbConfig["password"];
+			$dbname =  DbConfig["dbname"];
+			$dbtable =  DbConfig["dbtable"];
+			echo "<script>Swal.fire('提示','检测到你已安装过本程序<br />现已自动填入config.php中设置的数据','info');</script>";
+		} else {
+			$Sitename =  "";
+			$IsCheckPassword =  true;
+			$Password =  "";
+			$ADMIN_PASSWORD =  "";
+			$DownloadTimes =  "5";
+			$IsConfirmDownload =  true;
+			$Footer =  "";
+
+			$BDUSS =  "";
+			$STOKEN =  "";
+			$SVIP_BDUSS =  "";
+
+			$USING_DB =  true;
+			$servername =  "localhost";
+			$username = "";
+			$password =  ""; //注意哦，小写为数据库的密码~
+			$dbname =  "";
+			$dbtable =  "bdwp";
+		}
+
 		if (!isset($_POST["Sitename"])) {
 		?>
 			<!-- 设置页面 -->
@@ -78,7 +120,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">站点名称</label>
 							<div class="col-sm-10">
-								<input class="form-control" value="Pandownload 复刻版" name="Sitename">
+								<input class="form-control" value="Pandownload 复刻版" name="Sitename" value="<?php echo $Sitename; ?>">
 								<small class="form-text">设置你的站点名称，将在首页标题处显示。</small>
 							</div>
 						</div>
@@ -86,13 +128,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">是否开启解析密码</label>
 							<div class="col-sm-10">
 								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="IsCheckPassword" id="IsCheckPassword1" value="true" checked>
+									<input class="form-check-input" type="radio" name="IsCheckPassword" id="IsCheckPassword1" value="true" <?php if ($IsCheckPassword) echo "checked"; ?>>
 									<label class="form-check-label" for="IsCheckPassword1">
 										是
 									</label>
 								</div>
 								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="IsCheckPassword" id="IsCheckPassword2" value="false">
+									<input class="form-check-input" type="radio" name="IsCheckPassword" id="IsCheckPassword2" value="false" <?php if (!$IsCheckPassword) echo "checked"; ?>>
 									<label class="form-check-label" for="IsCheckPassword2">
 										否
 									</label>
@@ -100,24 +142,24 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								<small class="form-text">若开启，则在使用解析前必须输入设置的密码；若关闭（一般用于局域网搭建），则无需输入密码即可解析。</small>
 							</div>
 						</div>
-						<div class="form-group row" id="Password">
+						<div class="form-group row" id="Password" <?php if (!$IsCheckPassword) echo "style=\"display: none;\""; ?>>
 							<label class="col-sm-2 col-form-label">解析密码设置</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="Password">
+								<input class="form-control" name="Password" value="<?php echo $Password; ?>">
 								<small class="form-text">在首页需要输入的密码，至少需要6位字符。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">管理员密码设置</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="ADMIN_PASSWORD">
+								<input class="form-control" name="ADMIN_PASSWORD" value="<?php echo $ADMIN_PASSWORD; ?>">
 								<small class="form-text">用于登录管理后台(setting.php)的密码。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">下载次数限制修改</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="DownloadTimes" value="5">
+								<input class="form-control" name="DownloadTimes" value="<?php echo $DownloadTimes; ?>">
 								<small class="form-text">设置每一个IP的下载次数。</small>
 							</div>
 						</div>
@@ -125,13 +167,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">是否开启下载次数提示</label>
 							<div class="col-sm-10">
 								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload1" value="true" checked>
+									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload1" value="true" <?php if ($IsConfirmDownload) echo "checked"; ?>>
 									<label class="form-check-label" for="IsConfirmDownload1">
 										是
 									</label>
 								</div>
 								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload2" value="false">
+									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload2" value="false" <?php if (!$IsConfirmDownload) echo "checked"; ?>>
 									<label class="form-check-label" for="IsConfirmDownload2">
 										否
 									</label>
@@ -141,7 +183,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">页脚设置</label>
 							<div class="col-sm-10">
-								<textarea class="form-control" name="Footer" rows="3"></textarea>
+								<textarea class="form-control" name="Footer" rows="3"><?php echo $Footer; ?></textarea>
 								<small class="form-text">通常用于设置隐藏的统计代码。</small>
 							</div>
 						</div>
@@ -151,21 +193,21 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">普通账号BDUSS</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="BDUSS" placeholder="例：liMlp3bFN1NWpVM**********PYjItRlJhNFNTSn5rNW5vQ0FrVzRYRTkyWHBiQVFBQUFBJCQAAAAAAAAAAA……">
+								<input class="form-control" name="BDUSS" placeholder="例：liMlp3bFN1NWpVM**********PYjItRlJhNFNTSn5rNW5vQ0FrVzRYRTkyWHBiQVFBQUFBJCQAAAAAAAAAAA……" value="<?php echo $BDUSS; ?>">
 								<small class="form-text">用来获取文件列表及信息，不需要SVIP也可。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">普通账号STOKEN</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613">
+								<input class="form-control" name="STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613" value="<?php echo $STOKEN; ?>">
 								<small class="form-text">用来获取文件列表及信息，不需要SVIP也可。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">超级会员账号BDUSS</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="SVIP_BDUSS" placeholder="例：W4tanVHelU2VGpxb**********0ZTZlUm1saEVtYnpTWjByfmxheWwxRFRtNlphQVFBQUFBJCQAAAAAAAAAAA……">
+								<input class="form-control" name="SVIP_BDUSS" placeholder="例：W4tanVHelU2VGpxb**********0ZTZlUm1saEVtYnpTWjByfmxheWwxRFRtNlphQVFBQUFBJCQAAAAAAAAAAA……" value="<?php echo $SVIP_BDUSS; ?>">
 								<small class="form-text">用来获取文件告诉下载地址，必须为SVIP账号，否则将获取到限速地址。</small>
 							</div>
 						</div>
@@ -175,13 +217,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">是否启用数据库</label>
 							<div class="col-sm-10">
 								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="USING_DB" id="USING_DB1" value="true" checked>
+									<input class="form-check-input" type="radio" name="USING_DB" id="USING_DB1" value="true" <?php if ($USING_DB) echo "checked"; ?>>
 									<label class="form-check-label" for="USING_DB1">
 										是
 									</label>
 								</div>
 								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="USING_DB" id="USING_DB2" value="false">
+									<input class="form-check-input" type="radio" name="USING_DB" id="USING_DB2" value="false" <?php if (!$USING_DB) echo "checked"; ?>>
 									<label class="form-check-label" for="USING_DB2">
 										否
 									</label>
@@ -189,39 +231,45 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								<small class="form-text">如需使用记录解析数据、设置黑\白名单、自动切换限速SVIP账号等功能，需开启数据库。</small>
 							</div>
 						</div>
-						<div id="DbConfig">
+						<div id="DbConfig" <?php if (!$USING_DB) echo "style=\"display: none;\""; ?>>
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库地址</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_servername" value="localhost">
+									<input class="form-control" name="DbConfig_servername" value="<?php echo $servername; ?>">
 									<small class="form-text">填入MySQL数据库的地址。</small>
 								</div>
 							</div>
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库用户名</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_username">
+									<input class="form-control" name="DbConfig_username" value="<?php echo $username; ?>">
 								</div>
 							</div>
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库密码</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_password">
+									<input class="form-control" name="DbConfig_password" value="<?php echo $password; ?>">
 								</div>
 							</div>
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库名</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_dbname">
+									<input class="form-control" name="DbConfig_dbname" value="<?php echo $dbname; ?>">
 									<small class="form-text">如果此数据库不存在将会在检查连接时自动创建。</small>
 								</div>
 							</div>
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库表名前缀</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_dbtable" value="bdwp">
+									<input class="form-control" name="DbConfig_dbtable" value="<?php echo $dbtable; ?>">
 									<small class="form-text">一般情况无需修改</small>
 								</div>
+							</div>
+							<!-- 提供不清空数据选项 -->
+							<div class="form-group form-check">
+								<input type="checkbox" class="form-check-input" id="ReserveDBData" name="ReserveDBData" value="true">
+								<label class="form-check-label" for="ReserveDBData">保留以前的数据库数据</label>
+								<small class="form-text">如果勾选此选项，将不会执行导入数据库操作，但请保证安装的新版本数据结构与旧版本一致，否则可能出现不可预料的错误。</small>
 							</div>
 							<a href="javascript:CheckMySQLConnect();" class="btn btn-primary">检查数据库连接</a>
 						</div>
@@ -232,18 +280,43 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								<p class="text-danger">我同意在首页及其他页面<strong>保留作者版权信息</strong></p>
 							</label>
 						</div>
-						<div class="form-group form-check">
-							<input type="checkbox" class="form-check-input" id="AgreeCheck2">
-							<label class="form-check-label" for="AgreeCheck2">我已备份好相关数据</label>
-							<small class="form-text">安装操作将会清空 MySQL数据库 及 本地config.php文件。如果你曾使用过本项目，请备份好数据后再点击提交。</small>
-						</div>
+						<!-- 已经读取了配置，没必要确认 -->
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
-						<small class="form-text">1. 由于新版本更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
+						<small class="form-text">TIPS：1. 由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
 						<small class="form-text">2. 安装完成后请及时删除本安装文件。</small>
 						<br><br>
 
 
 						<script>
+							async function postAPI(method, body) { // 获取 API 数据
+								try {
+									const response = await fetch(`api.php?m=${method}`, { // fetch API
+										credentials: 'same-origin', // 发送验证信息 (cookies)
+										method: 'POST',
+										headers: {
+											"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+										},
+										body: body,
+									});
+									if (response.ok) { // 判断是否出现 HTTP 异常
+										return {
+											success: true,
+											data: await response.json() // 如果正常，则获取 JSON 数据
+										}
+									} else { // 若不正常，返回异常信息
+										return {
+											success: false,
+											msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+										};
+									}
+								} catch (reason) { // 若与服务器连接异常
+									return {
+										success: false,
+										msg: '连接服务器过程中出现异常，消息：' + reason.message
+									};
+								}
+							}
+
 							$("input[name='IsCheckPassword']").on('click', function() {
 								item = $(this).val(); // 这里获取的是你点击的那个radio的值，而不是设置的值。（虽然效果是一样的
 								if (item == "false") {
@@ -280,45 +353,36 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									});
 								}
 							});
+							$("#ReserveDBData").on('click', function() {
+								item = $(this).prop("checked");
+								if (item == true) {
+									// 提示
+									Swal.fire({
+										title: "保留数据库数据",
+										html: "如果勾选此选项，将不会执行导入数据库操作，但请保证安装的新版本数据结构与旧版本一致，否则可能出现不可预料的错误。",
+										icon: "warning",
+										showCancelButton: true,
+										confirmButtonText: "确认数据库一致"
+									}).then(function(e) {
+										if (e.isConfirmed) {
+											$("#ReserveDBData").prop("checked", true);
+										} else {
+											$("#ReserveDBData").prop("checked", false);
+										}
+									});
+								}
+							});
 
 							var SQLConnect = false;
 
 							function CheckMySQLConnect() {
+								Swal.fire("正在连接数据库，请稍等");
+								Swal.showLoading()
 								servername = $("input[name='DbConfig_servername']").val();
 								username = $("input[name='DbConfig_username']").val();
 								password = $("input[name='DbConfig_password']").val();
 								dbname = $("input[name='DbConfig_dbname']").val();
 								dbtable = $("input[name='DbConfig_dbtable']").val();
-
-								async function postAPI(method, body) { // 获取 API 数据
-									try {
-										const response = await fetch(`api.php?m=${method}`, { // fetch API
-											credentials: 'same-origin', // 发送验证信息 (cookies)
-											method: 'POST',
-											headers: {
-												"Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-											},
-											body: body,
-										});
-										if (response.ok) { // 判断是否出现 HTTP 异常
-											return {
-												success: true,
-												data: await response.json() // 如果正常，则获取 JSON 数据
-											}
-										} else { // 若不正常，返回异常信息
-											return {
-												success: false,
-												msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
-											};
-										}
-									} catch (reason) { // 若与服务器连接异常
-										return {
-											success: false,
-											msg: '连接服务器过程中出现异常，消息：' + reason.message
-										};
-									}
-								}
-
 
 								body = `servername=${servername}&username=${username}&password=${password}&dbname=${dbname}&dbtable=${dbtable}`;
 
@@ -329,7 +393,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 											// 连接成功
 											Swal.fire({
 												title: "数据库连接成功",
-												html: "请完成其他信息填写并提交。<br />详细信息：" + data.msg
+												html: "请完成其他信息填写并提交。<br />详细信息：" + data.msg,
+												icon: "success"
 											});
 											$("input[name='DbConfig_servername']").attr("readonly", true); // 禁用修改，防止提交后出错
 											$("input[name='DbConfig_username']").attr("readonly", true);
@@ -341,7 +406,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 											// 连接失败
 											Swal.fire({
 												title: "数据库连接错误",
-												html: "请检查你的数据库设置，并重新提交。<br />详细信息：" + data.msg
+												html: "请检查你的数据库设置，并重新提交。<br />详细信息：" + data.msg,
+												icon: "error"
 											});
 										}
 									}
@@ -350,6 +416,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							function CheckForm() {
+								Swal.fire("正在安装，请稍等");
+								Swal.showLoading()
 								USING_DB = $("input[name='USING_DB']:checked").val();
 								ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
 
@@ -357,7 +425,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									// 密码过短
 									Swal.fire({
 										title: "密码过短",
-										html: "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。"
+										html: "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。",
+										icon: "warning"
 									})
 									return 0;
 								}
@@ -366,28 +435,21 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 										// 暂未连接数据库
 										Swal.fire({
 											title: "暂未连接数据库",
-											html: "请先点击检查数据库连接按钮，再提交数据。"
+											html: "请先点击检查数据库连接按钮，再提交数据。",
+											icon: "warning"
 										})
 										return 0;
 									}
 								}
 								AgreeCheck = $("#AgreeCheck").prop("checked");
-								AgreeCheck2 = $("#AgreeCheck2").prop("checked");
 								if (AgreeCheck == false) {
 									Swal.fire({
 										title: "请同意保留版权信息",
-										html: "请同意保留版权信息，再点击提交。"
+										html: "请同意保留版权信息，再点击提交。",
+										icon: "warning"
 									})
 									return 0;
 								}
-								if (AgreeCheck2 == false) {
-									Swal.fire({
-										title: "请确认备份数据",
-										html: "请确认备份数据，再点击提交。"
-									})
-									return 0;
-								}
-
 								$("#SettingForm").submit(); // 提交表格
 							}
 						</script>
@@ -408,49 +470,54 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 				// 处理post数据
 				$Sitename = (!empty($_POST["Sitename"])) ? $_POST["Sitename"] : "";
-				$IsCheckPassword = (!empty($_POST["IsCheckPassword"])) ? $_POST["IsCheckPassword"] : "";
+				$IsCheckPassword = (!empty($_POST["IsCheckPassword"])) ? $_POST["IsCheckPassword"] : "true";
 				$Password = (!empty($_POST["Password"])) ? $_POST["Password"] : "";
 				$ADMIN_PASSWORD = (!empty($_POST["ADMIN_PASSWORD"])) ? $_POST["ADMIN_PASSWORD"] : "";
 				$DownloadTimes = (!empty($_POST["DownloadTimes"])) ? $_POST["DownloadTimes"] : "";
-				$IsConfirmDownload = (!empty($_POST["IsConfirmDownload"])) ? $_POST["IsConfirmDownload"] : "";
+				$IsConfirmDownload = (!empty($_POST["IsConfirmDownload"])) ? $_POST["IsConfirmDownload"] : "true";
 				$Footer = (!empty($_POST["Footer"])) ? $_POST["Footer"] : "";
 
 				$BDUSS = (!empty($_POST["BDUSS"])) ? $_POST["BDUSS"] : "";
 				$STOKEN = (!empty($_POST["STOKEN"])) ? $_POST["STOKEN"] : "";
 				$SVIP_BDUSS = (!empty($_POST["SVIP_BDUSS"])) ? $_POST["SVIP_BDUSS"] : "";
 
-				$USING_DB = (!empty($_POST["USING_DB"])) ? $_POST["USING_DB"] : "";
+				$USING_DB = (!empty($_POST["USING_DB"])) ? $_POST["USING_DB"] : "false";
 				$servername = (!empty($_POST["DbConfig_servername"])) ? $_POST["DbConfig_servername"] : "";
 				$username = (!empty($_POST["DbConfig_username"])) ? $_POST["DbConfig_username"] : "";
 				$password = (!empty($_POST["DbConfig_password"])) ? $_POST["DbConfig_password"] : "";
 				$dbname = (!empty($_POST["DbConfig_dbname"])) ? $_POST["DbConfig_dbname"] : "";
 				$dbtable = (!empty($_POST["DbConfig_dbtable"])) ? $_POST["DbConfig_dbtable"] : "";
+				$ReserveDBData = (!empty($_POST["ReserveDBData"])) ? $_POST["ReserveDBData"] : "false"; // 是否保存以前数据库数据 未选中不会提交
 
-				if ($USING_DB == "true") {
+				if ($USING_DB == "true") { //注意判断要用string类型进行
 					// 连接数据库
 					$conn = mysqli_connect($servername, $username, $password, $dbname);
 					// Check connection
 					if (!$conn) {
 						die("数据库连接错误，详细信息：" . mysqli_connect_error());
 					}
-					// 打开sql文件
-					$SQLfile = file_get_contents("./install/bdwp.sql");
-					if ($SQLfile == false) die("无法打开bdwp.sql文件");
-
-					$SQLfile = str_replace('<dbtable>', $dbtable, $SQLfile);
-
-					$sccess_result = 0;
-					if (mysqli_multi_query($conn, $SQLfile)) {
-						do {
-							$sccess_result = $sccess_result + 1;
-						} while (mysqli_more_results($conn) && mysqli_next_result($conn));
-					}
-
-					$affect_row = mysqli_affected_rows($conn);
-					if ($affect_row == -1) {
-						die("数据库导入出错，错误在" . $sccess_result . "行");
+					if ($ReserveDBData == "true") {
+						echo "保存以前数据库数据<br />";
 					} else {
-						echo "数据库导入成功，成功导入" . $sccess_result . "条数据<br />";
+						// 打开sql文件
+						$SQLfile = file_get_contents("./install/bdwp.sql");
+						if ($SQLfile == false) die("无法打开bdwp.sql文件");
+
+						$SQLfile = str_replace('<dbtable>', $dbtable, $SQLfile);
+
+						$sccess_result = 0;
+						if (mysqli_multi_query($conn, $SQLfile)) {
+							do {
+								$sccess_result = $sccess_result + 1;
+							} while (mysqli_more_results($conn) && mysqli_next_result($conn));
+						}
+
+						$affect_row = mysqli_affected_rows($conn);
+						if ($affect_row == -1) {
+							die("数据库导入出错，错误在" . $sccess_result . "行");
+						} else {
+							echo "数据库导入成功，成功导入" . $sccess_result . "条数据<br />";
+						}
 					}
 				} else {
 					echo "不启用数据库<br />";
@@ -488,8 +555,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				} else {
 					die("写入 config.php 文件失败，请检查 config.php 文件状态及当前用户权限。");
 				}
-				header('Refresh: 3;url=./');
-				echo "恭喜你！你的安装成功了~<br />浏览器将会在3s内自动跳转，若没有跳转可<a href='./'>点此链接</a>前往主页查看。";
+				header('Refresh: 5;url=./');
+				echo "恭喜你！你的安装成功了~<br />浏览器将会在5s内自动跳转，若没有跳转可<a href='./'>点此链接</a>前往主页查看。";
 			}
 				?>
 				</div>
