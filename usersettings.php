@@ -10,12 +10,22 @@
  * @link https://space.bilibili.com/88197958
  *
  */
+$programVersion_UserSettings = '2.1.0';
 if (!defined('init')) { // 直接访问处理程序
 	header('Content-Type: text/plain; charset=utf-8');
 	if (!file_exists('config.php')) {
 		http_response_code(503);
-		header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
-		die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
+		header('Content-Type: text/plain; charset=utf-8');
+		header('Refresh: 5;url=install.php');
+		die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
+	} else {
+		require('config.php');
+		if ($programVersion_UserSettings !== programVersion) {
+			http_response_code(503);
+			header('Content-Type: text/plain; charset=utf-8');
+			header('Refresh: 5;url=install.php');
+			die("HTTP 503 服务不可用！\r\n配置文件版本异常！\r\n将在五秒内跳转到安装程序！\r\n若重新安装无法解决问题，请重新 Clone 项目并配置！");
+		}
 	}
 	http_response_code(403);
 	header('Refresh: 3;url=./');

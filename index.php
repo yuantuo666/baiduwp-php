@@ -9,13 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.0.0
+ * @version 2.1.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
+$programVersion_Index = "2.1.0";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -28,7 +29,15 @@ if (!file_exists('config.php')) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=install.php');
-	die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序");
+	die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
+} else {
+	require('config.php');
+	if ($programVersion_Index !== programVersion) {
+		http_response_code(503);
+		header('Content-Type: text/plain; charset=utf-8');
+		header('Refresh: 5;url=install.php');
+		die("HTTP 503 服务不可用！\r\n配置文件版本异常！\r\n将在五秒内跳转到安装程序！\r\n若重新安装无法解决问题，请重新 Clone 项目并配置！");
+	}
 }
 if (!(file_exists('functions.php') && file_exists('language.php'))) {
 	http_response_code(503);
@@ -39,7 +48,7 @@ if (!(file_exists('functions.php') && file_exists('language.php'))) {
 // 保存启动时间
 $system_start_time = microtime(true);
 // 导入配置和函数
-require('config.php');
+
 require('language.php');
 require('functions.php');
 // 通用响应头

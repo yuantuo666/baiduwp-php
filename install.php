@@ -7,7 +7,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.0.0
+ * @version 2.1.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -64,54 +64,40 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 		</nav>
 
 		<?php
-		// 如果已经安装过一次，读取相关基本设置
-		if (file_exists('config.php')) {
-			require('config.php');
-			$Sitename =  Sitename;
-			$IsCheckPassword =  IsCheckPassword;
-			$Password =  Password;
-			$ADMIN_PASSWORD =  ADMIN_PASSWORD;
-			$DownloadTimes =  DownloadTimes;
-			if (defined('IsConfirmDownload')) {
-				$IsConfirmDownload =  IsConfirmDownload; // 增加对旧版本升级的支持
-			} else {
-				$IsConfirmDownload =  "";
-			}
-			$Footer =  Footer;
-
-			$BDUSS =  BDUSS;
-			$STOKEN =  STOKEN;
-			$SVIP_BDUSS =  SVIP_BDUSS;
-
-			$USING_DB =  USING_DB;
-			$servername =  DbConfig["servername"];
-			$username =  DbConfig["username"];
-			$password =  DbConfig["password"];
-			$dbname =  DbConfig["dbname"];
-			$dbtable =  DbConfig["dbtable"];
-			echo "<script>Swal.fire('提示','检测到你已安装过本程序<br />现已自动填入config.php中设置的数据','info');</script>";
-		} else {
-			$Sitename =  "";
-			$IsCheckPassword =  true;
-			$Password =  "";
-			$ADMIN_PASSWORD =  "";
-			$DownloadTimes =  "5";
-			$IsConfirmDownload =  true;
-			$Footer =  "";
-
-			$BDUSS =  "";
-			$STOKEN =  "";
-			$SVIP_BDUSS =  "";
-
-			$USING_DB =  true;
-			$servername =  "localhost";
-			$username = "";
-			$password =  ""; //注意哦，小写为数据库的密码~
-			$dbname =  "";
-			$dbtable =  "bdwp";
-		}
-
 		if (!isset($_POST["Sitename"])) {
+			// 如果已经安装过一次，读取相关基本设置
+			if (file_exists('config.php')) {
+				require('config.php');
+				echo "<script>Swal.fire('提示','检测到你已安装过本程序<br />现已自动填入config.php中设置的数据','info');</script>";
+			}
+			function getConfig(&$var, string $name, $default = '')
+			{
+				$var = defined($name) ? constant($name) : $default;
+			}
+			getConfig($Sitename, 'Sitename');
+			getConfig($IsCheckPassword, 'IsCheckPassword', true);
+			getConfig($Password, 'Password');
+			getConfig($ADMIN_PASSWORD, 'ADMIN_PASSWORD');
+			getConfig($DownloadTimes, 'DownloadTimes', '5');
+			getConfig($IsConfirmDownload, 'IsConfirmDownload', true);
+			getConfig($Footer, 'Footer');
+
+			getConfig($BDUSS, 'BDUSS');
+			getConfig($STOKEN, 'STOKEN');
+			getConfig($SVIP_BDUSS, 'SVIP_BDUSS');
+
+			getConfig($USING_DB, 'USING_DB', true);
+			if (defined('DbConfig')) {
+				function getDbConfig(&$var, string $key)
+				{
+					$var = isset(DbConfig[$key]) ? DbConfig[$key] : '';
+				}
+				getDbConfig($servername, 'servername');
+				getDbConfig($username, 'username');
+				getDbConfig($DBPassword, 'DBPassword');
+				getDbConfig($dbname, 'dbname');
+				getDbConfig($dbtable, 'dbtable');
+			}
 		?>
 			<!-- 设置页面 -->
 			<div class="card">
@@ -252,7 +238,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库密码</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_password" value="<?php echo $password; ?>">
+									<input class="form-control" name="DbConfig_DBPassword" value="<?php echo $DBPassword; ?>">
 								</div>
 							</div>
 							<div class="form-group row">
@@ -287,7 +273,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<!-- 已经读取了配置，没必要确认 -->
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
 						<small class="form-text">TIPS：1. 由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
-						<small class="form-text">2. 安装完成后请及时删除本安装文件。</small>
+						<small class="form-text text-danger">2. 安装完成后请及时删除本安装文件。</small>
 						<br><br>
 
 
@@ -384,35 +370,27 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								Swal.showLoading()
 								servername = $("input[name='DbConfig_servername']").val();
 								username = $("input[name='DbConfig_username']").val();
-								password = $("input[name='DbConfig_password']").val();
+								DBPassword = $("input[name='DbConfig_DBPassword']").val();
 								dbname = $("input[name='DbConfig_dbname']").val();
 								dbtable = $("input[name='DbConfig_dbtable']").val();
 
-								body = `servername=${servername}&username=${username}&password=${password}&dbname=${dbname}&dbtable=${dbtable}`;
+								body = `servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
 
 								postAPI('CheckMySQLConnect', body).then(function(response) {
 									if (response.success) {
 										const data = response.data;
 										if (data.error == 0) {
 											// 连接成功
-											Swal.fire({
-												title: "数据库连接成功",
-												html: "请完成其他信息填写并提交。<br />详细信息：" + data.msg,
-												icon: "success"
-											});
+											Swal.fire("数据库连接成功", "请完成其他信息填写并提交。<br />详细信息：" + data.msg, "success");
 											$("input[name='DbConfig_servername']").attr("readonly", true); // 禁用修改，防止提交后出错
 											$("input[name='DbConfig_username']").attr("readonly", true);
-											$("input[name='DbConfig_password']").attr("readonly", true);
+											$("input[name='DbConfig_DBPassword']").attr("readonly", true);
 											$("input[name='DbConfig_dbname']").attr("readonly", true);
 											SQLConnect = true;
 										} else {
 											;
 											// 连接失败
-											Swal.fire({
-												title: "数据库连接错误",
-												html: "请检查你的数据库设置，并重新提交。<br />详细信息：" + data.msg,
-												icon: "error"
-											});
+											Swal.fire("数据库连接错误", "请检查你的数据库设置，并重新提交。<br />详细信息：" + data.msg, "error");
 										}
 									}
 								});
@@ -420,38 +398,26 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							function CheckForm() {
-								Swal.fire("正在安装，请稍等");
-								Swal.showLoading()
+								Swal.fire("正在安装，请稍等……");
+								Swal.showLoading();
 								USING_DB = $("input[name='USING_DB']:checked").val();
 								ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
 
 								if (ADMIN_PASSWORDLength < 6) {
 									// 密码过短
-									Swal.fire({
-										title: "密码过短",
-										html: "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。",
-										icon: "warning"
-									})
+									Swal.fire("密码过短", "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。", "warning");
 									return 0;
 								}
 								if (USING_DB == "true") {
 									if (!SQLConnect) {
 										// 暂未连接数据库
-										Swal.fire({
-											title: "暂未连接数据库",
-											html: "请先点击检查数据库连接按钮，再提交数据。",
-											icon: "warning"
-										})
+										Swal.fire("暂未连接数据库", "请先点击检查数据库连接按钮，再提交数据。", "warning");
 										return 0;
 									}
 								}
 								AgreeCheck = $("#AgreeCheck").prop("checked");
 								if (AgreeCheck == false) {
-									Swal.fire({
-										title: "请同意保留版权信息",
-										html: "请同意保留版权信息，再点击提交。",
-										icon: "warning"
-									})
+									Swal.fire("请同意保留版权信息", "请同意保留版权信息，再点击提交。", "warning");
 									return 0;
 								}
 								$("#SettingForm").submit(); // 提交表格
@@ -488,14 +454,14 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$USING_DB = (!empty($_POST["USING_DB"])) ? $_POST["USING_DB"] : "false";
 				$servername = (!empty($_POST["DbConfig_servername"])) ? $_POST["DbConfig_servername"] : "";
 				$username = (!empty($_POST["DbConfig_username"])) ? $_POST["DbConfig_username"] : "";
-				$password = (!empty($_POST["DbConfig_password"])) ? $_POST["DbConfig_password"] : "";
+				$DBPassword = (!empty($_POST["DbConfig_DBPassword"])) ? $_POST["DbConfig_DBPassword"] : "";
 				$dbname = (!empty($_POST["DbConfig_dbname"])) ? $_POST["DbConfig_dbname"] : "";
 				$dbtable = (!empty($_POST["DbConfig_dbtable"])) ? $_POST["DbConfig_dbtable"] : "";
 				$ReserveDBData = (!empty($_POST["ReserveDBData"])) ? $_POST["ReserveDBData"] : "false"; // 是否保存以前数据库数据 未选中不会提交
 
 				if ($USING_DB == "true") { //注意判断要用string类型进行
 					// 连接数据库
-					$conn = mysqli_connect($servername, $username, $password, $dbname);
+					$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
 					// Check connection
 					if (!$conn) {
 						die("数据库连接错误，详细信息：" . mysqli_connect_error());
@@ -548,7 +514,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<USING_DB>', $USING_DB, $update_config);
 				$update_config = str_replace('<servername>', $servername, $update_config);
 				$update_config = str_replace('<username>', $username, $update_config);
-				$update_config = str_replace('<password>', $password, $update_config);
+				$update_config = str_replace('<DBPassword>', $DBPassword, $update_config);
 				$update_config = str_replace('<dbname>', $dbname, $update_config);
 				$update_config = str_replace('<dbtable>', $dbtable, $update_config);
 
@@ -560,7 +526,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 					die("写入 config.php 文件失败，请检查 config.php 文件状态及当前用户权限。");
 				}
 				header('Refresh: 5;url=./');
-				echo "恭喜你！你的安装成功了~<br />浏览器将会在5s内自动跳转，若没有跳转可<a href='./'>点此链接</a>前往主页查看。";
+				echo "恭喜你！安装成功了~<br />浏览器将会在5s内自动跳转，若没有跳转可<a href='./'>点此链接</a>前往主页查看。";
 			}
 				?>
 				</div>
