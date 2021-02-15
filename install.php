@@ -367,7 +367,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 							function CheckMySQLConnect() {
 								Swal.fire("正在连接数据库，请稍等");
-								Swal.showLoading()
+								Swal.showLoading();
 								servername = $("input[name='DbConfig_servername']").val();
 								username = $("input[name='DbConfig_username']").val();
 								DBPassword = $("input[name='DbConfig_DBPassword']").val();
@@ -388,7 +388,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 											$("input[name='DbConfig_dbname']").attr("readonly", true);
 											SQLConnect = true;
 										} else {
-											;
 											// 连接失败
 											Swal.fire("数据库连接错误", "请检查你的数据库设置，并重新提交。<br />详细信息：" + data.msg, "error");
 										}
