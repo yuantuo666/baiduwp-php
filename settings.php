@@ -88,6 +88,42 @@ if ($method == "API" and $is_login) {
 			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
 			echo GetIPTablePage($page);
 			break;
+		case "DeleteById":
+			//通过指定表格与ip删除对应行
+			$Type = (!empty($_GET["type"])) ? $_GET["type"] : "";
+			$Id = (!empty($_GET["id"])) ? $_GET["id"] : "";
+			if ($Type != "" and $Id != "") {
+				// 开始执行
+				// 生成SQL
+				switch ($Type) {
+					case 'AnalyseTable':
+						// 使用统计 分析表格 $dbtable
+						$Sql = "DELETE FROM `$dbtable` WHERE `id` = $Id";
+						break;
+					case 'SvipTable':
+						// 会员账号表格
+						$Sql = "DELETE FROM `" . $dbtable . "_svip` WHERE `id` = $Id";
+						break;
+					case 'IPTable':
+						// ip黑白名单
+						$Sql = "DELETE FROM `" . $dbtable . "_ip` WHERE `id` = $Id";
+						break;
+					default:
+						// 无匹配
+						EchoInfo(-1, array("msg" => "传入Type(删除种类)错误"));
+						exit;
+						break;
+				}
+				// 开始执行sql
+				$Result = mysqli_query($conn, $Sql);
+				if ($Result != false) {
+					EchoInfo(0, array("msg" => "成功删除id为 $Id 的数据。3s后将刷新该页面。", "refresh" => true)); //成功删除
+				} else {
+					$Error = addslashes(mysqli_error($conn));
+					EchoInfo(-1, array("msg" => "删除失败，返回信息:$Error"));
+				}
+			} else EchoInfo(-1, array("msg" => "未传入Type(删除种类)或Id(删除指定的id)"));
+			break;
 		default:
 			echo "<h1>没有参数传入</h1>";
 			break;
@@ -116,7 +152,9 @@ function GetAnalyseTablePage(string $page)
 		// 存在数据
 		$EachRow = "<tr>
 		<th>" . $Result["id"] . "</th>
-		<td>暂未开发</td>
+		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
+			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('AnalyseTable'," . $Result["id"] . ");\">删除</a>
+		</div></td>
 		<td>" . $Result["userip"] . "</td>
 		<td style=\"width:80px;\">" . $Result["filename"] . "</td>
 		<td>" . formatSize((int)$Result["size"]) . "</td>
@@ -144,7 +182,10 @@ function GetSvipTablePage(string $page)
 		$state = ($Result["state"] == -1) ? "限速" : "正常";
 		$EachRow = "<tr>
 		<th>" . $Result["id"] . "</th>
-		<td><a href=\"javascript:SettingFirstAccount(" . $Result["id"] . ");\"  class=\"btn btn-outline-primary btn-sm\">设为当前解析账号</a></td>
+		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
+			<a class=\"btn btn-secondary\" href=\"javascript:SettingFirstAccount(" . $Result["id"] . ");\">设为当前解析账号</a>
+			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('SvipTable'," . $Result["id"] . ");\">删除</a>
+		</div></td>
 		<td>" .  $is_using . "</td>
 		<td>" . $Result["name"] . "</td>
 		<td>" . $state . "</td>
@@ -171,6 +212,9 @@ function GetIPTablePage(string $page)
 		$type = ($Result["type"] == -1) ? "黑名单" : "白名单";
 		$EachRow = "<tr>
 		<th>" . $Result["id"] . "</th>
+		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
+			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable'," . $Result["id"] . ");\">删除</a>
+		</div></td>
 		<td>" . $Result["ip"] . "</td>
 		<td>" . $type . "</td>
 		<td>" . $Result["remark"] . "</td>
@@ -204,6 +248,18 @@ function GetIPTablePage(string $page)
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="static/color.js"></script>
+	<script>
+		function DeleteById(Type, Id) {
+			$.get("settings.php?m=API&act=DeleteById&id=" + String(Id) + "&type=" + Type, function(data, status) {
+				if (status == "success") {
+					var json = JSON.parse(data);
+					Swal.fire(json.msg);
+					if (json.refresh == true) setTimeout("location.reload();", 3000);
+				}
+			});
+
+		}
+	</script>
 </head>
 
 <body>
@@ -502,6 +558,7 @@ function GetIPTablePage(string $page)
 										<thead>
 											<tr>
 												<th scope="col">#</th>
+												<th scope="col">操作</th>
 												<th scope="col">IP</th>
 												<th scope="col">账号状态</th>
 												<th scope="col">备注</th>
