@@ -87,26 +87,35 @@ if (DEBUG) {
 	<script src="static/color.js"></script>
 	<script src="static/functions.js"></script>
 	<script defer src="static/ready.js"></script>
-	<script>
-		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
-			<?php
-			if (IsConfirmDownload)
-				echo 'Swal.fire({
-					title: "' . Language["ConfirmTitle"] . '",
-					html: "' . Language["ConfirmText"] . '",
-					icon: "warning",
-					showCancelButton: true,
-					confirmButtonText: "' . Language["ConfirmmButtonText"] . '",
-					reverseButtons: true
-				}).then(function(e) {
-					if (e.isConfirmed) {
-						dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
-					}
-				});';
-			else echo 'dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);';
-			?>
+	<?php
+	if (isset($_POST["surl"])) {
+		echo '<script>';
+		if (IsConfirmDownload) {
+			$Language = Language;
+			$JSCode['echo'](
+				<<<Function
+function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
+	Swal.fire({
+		title: "{$Language["ConfirmTitle"]}",
+		html: "{$Language["ConfirmText"]}",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: "{$Language["ConfirmmButtonText"]}",
+		reverseButtons: true
+	}).then(function(e) {
+		if (e.isConfirmed) {
+			dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
 		}
-	</script>
+	});
+}
+Function
+			);
+		} else {
+			echo 'let confirmdl = dl;';
+		}
+		echo '</script>';
+	}
+	?>
 </head>
 
 <body>
@@ -138,7 +147,7 @@ if (DEBUG) {
 		} elseif (isset($_GET["usersettings"])) { // 用户设置页面
 			require("usersettings.php");
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
-			echo '<script>setTimeout(() => Swal.fire(\'' . Language["TipTitle"] . '\',\'' . Language["TimeoutTip"] . '\',\'info\'), 300000);</script>';
+			echo '<script>setTimeout(() => Swal.fire("' . Language["TipTitle"] . '","' . Language["TimeoutTip"] . '","info"), 300000);</script>';
 			CheckPassword();
 			$surl = $_POST["surl"]; // 含有1
 			$pwd = (!empty($_POST["pwd"])) ? $_POST["pwd"] : "";

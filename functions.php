@@ -137,8 +137,10 @@ function CheckPassword(bool $IsReturnBool = false)
 			return $return;
 		}
 		if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
+			global $system_start_time;
 			dl_error("密码错误", "请检查你输入的密码！");
-			exit; // 结束进程
+			echo Footer;
+			die('</div><script>console.log("后端计算时间：' . (microtime(true) - $system_start_time) . 's");</script></body></html>');
 		}
 	} else { // 若不校验密码则永远 true
 		return true;
@@ -313,3 +315,22 @@ function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password)
 	}
 	return $result;
 }
+$getConstant = function (string $name) {
+	return constant($name);
+};
+$JSCode = array("get" => function (string $value) {
+	$value = preg_replace('# *//.*#', '', $value);
+	$value = preg_replace('#/\*.*?\*/#s', '', $value);
+	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
+	$value = preg_replace('#([,;{])[ \t]*?\r?\n[ \t]*([^ \t])#', '$1 $2', $value);
+	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
+	$value = preg_replace('#([^ \t])[ \t]*?\r?\n[ \t]*?\}#', '$1 }', $value);
+	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
+	$value = preg_replace('#([,;{])\t+#', '$1 ', $value);
+	$value = preg_replace('#\t+\}#', ' }', $value);
+	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
+	return $value;
+}, "echo" => function (string $value) {
+	global $JSCode;
+	echo $JSCode['get']($value);
+});
