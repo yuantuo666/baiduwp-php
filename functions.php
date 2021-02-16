@@ -138,6 +138,7 @@ function CheckPassword(bool $IsReturnBool = false)
 		}
 		if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
 			dl_error("密码错误", "请检查你输入的密码！");
+			exit; // 结束进程
 		}
 	} else { // 若不校验密码则永远 true
 		return true;
@@ -246,7 +247,7 @@ function dl_error(string $title, string $content, bool $jumptip = false)
 	}
 	echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 	<h5 class="alert-heading">' . $title . '</h5><hr /><p class="card-text">' . $content;
-	die('</p></div></div></div>');
+	echo '</p></div></div></div>'; // 仅仅弹出提示框，并不结束进程
 }
 function get_BDCLND($surl, $Pwd)
 {

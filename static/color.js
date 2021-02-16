@@ -29,5 +29,5 @@ function LightMod() {
 }
 function DarkMod() {
 	document.querySelector('#ColorMode-Dark').disabled = false;
-	document.querySelector('#Swal2-Light').disabled = false;
+	document.querySelector('#Swal2-Dark').disabled = false;
 }
