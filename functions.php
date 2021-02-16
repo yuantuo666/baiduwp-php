@@ -318,6 +318,10 @@ function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password)
 $getConstant = function (string $name) {
 	return constant($name);
 };
+/* 
+ * 优化 JavaScript 代码体积
+ * beta 版本
+ */
 $JSCode = array("get" => function (string $value) {
 	$value = preg_replace('# *//.*#', '', $value);
 	$value = preg_replace('#/\*.*?\*/#s', '', $value);
