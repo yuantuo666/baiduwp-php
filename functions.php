@@ -338,3 +338,100 @@ $JSCode = array("get" => function (string $value) {
 	global $JSCode;
 	echo $JSCode['get']($value);
 });
+/* 
+ * 将Settings.php里面的代码移到functionS.php里面来
+ * 方便api调用
+ */
+function EchoInfo(int $error, array $Result)
+{
+	$ReturnArray = array("error" => $error);
+	$ReturnArray += $Result;
+	echo json_encode($ReturnArray);
+}
+function GetAnalyseTablePage(string $page)
+{
+	if ($page <= 0) exit;
+	$EachPageNum = 10;
+	$conn = $GLOBALS['conn'];
+	$dbtable = $GLOBALS['dbtable'];
+	$AllRow = "";
+	$StartNum = ((int)$page - 1) * $EachPageNum;
+	$sql = "SELECT * FROM `$dbtable` ORDER BY `ptime` DESC LIMIT $StartNum,$EachPageNum";
+	$mysql_query = mysqli_query($conn, $sql);
+	while ($Result = mysqli_fetch_assoc($mysql_query)) {
+		// 存在数据
+		$EachRow = "<tr>
+		<th>" . $Result["id"] . "</th>
+		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
+			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('AnalyseTable'," . $Result["id"] . ");\">删除</a>
+		</div></td>
+		<td>" . $Result["userip"] . "</td>
+		<td style=\"width:80px;\">" . $Result["filename"] . "</td>
+		<td>" . formatSize((float)$Result["size"]) . "</td>
+		<td style=\"width:50px;\">" . $Result["path"] . "</td>
+		<td><a href=\"https://" . $Result["realLink"] . "\">" . substr($Result["realLink"], 0, 35) . "……</a></td>
+		<td>" . $Result["ptime"] . "</td><td>" . $Result["paccount"] . "</td>
+		</tr>";
+		$AllRow .= $EachRow;
+	}
+	return $AllRow;
+}
+function GetSvipTablePage(string $page)
+{
+	if ($page <= 0) exit;
+	$EachPageNum = 10;
+	$conn = $GLOBALS['conn'];
+	$dbtable = $GLOBALS['dbtable'];
+	$AllRow = "";
+	$StartNum = ((int)$page - 1) * $EachPageNum;
+	$sql = "SELECT * FROM `" . $dbtable . "_svip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
+	$mysql_query = mysqli_query($conn, $sql);
+	while ($Result = mysqli_fetch_assoc($mysql_query)) {
+		// 存在数据
+		$is_using = ($Result["is_using"] != "0000-00-00 00:00:00") ? $Result["is_using"] : "";
+		$state = ($Result["state"] == -1) ? "限速" : "正常";
+		$EachRow = "<tr>
+		<th>" . $Result["id"] . "</th>
+		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
+			<a class=\"btn btn-secondary\" href=\"javascript:SettingFirstAccount(" . $Result["id"] . ");\">使用此账号</a>
+			<a class=\"btn btn-secondary\" href=\"javascript:SettingNormalAccount(" . $Result["id"] . ");\">重置状态</a>
+			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('SvipTable'," . $Result["id"] . ");\">删除</a>
+		</div></td>
+		<td>" .  $is_using . "</td>
+		<td>" . $Result["name"] . "</td>
+		<td>" . $state . "</td>
+		<td>" . $Result["add_time"] . "</td>
+		<td><a href=\"javascript:Swal.fire('" . $Result["svip_bduss"] . "')\">" . substr($Result["svip_bduss"], 0, 20) . "……</a></td>
+		<td><a href=\"javascript:Swal.fire('" . $Result["svip_stoken"] . "')\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>
+		</tr>";
+		$AllRow .= $EachRow;
+	}
+	return $AllRow;
+} // name 账号名称	svip_bduss 会员bduss	svip_stoken 会员stoken	add_time 会员账号加入时间	state 会员状态(0:正常,-1:限速)	is_using 是否正在使用(非零表示真)
+function GetIPTablePage(string $page)
+{
+	if ($page <= 0) exit;
+	$EachPageNum = 10;
+	$conn = $GLOBALS['conn'];
+	$dbtable = $GLOBALS['dbtable'];
+	$AllRow = "";
+	$StartNum = ((int)$page - 1) * $EachPageNum;
+	$sql = "SELECT * FROM `" . $dbtable . "_ip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
+	$mysql_query = mysqli_query($conn, $sql);
+	while ($Result = mysqli_fetch_assoc($mysql_query)) {
+		// 存在数据
+		$type = ($Result["type"] == -1) ? "黑名单" : "白名单";
+		$EachRow = "<tr>
+		<th>" . $Result["id"] . "</th>
+		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
+			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable'," . $Result["id"] . ");\">删除</a>
+		</div></td>
+		<td>" . $Result["ip"] . "</td>
+		<td>" . $type . "</td>
+		<td>" . $Result["remark"] . "</td>
+		<td>" . $Result["add_time"] . "</td>
+		</tr>";
+		$AllRow .= $EachRow;
+	}
+	return $AllRow;
+}

@@ -53,7 +53,179 @@ if ($method != "CheckMySQLConnect" and DEBUG) {
 } else {
 	error_reporting(0); // 关闭错误报告
 }
+$is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
+if ($method == "ADMINAPI") {
+	if (!$is_login) {
+		//没有登录管理员账号
+		EchoInfo(-1, array("msg" => "未登录"));
+		exit;
+	}else{
+		connectdb();
+	}
+	$action = (!empty($_GET["act"])) ? $_GET["act"] : "";
+	switch ($action) {
+		case "AnalyseGetTable":
+			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
+			echo GetAnalyseTablePage($page);
+			break;
+		case "SvipGetTable":
+			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
+			echo GetSvipTablePage($page);
+			break;
+		case "singleBDUSS":
+			// 先处理是否有新增加数据
+			$BDUSS = (!empty($_POST["BDUSS"])) ? trim($_POST["BDUSS"]) : "";
+			$STOKEN = (!empty($_POST["STOKEN"])) ? $_POST["STOKEN"] : "";
+			$name = (!empty($_POST["name"])) ? $_POST["name"] : "";
+			if ($BDUSS != "" and strlen($BDUSS) == 192) {
+				// 开始录入
+				$add_time = date("Y-m-d H:i:s");
+				$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$name','$BDUSS','$STOKEN','$add_time',1,'')";
+				$Result = mysqli_query($conn, $sql);
+				if ($Result != false) EchoInfo(0, array("msg" => "新增成功", "detail" => "已经成功新增一条会员数据。3s后将刷新该页面。", "refresh" => true));
+				else {
+					$Error = addslashes(mysqli_error($conn));
+					EchoInfo(-1, array("msg" => "添加失败", "detail" => $Error));
+				}
+			} else {
+				EchoInfo(-1, array("msg" => "添加失败", "detail" => "请检查BDUSS是否填写正确"));
+			}
+			break;
+		case "multiBDUSS":
+			$BDUSS = (!empty($_POST["MULTI_BDUSS"])) ? trim($_POST["MULTI_BDUSS"]) : "";
+			$name = (!empty($_POST["name"])) ? $_POST["name"] : "";
+			if ($BDUSS != "") {
+				// 开始录入
+				$allsql = "";
+				$add_time = date("Y-m-d H:i:s");
 
+				$AllBduss = explode("\n", $BDUSS);
+				for ($i = 0; $i < count($AllBduss); $i++) {
+					$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `add_time`, `state`, `is_using`) VALUES ('$name-" . ($i + 1) . "','" . $AllBduss[$i] . "','$add_time',1,'');";
+					$allsql .= $sql;
+				}
+
+				$sccess_result = 0;
+				if (mysqli_multi_query($conn, $allsql)) {
+					do {
+						$sccess_result = $sccess_result + 1;
+					} while (mysqli_more_results($conn) && mysqli_next_result($conn));
+				}
+
+				$affect_row = mysqli_affected_rows($conn);
+				if ($affect_row == -1)
+					EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误在" . $sccess_result . "行"));
+				else EchoInfo(0, array("msg" => "导入成功", "detail" =>	"成功导入" . $sccess_result . "条数据。3s后将刷新该页面。", "refresh" => true));
+			} else EchoInfo(-1, array("msg" => "添加失败", "detail" => "请检查BDUSS是否填写正确"));
+			break;
+		case "SvipSettingFirstAccount":
+			$id = (!empty($_GET["id"])) ? $_GET["id"] : "";
+			if ($id == "") {
+				// 参数错误
+				EchoInfo(-1, array("msg" => "传入参数错误"));
+			} else {
+				// 开始处理
+				// 这里最新的时间表示可用账号，按顺序排序
+				$is_using = date("Y-m-d H:i:s");
+				$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+				$mysql_query = mysqli_query($conn, $sql);
+				if ($mysql_query != false) {
+					// 成功
+					EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为首选账号。3s后将刷新该页面。", "refresh" => true));
+				} else {
+					// 失败
+					EchoInfo(-1, array("msg" => "修改失败"));
+				}
+			}
+			break;
+		case "SvipSettingNormalAccount":
+				$id = (!empty($_GET["id"])) ? $_GET["id"] : "";
+				if ($id == "") {
+					// 参数错误
+					EchoInfo(-1, array("msg" => "传入参数错误"));
+				} else {
+					// 开始处理
+					$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= 1 WHERE `id`=$id";
+					$mysql_query = mysqli_query($conn, $sql);
+					if ($mysql_query != false) {
+						// 成功
+						EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为正常账号。3s后将刷新该页面。", "refresh" => true));
+					} else {
+						// 失败
+						EchoInfo(-1, array("msg" => "修改失败"));
+					}
+				}
+				break;
+		case "IPGetTable":
+			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
+			echo GetIPTablePage($page);
+			break;
+		case "NewIp":
+			$ip = (!empty($_POST["ip"])) ? trim($_POST["ip"]) : "";
+			$remark = (!empty($_POST["remark"])) ? $_POST["remark"] : "";
+			$type = $_POST["type"];
+			if ($ip != "") {
+				// 开始录入
+				$add_time = date("Y-m-d H:i:s");
+				$sql = "INSERT INTO `" . $dbtable . "_ip`( `ip`, `remark`, `type`, `add_time`) VALUES ('$ip','$remark',$type,'$add_time')";
+				$Result = mysqli_query($conn, $sql);
+				if ($Result != false) EchoInfo(0, array("msg" => "新增成功", "detail" => "成功新增一条ip记录。3s后将刷新该页面。", "refresh" => true));
+				else {
+					$Error = addslashes(mysqli_error($conn));
+					EchoInfo(-1, array("msg" => "添加失败", "detail" => $Error));
+				}
+			} else EchoInfo(-1, array("msg" => "添加失败", "detail" => "请检查IP和账号种类是否填写正确"));
+			break;
+		case "setDownloadTimes":
+			$origin_config = file_get_contents("config.php");
+			$update_config = str_replace('const DownloadTimes = ' . DownloadTimes . ';', 'const DownloadTimes = ' . $_POST["DownloadTimes"] . ';', $origin_config);
+			$len = file_put_contents('config.php', $update_config);
+
+			if ($len != false) EchoInfo(0, array("msg" => "设置成功", "detail" => "成功写入 config.php 共 $len 个字符。3s后将刷新该页面。", "refresh" => true));
+			else EchoInfo(-1, array("msg" => "添加失败", "detail" => "请检查 config.php 文件状态及当前用户权限。或者手动修改 config.php 中相关设置。"));
+			break;
+		case "DeleteById":
+			//通过指定表格与ip删除对应行
+			$Type = (!empty($_GET["type"])) ? $_GET["type"] : "";
+			$Id = (!empty($_GET["id"])) ? $_GET["id"] : "";
+			if ($Type != "" and $Id != "") {
+				// 开始执行
+				// 生成SQL
+				switch ($Type) {
+					case 'AnalyseTable':
+						// 使用统计 分析表格 $dbtable
+						$Sql = "DELETE FROM `$dbtable` WHERE `id` = $Id";
+						break;
+					case 'SvipTable':
+						// 会员账号表格
+						$Sql = "DELETE FROM `" . $dbtable . "_svip` WHERE `id` = $Id";
+						break;
+					case 'IPTable':
+						// ip黑白名单
+						$Sql = "DELETE FROM `" . $dbtable . "_ip` WHERE `id` = $Id";
+						break;
+					default:
+						// 无匹配
+						EchoInfo(-1, array("msg" => "传入Type(删除种类)错误"));
+						exit;
+						break;
+				}
+				// 开始执行sql
+				$Result = mysqli_query($conn, $Sql);
+				if ($Result != false) {
+					EchoInfo(0, array("msg" => "成功删除id为 $Id 的数据。3s后将刷新该页面。", "refresh" => true)); //成功删除
+				} else {
+					$Error = addslashes(mysqli_error($conn));
+					EchoInfo(-1, array("msg" => "删除失败，返回信息:$Error"));
+				}
+			} else EchoInfo(-1, array("msg" => "未传入Type(删除种类)或Id(删除指定的id)"));
+			break;
+		default:
+			EchoInfo(-1, array("msg" => "没有参数传入"));
+			break;
+	}
+	exit;
+}
 switch ($method) {
 	case 'LastParse':
 		// 返回数据库中上一次解析的时间，及SVIP状态
@@ -156,11 +328,4 @@ switch ($method) {
 	default:
 		EchoInfo(-1, array("msg" => "无传入数据"));
 		break;
-}
-
-function EchoInfo(int $error, array $Result)
-{
-	$ReturnArray = array("error" => $error);
-	$ReturnArray += $Result;
-	echo json_encode($ReturnArray);
 }

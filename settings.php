@@ -61,182 +61,10 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 	} else {
 		// 密码错误
 		$_SESSION["admin_login"] = false;
-		echo "<script>Swal.fire('管理员密码错误，如果忘记密码请进入 config.php 查看');</script>";
+		$PasswordError = true;
 	}
 }
 if ($is_login) connectdb();
-if ($method == "API" and $is_login) {
-	$action = (!empty($_GET["act"])) ? $_GET["act"] : "";
-	switch ($action) {
-		case "AnalyseGetTable":
-			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
-			echo GetAnalyseTablePage($page);
-			break;
-		case "SvipGetTable":
-			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
-			echo GetSvipTablePage($page);
-			break;
-		case "SvipSettingFirstAccount":
-			$id = (!empty($_GET["id"])) ? $_GET["id"] : "";
-			if ($id == "") {
-				// 参数错误
-				EchoInfo(-1, array("msg" => "传入参数错误"));
-			} else {
-				// 开始处理
-				// 这里最新的时间表示可用账号，按顺序排序
-				$is_using = date("Y-m-d H:i:s");
-				$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
-				$mysql_query = mysqli_query($conn, $sql);
-				if ($mysql_query != false) {
-					// 成功
-					EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为首选账号。3s后将刷新该页面。", "refresh" => true));
-				} else {
-					// 失败
-					EchoInfo(-1, array("msg" => "修改失败"));
-				}
-			}
-			break;
-		case "IPGetTable":
-			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
-			echo GetIPTablePage($page);
-			break;
-		case "DeleteById":
-			//通过指定表格与ip删除对应行
-			$Type = (!empty($_GET["type"])) ? $_GET["type"] : "";
-			$Id = (!empty($_GET["id"])) ? $_GET["id"] : "";
-			if ($Type != "" and $Id != "") {
-				// 开始执行
-				// 生成SQL
-				switch ($Type) {
-					case 'AnalyseTable':
-						// 使用统计 分析表格 $dbtable
-						$Sql = "DELETE FROM `$dbtable` WHERE `id` = $Id";
-						break;
-					case 'SvipTable':
-						// 会员账号表格
-						$Sql = "DELETE FROM `" . $dbtable . "_svip` WHERE `id` = $Id";
-						break;
-					case 'IPTable':
-						// ip黑白名单
-						$Sql = "DELETE FROM `" . $dbtable . "_ip` WHERE `id` = $Id";
-						break;
-					default:
-						// 无匹配
-						EchoInfo(-1, array("msg" => "传入Type(删除种类)错误"));
-						exit;
-						break;
-				}
-				// 开始执行sql
-				$Result = mysqli_query($conn, $Sql);
-				if ($Result != false) {
-					EchoInfo(0, array("msg" => "成功删除id为 $Id 的数据。3s后将刷新该页面。", "refresh" => true)); //成功删除
-				} else {
-					$Error = addslashes(mysqli_error($conn));
-					EchoInfo(-1, array("msg" => "删除失败，返回信息:$Error"));
-				}
-			} else EchoInfo(-1, array("msg" => "未传入Type(删除种类)或Id(删除指定的id)"));
-			break;
-		default:
-			echo "<h1>没有参数传入</h1>";
-			break;
-	}
-	exit;
-}
-
-function EchoInfo(int $error, array $Result)
-{
-	$ReturnArray = array("error" => $error);
-	$ReturnArray += $Result;
-	echo json_encode($ReturnArray);
-}
-
-function GetAnalyseTablePage(string $page)
-{
-	if ($page <= 0) exit;
-	$EachPageNum = 10;
-	$conn = $GLOBALS['conn'];
-	$dbtable = $GLOBALS['dbtable'];
-	$AllRow = "";
-	$StartNum = ((int)$page - 1) * $EachPageNum;
-	$sql = "SELECT * FROM `$dbtable` ORDER BY `ptime` DESC LIMIT $StartNum,$EachPageNum";
-	$mysql_query = mysqli_query($conn, $sql);
-	while ($Result = mysqli_fetch_assoc($mysql_query)) {
-		// 存在数据
-		$EachRow = "<tr>
-		<th>" . $Result["id"] . "</th>
-		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
-			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('AnalyseTable'," . $Result["id"] . ");\">删除</a>
-		</div></td>
-		<td>" . $Result["userip"] . "</td>
-		<td style=\"width:80px;\">" . $Result["filename"] . "</td>
-		<td>" . formatSize((float)$Result["size"]) . "</td>
-		<td style=\"width:50px;\">" . $Result["path"] . "</td>
-		<td><a href=\"https://" . $Result["realLink"] . "\">" . substr($Result["realLink"], 0, 35) . "……</a></td>
-		<td>" . $Result["ptime"] . "</td><td>" . $Result["paccount"] . "</td>
-		</tr>";
-		$AllRow .= $EachRow;
-	}
-	return $AllRow;
-}
-function GetSvipTablePage(string $page)
-{
-	if ($page <= 0) exit;
-	$EachPageNum = 10;
-	$conn = $GLOBALS['conn'];
-	$dbtable = $GLOBALS['dbtable'];
-	$AllRow = "";
-	$StartNum = ((int)$page - 1) * $EachPageNum;
-	$sql = "SELECT * FROM `" . $dbtable . "_svip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
-	$mysql_query = mysqli_query($conn, $sql);
-	while ($Result = mysqli_fetch_assoc($mysql_query)) {
-		// 存在数据
-		$is_using = ($Result["is_using"] != "0000-00-00 00:00:00") ? $Result["is_using"] : "";
-		$state = ($Result["state"] == -1) ? "限速" : "正常";
-		$EachRow = "<tr>
-		<th>" . $Result["id"] . "</th>
-		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
-			<a class=\"btn btn-secondary\" href=\"javascript:SettingFirstAccount(" . $Result["id"] . ");\">设为当前解析账号</a>
-			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('SvipTable'," . $Result["id"] . ");\">删除</a>
-		</div></td>
-		<td>" .  $is_using . "</td>
-		<td>" . $Result["name"] . "</td>
-		<td>" . $state . "</td>
-		<td>" . $Result["add_time"] . "</td>
-		<td><a href=\"javascript:Swal.fire('" . $Result["svip_bduss"] . "')\">" . substr($Result["svip_bduss"], 0, 20) . "……</a></td>
-		<td><a href=\"javascript:Swal.fire('" . $Result["svip_stoken"] . "')\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>
-		</tr>";
-		$AllRow .= $EachRow;
-	}
-	return $AllRow;
-} // name 账号名称	svip_bduss 会员bduss	svip_stoken 会员stoken	add_time 会员账号加入时间	state 会员状态(0:正常,-1:限速)	is_using 是否正在使用(非零表示真)
-function GetIPTablePage(string $page)
-{
-	if ($page <= 0) exit;
-	$EachPageNum = 10;
-	$conn = $GLOBALS['conn'];
-	$dbtable = $GLOBALS['dbtable'];
-	$AllRow = "";
-	$StartNum = ((int)$page - 1) * $EachPageNum;
-	$sql = "SELECT * FROM `" . $dbtable . "_ip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
-	$mysql_query = mysqli_query($conn, $sql);
-	while ($Result = mysqli_fetch_assoc($mysql_query)) {
-		// 存在数据
-		$type = ($Result["type"] == -1) ? "黑名单" : "白名单";
-		$EachRow = "<tr>
-		<th>" . $Result["id"] . "</th>
-		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
-			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable'," . $Result["id"] . ");\">删除</a>
-		</div></td>
-		<td>" . $Result["ip"] . "</td>
-		<td>" . $type . "</td>
-		<td>" . $Result["remark"] . "</td>
-		<td>" . $Result["add_time"] . "</td>
-		</tr>";
-		$AllRow .= $EachRow;
-	}
-	return $AllRow;
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -259,19 +87,8 @@ function GetIPTablePage(string $page)
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery-form@4.3.0/dist/jquery.form.min.js"></script>
 	<script src="static/color.js"></script>
-	<script>
-		function DeleteById(Type, Id) {
-			$.get("settings.php?m=API&act=DeleteById&id=" + String(Id) + "&type=" + Type, function(data, status) {
-				if (status == "success") {
-					var json = JSON.parse(data);
-					Swal.fire(json.msg);
-					if (json.refresh == true) setTimeout("location.reload();", 3000);
-				}
-			});
-
-		}
-	</script>
 </head>
 
 <body>
@@ -284,14 +101,24 @@ function GetIPTablePage(string $page)
 				<!-- 登录 -->
 				<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 					<div class="card">
-						<div class="card-header bg-dark text-light">Pandownload复刻版-后台登录</div>
+						<div class="card-header bg-dark text-light">Pandownload复刻版 - 后台登录</div>
 						<div class="card-body">
-							<form name="form1" method="post">
+							<form id="form1" method="post">
 								<div class="form-group my-2">
 									<input type="text" class="form-control" name="setting_password" placeholder="Password">
-									<small class="form-text text-right">密码是中文，别想破解了~</small>
+									<small class="form-text text-right">忘记密码可进入<b>config.php</b>中查看~</small>
 								</div>
-								<button type="submit" class="mt-4 mb-3 form-control btn btn-success btn-block">登录</button>
+								<button onclick="Sumbitform()" class="mt-4 mb-3 form-control btn btn-success btn-block">登录</button>
+							</form>
+							<script>
+								<?php if (isset($PasswordError) and $PasswordError) echo "Swal.fire('管理员密码错误','如果忘记管理员密码请进入 config.php 查看','error');"; ?>
+
+								function Sumbitform() {
+									Swal.fire("正在登录，请稍等");
+									Swal.showLoading();
+									$("#form1").submit();
+								}
+							</script>
 						</div>
 					</div>
 				</div>
@@ -343,71 +170,23 @@ function GetIPTablePage(string $page)
 								<a href="javascript:AnalyseLoadmore();" class="btn btn-primary">加载更多</a>
 								<script>
 									function AnalyseLoadmore() {
+										Swal.fire("正在加载，请稍等");
+										Swal.showLoading();
 										newpage = Number($("#AnalyseTable").attr("page")) + 1;
-										$.get("settings.php?m=API&act=AnalyseGetTable&page=" + String(newpage), function(data, status) {
+										$.get("api.php?m=ADMINAPI&act=AnalyseGetTable&page=" + String(newpage), function(data, status) {
 											if (status == "success") {
 												$("#AnalyseTable").append(data);
 												$("#AnalyseTable").attr("page", newpage);
+												Swal.close();
+											} else {
+												Swal.fire("请求错误，请检查网络是否正常");
 											}
 										});
 									}
 								</script>
 							</div>
 						</div>
-					<?php } elseif ($method == "svip") {
-						// 先处理是否有新增加数据
-						if (isset($_POST["BDUSS"])) {
-							$BDUSS = (!empty($_POST["BDUSS"])) ? trim($_POST["BDUSS"]) : "";
-							$STOKEN = (!empty($_POST["STOKEN"])) ? $_POST["STOKEN"] : "";
-							$name = (!empty($_POST["name"])) ? $_POST["name"] : "";
-							if ($BDUSS != "" and strlen($BDUSS) == 192) {
-								// 开始录入
-								$add_time = date("Y-m-d H:i:s");
-								$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$name','$BDUSS','$STOKEN','$add_time',1,'')";
-								$Result = mysqli_query($conn, $sql);
-								if ($Result != false) echo "<script>Swal.fire('新增成功');</script>";
-								else {
-									$Error = addslashes(mysqli_error($conn));
-									echo "<script>Swal.fire('添加失败','$Error');</script>";
-								}
-							} else {
-								echo "<script>Swal.fire('请检查BDUSS是否填写正确')</script>";
-							}
-						}
-						if (isset($_POST["MULTI_BDUSS"])) {
-							$BDUSS = (!empty($_POST["MULTI_BDUSS"])) ? trim($_POST["MULTI_BDUSS"]) : "";
-							$name = (!empty($_POST["name"])) ? $_POST["name"] : "";
-							if ($BDUSS != "") {
-								// 开始录入
-								$allsql = "";
-								$add_time = date("Y-m-d H:i:s");
-
-								$AllBduss = explode("\n", $BDUSS);
-								for ($i = 0; $i < count($AllBduss); $i++) {
-									$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `add_time`, `state`, `is_using`) VALUES ('$name-" . ($i + 1) . "','" . $AllBduss[$i] . "','$add_time',1,'');";
-									$allsql .= $sql;
-								}
-
-								$sccess_result = 0;
-								if (mysqli_multi_query($conn, $allsql)) {
-									do {
-										$sccess_result = $sccess_result + 1;
-									} while (mysqli_more_results($conn) && mysqli_next_result($conn));
-								}
-
-								$affect_row = mysqli_affected_rows($conn);
-								if ($affect_row == -1) {
-									$Msg = "错误在" . $sccess_result . "行";
-								} else {
-									$Msg = "成功导入" . $sccess_result . "条数据";
-								}
-								echo "<script>Swal.fire('$Msg');</script>";
-							} else {
-								echo "<script>Swal.fire('请检查BDUSS是否填写正确')</script>";
-							}
-						}
-
-					?>
+					<?php } elseif ($method == "svip") { ?>
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
@@ -477,21 +256,42 @@ function GetIPTablePage(string $page)
 								<a href="javascript:SvipLoadmore();" class="btn btn-primary">加载更多</a>
 								<script>
 									function SvipLoadmore() {
+										Swal.fire("正在加载，请稍等");
+										Swal.showLoading();
 										newpage = Number($("#SvipTable").attr("page")) + 1;
-										$.get("settings.php?m=API&act=SvipGetTable&page=" + String(newpage), function(data, status) {
+										$.get("api.php?m=ADMINAPI&act=SvipGetTable&page=" + String(newpage), function(data, status) {
 											if (status == "success") {
 												$("#SvipTable").append(data);
 												$("#SvipTable").attr("page", newpage);
+												Swal.close();
+											} else {
+												Swal.fire("请求错误，请检查网络是否正常");
 											}
 										});
 									}
-
 									function SettingFirstAccount(id) {
-										$.get("settings.php?m=API&act=SvipSettingFirstAccount&id=" + String(id), function(data, status) {
+										Swal.fire("正在设置，请稍等");
+										Swal.showLoading();
+										$.get("api.php?m=ADMINAPI&act=SvipSettingFirstAccount&id=" + String(id), function(data, status) {
 											if (status == "success") {
 												var json = JSON.parse(data);
 												Swal.fire(json.msg);
 												if (json.refresh == true) setTimeout("location.reload();", 3000);
+											} else {
+												Swal.fire("请求错误，请检查网络是否正常");
+											}
+										});
+									}
+									function SettingNormalAccount(id) {
+										Swal.fire("正在设置，请稍等");
+										Swal.showLoading();
+										$.get("api.php?m=ADMINAPI&act=SvipSettingNormalAccount&id=" + String(id), function(data, status) {
+											if (status == "success") {
+												var json = JSON.parse(data);
+												Swal.fire(json.msg);
+												if (json.refresh == true) setTimeout("location.reload();", 3000);
+											} else {
+												Swal.fire("请求错误，请检查网络是否正常");
 											}
 										});
 									}
@@ -499,7 +299,7 @@ function GetIPTablePage(string $page)
 								<br><br><br>
 								<!-- 新增会员数据 -->
 								<h5 class="card-title">新增会员数据</h5>
-								<form action="settings.php?m=svip" method="post">
+								<form class="ajaxform" action="api.php?m=ADMINAPI&act=singleBDUSS">
 									<div class="form-group">
 										<label>账号名称</label>
 										<input type="text" class="form-control form-control-sm" name="name">
@@ -517,7 +317,7 @@ function GetIPTablePage(string $page)
 								<!-- 新增会员数据 -->
 								<br><br>
 								<h5 class="card-title">批量导入svip</h5>
-								<form action="settings.php?m=svip" method="post">
+								<form class="ajaxform" action="api.php?m=ADMINAPI&act=multiBDUSS">
 									<div class="form-group">
 										<label>账号名称</label>
 										<input type="text" class="form-control form-control-sm" name="name">
@@ -530,27 +330,7 @@ function GetIPTablePage(string $page)
 								</form>
 							</div>
 						</div>
-					<?php } elseif ($method == "iplist") {
-						// 先处理是否有新增加数据
-						if (isset($_POST["ip"])) {
-							$ip = (!empty($_POST["ip"])) ? trim($_POST["ip"]) : "";
-							$remark = (!empty($_POST["remark"])) ? $_POST["remark"] : "";
-							$type = $_POST["type"];
-							if ($ip != "") {
-								// 开始录入
-								$add_time = date("Y-m-d H:i:s");
-								$sql = "INSERT INTO `" . $dbtable . "_ip`( `ip`, `remark`, `type`, `add_time`) VALUES ('$ip','$remark',$type,'$add_time')";
-								$Result = mysqli_query($conn, $sql);
-								if ($Result != false) echo "<script>Swal.fire('新增成功');</script>";
-								else {
-									$Error = addslashes(mysqli_error($conn));
-									echo "<script>Swal.fire('添加失败','$Error');</script>";
-								}
-							} else {
-								echo "<script>Swal.fire('请检查IP和账号种类是否填写正确')</script>";
-							}
-						}
-					?>
+					<?php } elseif ($method == "iplist") { ?>
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
@@ -588,11 +368,16 @@ function GetIPTablePage(string $page)
 								<a href="javascript:IPLoadmore();" class="btn btn-primary">加载更多</a>
 								<script>
 									function IPLoadmore() {
+										Swal.fire("正在加载，请稍等");
+										Swal.showLoading();
 										newpage = Number($("#IPTable").attr("page")) + 1;
-										$.get("settings.php?m=API&act=IPGetTable&page=" + String(newpage), function(data, status) {
+										$.get("api.php?m=ADMINAPI&act=IPGetTable&page=" + String(newpage), function(data, status) {
 											if (status == "success") {
 												$("#IPTable").append(data);
 												$("#IPTable").attr("page", newpage);
+												Swal.close();
+											} else {
+												Swal.fire("请求错误，请检查网络是否正常");
 											}
 										});
 									}
@@ -600,7 +385,7 @@ function GetIPTablePage(string $page)
 								<br><br><br>
 								<!-- 新增IP -->
 								<h5 class="card-title">新增IP</h5>
-								<form action="settings.php?m=iplist" method="post">
+								<form class="ajaxform" action="api.php?m=ADMINAPI&act=NewIp">
 									<div class="form-group">
 										<label>IP地址</label>
 										<input type="text" class="form-control form-control-sm" name="ip">
@@ -618,23 +403,9 @@ function GetIPTablePage(string $page)
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
 								</form>
-
 							</div>
 						</div>
-					<?php } elseif ($method == "DownloadTimes") {
-						// 先处理是否有新增加数据
-						if (isset($_POST["DownloadTimes"])) {
-							$origin_config = file_get_contents("config.php");
-							$update_config = str_replace('const DownloadTimes = ' . DownloadTimes . ';', 'const DownloadTimes = ' . $_POST["DownloadTimes"] . ';', $origin_config);
-							$len = file_put_contents('config.php', $update_config);
-
-							if ($len != false) {
-								echo "<script>Swal.fire('成功！成功写入 config.php 共 $len 个字符。刷新页面后可看到修改的内容。');</script>";
-							} else {
-								echo "<script>Swal.fire('写入失败，请检查 config.php 文件状态及当前用户权限。或者手动修改 config.php 中相关设置。');</script>";
-							}
-						}
-					?>
+					<?php } elseif ($method == "DownloadTimes") { ?>
 						<nav>
 							<ol class="breadcrumb my-4">
 								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
@@ -657,7 +428,7 @@ function GetIPTablePage(string $page)
 								<br><br><br>
 								<!-- 修改下载次数 -->
 								<h5 class="card-title">修改下载次数</h5>
-								<form action="settings.php?m=DownloadTimes" method="post">
+								<form class="ajaxform" action="api.php?m=ADMINAPI&act=setDownloadTimes">
 									<div class="form-group">
 										<label>下载次数</label>
 										<input type="text" class="form-control form-control-sm" name="DownloadTimes">
@@ -778,7 +549,44 @@ function GetIPTablePage(string $page)
 	<?php
 			} ?>
 	</div>
-	</div>
+	<script>
+		function DeleteById(Type, Id) {
+			Swal.fire("正在提交删除请求，请稍等");
+			Swal.showLoading();
+			$.get("api.php?m=ADMINAPI&act=DeleteById&id=" + String(Id) + "&type=" + Type, function(data, status) {
+				if (status == "success") {
+					var json = JSON.parse(data);
+					Swal.fire(json.msg);
+					if (json.refresh == true) setTimeout("location.reload();", 3000);
+				} else {
+					Swal.fire("请求错误，请检查网络是否正常");
+				}
+			});
+
+		}
+		$('form.ajaxform').ajaxForm({
+			type: 'post',
+			dataType: 'json',
+			beforeSubmit: function() {
+				Swal.fire("正在提交数据，请稍等");
+				Swal.showLoading();
+			},
+			success: function(data, success, xhr, $form) {
+				if (data.error === 0) {
+					Swal.fire(`${data.msg}`, data.detail, 'success');
+					if (data.refresh == true) setTimeout("location.reload();", 3000);
+				} else {
+					Swal.fire(`${data.msg}`, data.detail, 'error');
+				}
+			},
+			error: function(xhr, error, text, $form) {
+				console.log(xhr);
+				console.log(`${error}: ${text}`);
+				console.log($form);
+				Swal.fire('添加失败', '发生错误，添加失败！<br />详细信息请见控制台！', 'error');
+			}
+		});
+	</script>
 </body>
 
 </html>

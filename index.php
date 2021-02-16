@@ -261,6 +261,7 @@ Function
 						return $ip;
 					}
 					$ip = getip();
+					$isipwhite = FALSE; //初始化 防止报错
 					if (USING_DB) {
 						connectdb();
 
@@ -349,7 +350,7 @@ Function
 								}
 								// 获取SVIP BDUSS
 
-								$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
+								$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using`,`id` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
 								$Result = mysqli_query($conn, $sql);
 								if ($Result =  mysqli_fetch_assoc($Result)) {
 									$SVIP_BDUSS = $Result["svip_bduss"];
