@@ -328,41 +328,81 @@ Function
 							$realLink = $result["realLink"];
 							$usingcache = true;
 						} else {
-							// // 判断cookie   取消这个判断 下载次数限制在后台控制
-							// if (!$isipwhite and !empty($_COOKIE["SESSID"]) and !$smallfile) {
-							// 	// 提示无权继续
-							// 	dl_error("免费次数不足", "<p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-							// 	exit;
-							// }
-							if (USING_DB) {
-								// 判断今天内是否获取过文件
-								if (!$isipwhite and !$smallfile) { // 白名单和小文件跳过
-									// 获取解析次数
-									$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
-									$mysql_query = mysqli_query($conn, $sql);
-									$result = mysqli_fetch_assoc($mysql_query);
-									if ($result["Num"] >= DownloadTimes) {
-										// 提示无权继续
-										// dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>您已于 <b>" . $result["ptime"] . "</b> 时解析过文件“<b>" . $result["filename"] . "</b>”。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-										dl_error(Language["NoChance"], "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-										exit;
-									}
-								}
-								// 获取SVIP BDUSS
 
-								$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using`,`id` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
-								$Result = mysqli_query($conn, $sql);
-								if ($Result =  mysqli_fetch_assoc($Result)) {
-									$SVIP_BDUSS = $Result["svip_bduss"];
-									$id = $Result["id"];
-								} else {
-									// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+							// 判断今天内是否获取过文件
+							if (!$isipwhite and !$smallfile) { // 白名单和小文件跳过
+								// 获取解析次数
+								$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
+								$mysql_query = mysqli_query($conn, $sql);
+								$result = mysqli_fetch_assoc($mysql_query);
+								if ($result["Num"] >= DownloadTimes) {
+									// 提示无权继续
+									dl_error(Language["NoChance"], "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+									exit;
+								}
+							}
+
+							// 获取SVIP BDUSS
+							switch ($SVIPSwitchMod) {
+								case 1:
+									//模式1：用到废为止
+									// 时间倒序输出第一项未被限速账号
+									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
+									$Result = mysqli_query($conn, $sql);
+									if ($Result =  mysqli_fetch_assoc($Result)) {
+										$SVIP_BDUSS = $Result["svip_bduss"];
+										$id = $Result["id"];
+									} else {
+										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+										$SVIP_BDUSS = SVIP_BDUSS;
+										$id = "-1";
+									}
+									break;
+								case 2:
+									//模式2：轮番上
+									// 时间顺序输出第一项未被限速账号
+									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
+
+									$Result = mysqli_query($conn, $sql);
+									if ($Result =  mysqli_fetch_assoc($Result)) {
+										$SVIP_BDUSS = $Result["svip_bduss"];
+										$id = $Result["id"];
+										//不论解析成功与否，将当前账号更新时间，下一次使用另一账号
+										// 开始处理
+										// 这里最新的时间表示可用账号，按顺序排序
+										$is_using = date("Y-m-d H:i:s");
+										$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+										$mysql_query = mysqli_query($conn, $sql);
+										if ($mysql_query == false) {
+											// 失败 但可继续解析
+											dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
+										}
+									} else {
+										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+										$SVIP_BDUSS = SVIP_BDUSS;
+										$id = "-1";
+									}
+									break;
+								case 3:
+									//模式3：手动切换，不管限速
+									// 时间倒序输出第一项账号
+									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
+									$Result = mysqli_query($conn, $sql);
+									if ($Result =  mysqli_fetch_assoc($Result)) {
+										$SVIP_BDUSS = $Result["svip_bduss"];
+										$id = $Result["id"];
+									} else {
+										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+										$SVIP_BDUSS = SVIP_BDUSS;
+										$id = "-1";
+									}
+									break;
+								case 0:
+									//模式0：使用本地解析
+								default:
 									$SVIP_BDUSS = SVIP_BDUSS;
 									$id = "-1";
-								}
-							} else {
-								$SVIP_BDUSS = SVIP_BDUSS;
-								$id = "-1";
+									break;
 							}
 
 
@@ -378,41 +418,49 @@ Function
 							else $realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
 							$usingcache = false;
 
-
-							if (USING_DB) {
-								// 判断账号是否限速，如果限速就将其标记，切换账号
-								if (strstr('https://' . $realLink, "//qdall") or $realLink == "") {
-									// 限速
-									if ($id != "-1") {
+							switch ($SVIPSwitchMod) {
+								case 1:
+									//模式1：用到废为止
+								case 2:
+									//模式2：轮番上
+									if (strstr('https://' . $realLink, "//qdall") or $realLink == "") {
+										//限速进行标记 并刷新页面重新解析
 										$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= -1 WHERE `id`=$id";
 										$mysql_query = mysqli_query($conn, $sql);
 										if ($mysql_query != false) {
 											// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
-		?>
-											<div class="row justify-content-center">
-												<div class="col-md-7 col-sm-8 col-11">
-													<div class="alert alert-danger" role="alert">
-														<h5 class="alert-heading"><?php echo Language["SwitchWait"]; ?></h5>
-														<hr />
-														<p class="card-text">当前SVIP账号已经被限速</p>
-														<p class="card-text">正在自动切换新账号中</p>
-														<p class="card-text">预计需要2~3秒，请耐心等待</p>
-														</p>
+											$Language = Language;
+											echo <<<SWITCHTIP
+												<div class="row justify-content-center">
+													<div class="col-md-7 col-sm-8 col-11">
+														<div class="alert alert-danger" role="alert">
+															<h5 class="alert-heading">{$Language["SwitchWait"]}</h5>
+															<hr />
+															<p class="card-text">当前SVIP账号已经被限速</p>
+															<p class="card-text">正在自动切换新账号中</p>
+															<p class="card-text">预计需要2~3秒，请耐心等待</p>
+															</p>
+														</div>
 													</div>
 												</div>
-											</div>
-											<script>
-												setTimeout(() => location.reload(), 2000);
-											</script>
-							<?php exit;
+												<script>
+													setTimeout(() => location.reload(), 2000);
+												</script>
+SWITCHTIP;
+											exit;
 										} else {
 											// SVIP账号自动切换失败
-
+											dl_error("SVIP账号切换失败", "数据库出现问题，无法切换SVIP账号，请联系站长修复", true);
+											exit;
 										}
-									} else {
-										// 本地账号也限速
 									}
-								}
+									break;
+								case 3:
+									//模式3：手动切换，不管限速
+								case 0:
+									//模式0：使用本地解析
+								default:
+									break;
 							}
 						}
 
@@ -438,7 +486,7 @@ Function
 								// 为了防止一些换ip调用，这里写一个cookie
 							}
 
-							?>
+		?>
 							<div class="row justify-content-center">
 								<div class="col-md-7 col-sm-8 col-11">
 									<div class="alert alert-primary" role="alert">
