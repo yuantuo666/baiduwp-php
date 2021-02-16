@@ -95,7 +95,7 @@ switch ($method) {
 			if ($Result = mysqli_fetch_assoc($mysql_query)) {
 				// 存在数据
 				$AllCount = $Result["AllCount"];
-				$AllSize = formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
+				$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 				$ParseCountMsg =  "累计解析 $AllCount 个，共 $AllSize";
 			} else {
 				EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
@@ -107,7 +107,7 @@ switch ($method) {
 			if ($Result = mysqli_fetch_assoc($mysql_query)) {
 				// 存在数据
 				$AllCount = $Result["AllCount"];
-				$AllSize = formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
+				$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 				$TodayParseCountMsg =  "今日解析 $AllCount 个，共 $AllSize";
 			} else {
 				EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));

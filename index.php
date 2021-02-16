@@ -201,7 +201,7 @@ Function
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
-								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
+								<span class="float-right">' . formatSize((float)$file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
@@ -234,7 +234,7 @@ Function
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
-								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
+								<span class="float-right">' . formatSize((float)$file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}

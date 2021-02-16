@@ -169,7 +169,7 @@ function GetAnalyseTablePage(string $page)
 		</div></td>
 		<td>" . $Result["userip"] . "</td>
 		<td style=\"width:80px;\">" . $Result["filename"] . "</td>
-		<td>" . formatSize((int)$Result["size"]) . "</td>
+		<td>" . formatSize((float)$Result["size"]) . "</td>
 		<td style=\"width:50px;\">" . $Result["path"] . "</td>
 		<td><a href=\"https://" . $Result["realLink"] . "\">" . substr($Result["realLink"], 0, 35) . "……</a></td>
 		<td>" . $Result["ptime"] . "</td><td>" . $Result["paccount"] . "</td>
@@ -438,7 +438,7 @@ function GetIPTablePage(string $page)
 
 									if ($Result = mysqli_fetch_assoc($Result)) {
 										$AllCount = $Result["AllCount"];
-										$AllSize = ($AllCount == "0") ? "无数据" : formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
+										$AllSize = ($AllCount == "0") ? "无数据" : formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 										$ParseCountMsg =  "累计解析次数：$AllCount 个<br />累计解析大小：$AllSize";
 									}
 
@@ -691,7 +691,7 @@ function GetIPTablePage(string $page)
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 											// 存在数据
 											$AllCount = $Result["AllCount"];
-											$AllSize = formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
+											$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 											echo "累计解析 $AllCount 个，共 $AllSize";
 											?>
 											<br />
@@ -700,7 +700,7 @@ function GetIPTablePage(string $page)
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 											// 存在数据
 											$AllCount = $Result["AllCount"];
-											$AllSize = formatSize((int)$Result["AllSize"]); // 格式化获取到的文件大小
+											$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 											echo "今日解析 $AllCount 个，共 $AllSize";
 											?>
 										</p>
