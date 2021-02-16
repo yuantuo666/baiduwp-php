@@ -76,7 +76,7 @@ switch ($method) {
 					"sviptips" => $SvipTips
 				));
 			} else {
-				EchoInfo(0, array("msg" => "数据库中没有数据"));
+				EchoInfo(-1, array("msg" => "数据库中没有数据", "sviptips" => "Unknown"));
 			}
 		} else {
 			// 未开启数据库
