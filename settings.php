@@ -173,7 +173,7 @@ if ($is_login) connectdb();
 										Swal.fire("正在加载，请稍等");
 										Swal.showLoading();
 										newpage = Number($("#AnalyseTable").attr("page")) + 1;
-										$.get("api.php?m=ADMINAPI&act=AnalyseGetTable&page=" + String(newpage), function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=AnalyseGetTable&page=${newpage}`, function(data, status) {
 											if (status == "success") {
 												$("#AnalyseTable").append(data);
 												$("#AnalyseTable").attr("page", newpage);
@@ -259,7 +259,7 @@ if ($is_login) connectdb();
 										Swal.fire("正在加载，请稍等");
 										Swal.showLoading();
 										newpage = Number($("#SvipTable").attr("page")) + 1;
-										$.get("api.php?m=ADMINAPI&act=SvipGetTable&page=" + String(newpage), function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=SvipGetTable&page=${newpage}`, function(data, status) {
 											if (status == "success") {
 												$("#SvipTable").append(data);
 												$("#SvipTable").attr("page", newpage);
@@ -373,7 +373,7 @@ if ($is_login) connectdb();
 										Swal.fire("正在加载，请稍等");
 										Swal.showLoading();
 										newpage = Number($("#IPTable").attr("page")) + 1;
-										$.get("api.php?m=ADMINAPI&act=IPGetTable&page=" + String(newpage), function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=IPGetTable&page=${newpage}`, function(data, status) {
 											if (status == "success") {
 												$("#IPTable").append(data);
 												$("#IPTable").attr("page", newpage);
@@ -643,7 +643,7 @@ if ($is_login) connectdb();
 		function DeleteById(Type, Id) {
 			Swal.fire("正在提交删除请求，请稍等");
 			Swal.showLoading();
-			$.get("api.php?m=ADMINAPI&act=DeleteById&id=" + String(Id) + "&type=" + Type, function(data, status) {
+			$.get(`api.php?m=ADMINAPI&act=DeleteById&id=${Id}&type=${Type}`, function(data, status) {
 				if (status == "success") {
 					var json = JSON.parse(data);
 					Swal.fire(json.msg);
