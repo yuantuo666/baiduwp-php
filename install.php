@@ -303,7 +303,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						</div>
 						<!-- 已经读取了配置，没必要确认 -->
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
-						<small class="form-text">TIPS：由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
+						<small class="form-text">TIPS：1. 由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
+						<small class="form-text">2. 你可以手动在当前目录下新建一个 notice.html 文件，当加载首页时会自动引用该文件。</small>
 						<br><br>
 
 

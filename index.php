@@ -615,6 +615,7 @@ SWITCHTIP;
 							?>
 							<button type="submit" class="mt-4 mb-3 btn btn-success btn-block"><?php echo Language["Submit"]; ?></button>
 						</form>
+						<?php if (file_exists("notice.html")) echo file_get_contents("notice.html"); ?>
 					</div>
 				</div>
 				<script>
