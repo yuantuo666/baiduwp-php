@@ -273,7 +273,7 @@ if ($is_login) connectdb();
 									function SettingFirstAccount(id) {
 										Swal.fire("正在设置，请稍等");
 										Swal.showLoading();
-										$.get("api.php?m=ADMINAPI&act=SvipSettingFirstAccount&id=" + String(id), function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=SvipSettingFirstAccount&id=${id}`, function(data, status) {
 											if (status == "success") {
 												var json = JSON.parse(data);
 												Swal.fire(json.msg);
@@ -287,7 +287,7 @@ if ($is_login) connectdb();
 									function SettingNormalAccount(id) {
 										Swal.fire("正在设置，请稍等");
 										Swal.showLoading();
-										$.get("api.php?m=ADMINAPI&act=SvipSettingNormalAccount&id=" + String(id), function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=SvipSettingNormalAccount&id=${id}`, function(data, status) {
 											if (status == "success") {
 												var json = JSON.parse(data);
 												Swal.fire(json.msg);
