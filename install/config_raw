@@ -3,17 +3,34 @@
  * PanDownload 网页复刻版，PHP 语言版配置文件
  * ！！！请勿修改本文件，如果手动修改后再在后台设置，可能导致config.php文件被清空！！！
  *
- * @version 2.0.0
+ * @version 2.1.0
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  */
-const programVersion = '2.0.0';
+const programVersion = '2.1.0';
 if (!defined('init')) {
 	http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./');
 	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的配置文件！\r\n禁止直接访问！");
 }
-const Sitename = '<Sitename>'; const BDUSS = '<BDUSS>'; const STOKEN = '<STOKEN>'; const SVIP_BDUSS = '<SVIP_BDUSS>'; const IsCheckPassword = <IsCheckPassword>;
-const Password = '<Password>'; const Footer = '<Footer>'; const APP_ID = '250528'; const DEBUG = false; const USING_DB = <USING_DB>;
-const DbConfig = array("servername" => "<servername>", "username" => "<username>", "password" => "<password>", "dbname" => "<dbname>", "dbtable" => "<dbtable>");
-const ADMIN_PASSWORD = '<ADMIN_PASSWORD>'; const DownloadTimes = <DownloadTimes>; const IsConfirmDownload = <IsConfirmDownload>;
+const Sitename = '<Sitename>';
+
+const BDUSS = '<BDUSS>';
+const STOKEN = '<STOKEN>';
+const SVIP_BDUSS = '<SVIP_BDUSS>';
+
+const IsCheckPassword = <IsCheckPassword>;
+const Password = '<Password>';
+const Footer = <<<'FoOtEr_Made_By_YuanTuo'
+<Footer>
+FoOtEr_Made_By_YuanTuo;
+const APP_ID = '250528';
+const DEBUG = false;
+
+const USING_DB = <USING_DB>;
+const DbConfig = array("servername" => "<servername>", "username" => "<username>", "DBPassword" => "<DBPassword>", "dbname" => "<dbname>", "dbtable" => "<dbtable>");
+
+const ADMIN_PASSWORD = '<ADMIN_PASSWORD>';
+const DownloadTimes = <DownloadTimes>;
+const IsConfirmDownload = <IsConfirmDownload>;
+const SVIPSwitchMod = <SVIPSwitchMod>;

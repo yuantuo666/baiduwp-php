@@ -2,20 +2,20 @@
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供大家学习参考，严禁商业用途
 
-### 实现原理
+## 🔎实现原理
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
 本质就是用会员账号获取下载地址并发送给访客。
 
-在使用时请保留导航栏的 Made by Yuan_Tuo ，感谢！
+📢在使用时请保留导航栏的 Made by Yuan_Tuo ，感谢！
 
-欢迎各位转发本项目到各大论坛，但请一定要标注原地址！
+📢欢迎各位转发本项目到各大论坛，但请一定要标注原地址！
 
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
-## Donate
+## 💴Donate
 [捐赠作者](https://imwcr.cn/?donate)
 
-## Blacklists
+## 🚧Blacklists
 <!-- - http://down.5nb.me/ 1.4.5版本（站长拒不修改） -->
 - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码
 - https://pan.qiafan.vip/ 1.4.5版本 无密码
@@ -39,7 +39,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 版权信息可添加**Github项目地址**或**我个人主页地址**，内容可自定，但访客**必须可见**。<br />
 **那些把文字颜色和背景改成一样的站长，有意思吗？**
 
-## Tips
+## 📌Tips
 - 使用了 `Curl`，使用前请确认安装了Curl及其PHP插件
 - 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限** 问题
 - 仅支持 **PHP 7 和 7+**！
@@ -56,34 +56,43 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - `Google Chrome 88+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
   - `Firefox 85+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
-# Setting
+# 🔧Setting
 首先Clone项目或进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件。<br />
 然后访问 `install.php` 文件并填写相关信息。<br />
 如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确。<br />
 最后点击提交即可。
 
-## Demo
+## 💻Demo
 [暂不开放](http://imwcr.cn/api/bdwp/)<br />
 因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 
-## New Changes
-- 当前版本：`2.0.0`
-- 更新日期：2021-02-11
-- 修改内容
-  - ✨增加深色模式
-  - 弹窗升级适应深色模式，改 `SweetAlert` 为 `SweetAlert2`
-  - 优化部分 PHP 和 JavaScript 代码
-  - 修复 SQL 文件中初始序号不为 1 的问题
-  - ✨新增用户设置页面，可手动设置**系统语言**和**色彩模式**
-  - 删除不必要的保护密码提醒（从项目启动时留下来的问题）
-  - 增加新的免登陆接口获取 50MB 以下文件 **（未完成）**
-  - ✨系统语言增加英语，可自动识别浏览器语言，也可手动切换
-  - ✨增加安装程序
-  - 丰富错误提示内容
-  - 修复一些历史遗留 bug
-  - 修复一些新发现/新出现的 bug
+## 📦New Changes
+- 当前版本：`2.1.0`
+- 更新日期：2021-02-17
+<!-- 同志们，写更新日志要细致啊，不要写笼统的！ -->
+- 修改内容：
+  - 💥新增功能
+    - 安装程序 `install.php` 自动检测旧版本配置文件 `config.php` 是否存在，若存在自动导入旧版本配置
+    - 增加选择是否取消下载次数提醒功能
+    - ✨安装时支持保留数据库数据
+    - ✨后台管理页面支持删除数据
+    - ✨增加四种SVIP账号切换模式
+    - 增加首页公告自定义功能
+  - 💪安全增强
+    - 安装程序 `install.php` 自动检测是否安装过，如果安装则需进入管理员页面登录
+  - ⚠错误修复
+    - 修复部分页面检查密码功能失效问题
+    - 修复首页小圆点无颜色错误
+    - 修复不支持色彩模式的浏览器无法显示 `Sweetalert2` 弹窗问题
+    - 修复解析数据一直为 `2.00GB` 问题
+    - 修复管理员密码错误不提示
+  - ♻代码优化
+    - ✨将 `settings.php` 内部分请求方式改为 `ajax` ，增加加载提示框 <!-- 搞了四个小时，累死 -->
+    - 优化提示文本（语法、严谨程度等），给一些提示框增加图标
+    - 增加部分配置异常的处理程序
+    - 优化部分 PHP 和 JavaScript 代码
 
-## Thanks
+## 🔔Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
 - [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")
 - [Bootstrap 深色模式](https://github.com/vinorodrigues/bootstrap-dark "bootstrap-dark 项目")

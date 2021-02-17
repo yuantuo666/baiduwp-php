@@ -1,27 +1,16 @@
 const colorMode = localStorage.getItem('colorMode'); // 获取色彩模式配置
 if (colorMode === null) { // 若没有配置（跟随浏览器）
-	if (window.matchMedia('(prefers-color-scheme: dark)').matches) { // 深色模式
-		document.querySelector('#ColorMode-Dark').disabled = false;
-		document.querySelector('#Swal2-Dark').disabled = false;
-	} else if (window.matchMedia('(prefers-color-scheme: light)').matches) { // 浅色模式
-		document.querySelector('#ColorMode-Dark').disabled = true;
-		document.querySelector('#Swal2-Light').disabled = false;
-	}
-} else if (colorMode === 'dark') { // 深色模式
-	document.querySelector('#ColorMode-Dark').disabled = false;
-	document.querySelector('#Swal2-Dark').disabled = false;
-} else if (colorMode === 'light') { // 浅色模式
-	document.querySelector('#ColorMode-Dark').disabled = true;
-	document.querySelector('#Swal2-Light').disabled = false;
-} else { // 配置错误时的自动纠正程序
+	if (window.matchMedia('(prefers-color-scheme: dark)').matches) DarkMod(); // 深色模式
+	else if (window.matchMedia('(prefers-color-scheme: light)').matches) LightMod();// 浅色模式
+	else LightMod(); // 对于不支持选择的老版本浏览器，启用浅色模式
+} else if (colorMode === 'dark') DarkMod(); // 深色模式
+else if (colorMode === 'light') LightMod(); // 浅色模式
+else { // 配置错误时的自动纠正程序
 	localStorage.removeItem('colorMode');
-	if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-		document.querySelector('#ColorMode-Dark').disabled = false;
-		document.querySelector('#Swal2-Dark').disabled = false;
-	} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-		document.querySelector('#ColorMode-Dark').disabled = true;
-		document.querySelector('#Swal2-Light').disabled = false;
-	}
+	if (window.matchMedia('(prefers-color-scheme: dark)').matches) DarkMod();
+	else if (window.matchMedia('(prefers-color-scheme: light)').matches) LightMod();
+	else LightMod(); // 对于不支持选择的老版本浏览器，启用浅色模式
+
 	document.addEventListener('DOMContentLoaded', function () {
 		Swal.fire({
 			title: '错误',
@@ -32,4 +21,13 @@ if (colorMode === null) { // 若没有配置（跟随浏览器）
 			location.reload();
 		});
 	});
+}
+
+function LightMod() {
+	document.querySelector('#ColorMode-Dark').disabled = true;
+	document.querySelector('#Swal2-Light').disabled = false;
+}
+function DarkMod() {
+	document.querySelector('#ColorMode-Dark').disabled = false;
+	document.querySelector('#Swal2-Dark').disabled = false;
 }

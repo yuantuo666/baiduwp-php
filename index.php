@@ -9,13 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.0.0
+ * @version 2.1.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
+$programVersion_Index = "2.1.0";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -28,7 +29,15 @@ if (!file_exists('config.php')) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=install.php');
-	die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序");
+	die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
+} else {
+	require('config.php');
+	if ($programVersion_Index !== programVersion) {
+		http_response_code(503);
+		header('Content-Type: text/plain; charset=utf-8');
+		header('Refresh: 5;url=install.php');
+		die("HTTP 503 服务不可用！\r\n配置文件版本异常！\r\n将在五秒内跳转到安装程序！\r\n若重新安装无法解决问题，请重新 Clone 项目并配置！");
+	}
 }
 if (!(file_exists('functions.php') && file_exists('language.php'))) {
 	http_response_code(503);
@@ -36,10 +45,17 @@ if (!(file_exists('functions.php') && file_exists('language.php'))) {
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
 	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
+// 确认会员账号模式是否正常
+if (USING_DB == false and SVIPSwitchMod != 0) {
+	http_response_code(503);
+	header('Content-Type: text/plain; charset=utf-8');
+	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
+	die("HTTP 503 服务不可用！\r\n配置错误，未启用数据库无法使用其他会员模式！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
+}
 // 保存启动时间
 $system_start_time = microtime(true);
 // 导入配置和函数
-require('config.php');
+
 require('language.php');
 require('functions.php');
 // 通用响应头
@@ -78,26 +94,35 @@ if (DEBUG) {
 	<script src="static/color.js"></script>
 	<script src="static/functions.js"></script>
 	<script defer src="static/ready.js"></script>
-	<script>
-		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
-			<?php
-			if (IsConfirmDownload)
-				echo 'Swal.fire({
-					title: "' . Language["ConfirmTitle"] . '",
-					html: "' . Language["ConfirmText"] . '",
-					icon: "warning",
-					showCancelButton: true,
-					confirmButtonText: "' . Language["ConfirmmButtonText"] . '",
-					reverseButtons: true
-				}).then(function(e) {
-					if (e.isConfirmed) {
-						dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
-					}
-				});';
-			else echo 'dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);';
-			?>
+	<?php
+	if (isset($_POST["surl"])) {
+		echo '<script>';
+		if (IsConfirmDownload) {
+			$Language = Language;
+			$JSCode['echo'](
+				<<<Function
+function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
+	Swal.fire({
+		title: "{$Language["ConfirmTitle"]}",
+		html: "{$Language["ConfirmText"]}",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: "{$Language["ConfirmmButtonText"]}",
+		reverseButtons: true
+	}).then(function(e) {
+		if (e.isConfirmed) {
+			dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize);
 		}
-	</script>
+	});
+}
+Function
+			);
+		} else {
+			echo 'let confirmdl = dl;';
+		}
+		echo '</script>';
+	}
+	?>
 </head>
 
 <body>
@@ -129,7 +154,7 @@ if (DEBUG) {
 		} elseif (isset($_GET["usersettings"])) { // 用户设置页面
 			require("usersettings.php");
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
-			echo '<script>setTimeout(() => Swal.fire(\'' . Language["TipTitle"] . '\',\'' . Language["TimeoutTip"] . '\',\'info\'), 300000);</script>';
+			echo '<script>setTimeout(() => Swal.fire("' . Language["TipTitle"] . '","' . Language["TimeoutTip"] . '","info"), 300000);</script>';
 			CheckPassword();
 			$surl = $_POST["surl"]; // 含有1
 			$pwd = (!empty($_POST["pwd"])) ? $_POST["pwd"] : "";
@@ -183,7 +208,7 @@ if (DEBUG) {
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
-								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
+								<span class="float-right">' . formatSize((float)$file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
@@ -216,7 +241,7 @@ if (DEBUG) {
 							$file = $filejson["list"][$i];
 							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
-								<span class="float-right">' . formatSize($file["size"]) . '</span></li>';
+								<span class="float-right">' . formatSize((float)$file["size"]) . '</span></li>';
 							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
 						}
@@ -243,6 +268,7 @@ if (DEBUG) {
 						return $ip;
 					}
 					$ip = getip();
+					$isipwhite = FALSE; //初始化 防止报错
 					if (USING_DB) {
 						connectdb();
 
@@ -309,41 +335,81 @@ if (DEBUG) {
 							$realLink = $result["realLink"];
 							$usingcache = true;
 						} else {
-							// // 判断cookie   取消这个判断 下载次数限制在后台控制
-							// if (!$isipwhite and !empty($_COOKIE["SESSID"]) and !$smallfile) {
-							// 	// 提示无权继续
-							// 	dl_error("免费次数不足", "<p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-							// 	exit;
-							// }
-							if (USING_DB) {
-								// 判断今天内是否获取过文件
-								if (!$isipwhite and !$smallfile) { // 白名单和小文件跳过
-									// 获取解析次数
-									$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
-									$mysql_query = mysqli_query($conn, $sql);
-									$result = mysqli_fetch_assoc($mysql_query);
-									if ($result["Num"] >= DownloadTimes) {
-										// 提示无权继续
-										// dl_error("免费次数不足", "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>您已于 <b>" . $result["ptime"] . "</b> 时解析过文件“<b>" . $result["filename"] . "</b>”。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-										dl_error(Language["NoChance"], "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-										exit;
-									}
-								}
-								// 获取SVIP BDUSS
 
-								$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
-								$Result = mysqli_query($conn, $sql);
-								if ($Result =  mysqli_fetch_assoc($Result)) {
-									$SVIP_BDUSS = $Result["svip_bduss"];
-									$id = $Result["id"];
-								} else {
-									// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+							// 判断今天内是否获取过文件
+							if (!$isipwhite and !$smallfile) { // 白名单和小文件跳过
+								// 获取解析次数
+								$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
+								$mysql_query = mysqli_query($conn, $sql);
+								$result = mysqli_fetch_assoc($mysql_query);
+								if ($result["Num"] >= DownloadTimes) {
+									// 提示无权继续
+									dl_error(Language["NoChance"], "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
+									exit;
+								}
+							}
+
+							// 获取SVIP BDUSS
+							switch (SVIPSwitchMod) {
+								case 1:
+									//模式1：用到废为止
+									// 时间倒序输出第一项未被限速账号
+									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
+									$Result = mysqli_query($conn, $sql);
+									if ($Result =  mysqli_fetch_assoc($Result)) {
+										$SVIP_BDUSS = $Result["svip_bduss"];
+										$id = $Result["id"];
+									} else {
+										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+										$SVIP_BDUSS = SVIP_BDUSS;
+										$id = "-1";
+									}
+									break;
+								case 2:
+									//模式2：轮番上
+									// 时间顺序输出第一项未被限速账号
+									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
+
+									$Result = mysqli_query($conn, $sql);
+									if ($Result =  mysqli_fetch_assoc($Result)) {
+										$SVIP_BDUSS = $Result["svip_bduss"];
+										$id = $Result["id"];
+										//不论解析成功与否，将当前账号更新时间，下一次使用另一账号
+										// 开始处理
+										// 这里最新的时间表示可用账号，按顺序排序
+										$is_using = date("Y-m-d H:i:s");
+										$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+										$mysql_query = mysqli_query($conn, $sql);
+										if ($mysql_query == false) {
+											// 失败 但可继续解析
+											dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
+										}
+									} else {
+										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+										$SVIP_BDUSS = SVIP_BDUSS;
+										$id = "-1";
+									}
+									break;
+								case 3:
+									//模式3：手动切换，不管限速
+									// 时间倒序输出第一项账号，不管限速
+									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
+									$Result = mysqli_query($conn, $sql);
+									if ($Result =  mysqli_fetch_assoc($Result)) {
+										$SVIP_BDUSS = $Result["svip_bduss"];
+										$id = $Result["id"];
+									} else {
+										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+										$SVIP_BDUSS = SVIP_BDUSS;
+										$id = "-1";
+									}
+									break;
+								case 0:
+									//模式0：使用本地解析
+								default:
 									$SVIP_BDUSS = SVIP_BDUSS;
 									$id = "-1";
-								}
-							} else {
-								$SVIP_BDUSS = SVIP_BDUSS;
-								$id = "-1";
+									break;
 							}
 
 
@@ -359,41 +425,49 @@ if (DEBUG) {
 							else $realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
 							$usingcache = false;
 
-
-							if (USING_DB) {
-								// 判断账号是否限速，如果限速就将其标记，切换账号
-								if (strstr('https://' . $realLink, "//qdall") or $realLink == "") {
-									// 限速
-									if ($id != "-1") {
+							switch (SVIPSwitchMod) {
+								case 1:
+									//模式1：用到废为止
+								case 2:
+									//模式2：轮番上
+									if (strstr('https://' . $realLink, "//qdall") or $realLink == "") {
+										//限速进行标记 并刷新页面重新解析
 										$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= -1 WHERE `id`=$id";
 										$mysql_query = mysqli_query($conn, $sql);
 										if ($mysql_query != false) {
 											// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
-		?>
-											<div class="row justify-content-center">
-												<div class="col-md-7 col-sm-8 col-11">
-													<div class="alert alert-danger" role="alert">
-														<h5 class="alert-heading"><?php echo Language["SwitchWait"]; ?></h5>
-														<hr />
-														<p class="card-text">当前SVIP账号已经被限速</p>
-														<p class="card-text">正在自动切换新账号中</p>
-														<p class="card-text">预计需要2~3秒，请耐心等待</p>
-														</p>
+											$Language = Language;
+											echo <<<SWITCHTIP
+												<div class="row justify-content-center">
+													<div class="col-md-7 col-sm-8 col-11">
+														<div class="alert alert-danger" role="alert">
+															<h5 class="alert-heading">{$Language["SwitchWait"]}</h5>
+															<hr />
+															<p class="card-text">当前SVIP账号已经被限速</p>
+															<p class="card-text">正在自动切换新账号中</p>
+															<p class="card-text">预计需要2~3秒，请耐心等待</p>
+															</p>
+														</div>
 													</div>
 												</div>
-											</div>
-											<script>
-												setTimeout(() => location.reload(), 2000);
-											</script>
-							<?php exit;
+												<script>
+													setTimeout(() => location.reload(), 2000);
+												</script>
+SWITCHTIP;
+											exit;
 										} else {
 											// SVIP账号自动切换失败
-
+											dl_error("SVIP账号切换失败", "数据库出现问题，无法切换SVIP账号，请联系站长修复", true);
+											exit;
 										}
-									} else {
-										// 本地账号也限速
 									}
-								}
+									break;
+								case 3:
+									//模式3：手动切换，不管限速
+								case 0:
+									//模式0：使用本地解析
+								default:
+									break;
 							}
 						}
 
@@ -419,7 +493,7 @@ if (DEBUG) {
 								// 为了防止一些换ip调用，这里写一个cookie
 							}
 
-							?>
+		?>
 							<div class="row justify-content-center">
 								<div class="col-md-7 col-sm-8 col-11">
 									<div class="alert alert-primary" role="alert">
@@ -541,6 +615,7 @@ if (DEBUG) {
 							?>
 							<button type="submit" class="mt-4 mb-3 btn btn-success btn-block"><?php echo Language["Submit"]; ?></button>
 						</form>
+						<?php if (file_exists("notice.html")) echo file_get_contents("notice.html"); ?>
 					</div>
 				</div>
 				<script>
