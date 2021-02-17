@@ -339,7 +339,7 @@ $JSCode = array("get" => function (string $value) {
 	echo $JSCode['get']($value);
 });
 /* 
- * 将Settings.php里面的代码移到functionS.php里面来
+ * 将settings.php里面的代码移到functions.php里面来
  * 方便api调用
  */
 function EchoInfo(int $error, array $Result)

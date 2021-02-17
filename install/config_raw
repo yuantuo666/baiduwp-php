@@ -21,7 +21,9 @@ const SVIP_BDUSS = '<SVIP_BDUSS>';
 
 const IsCheckPassword = <IsCheckPassword>;
 const Password = '<Password>';
-const Footer = '<Footer>';
+const Footer = <<<'FoOtEr_Made_By_YuanTuo'
+<Footer>
+FoOtEr_Made_By_YuanTuo;
 const APP_ID = '250528';
 const DEBUG = false;
 
