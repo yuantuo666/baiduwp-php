@@ -13,7 +13,22 @@ if (!defined('init')) {
 	http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./');
 	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的配置文件！\r\n禁止直接访问！");
 }
-const Sitename = '<Sitename>'; const BDUSS = '<BDUSS>'; const STOKEN = '<STOKEN>'; const SVIP_BDUSS = '<SVIP_BDUSS>'; const IsCheckPassword = <IsCheckPassword>;
-const Password = '<Password>'; const Footer = '<Footer>'; const APP_ID = '250528'; const DEBUG = false; const USING_DB = <USING_DB>;
+const Sitename = '<Sitename>';
+
+const BDUSS = '<BDUSS>';
+const STOKEN = '<STOKEN>';
+const SVIP_BDUSS = '<SVIP_BDUSS>';
+
+const IsCheckPassword = <IsCheckPassword>;
+const Password = '<Password>';
+const Footer = '<Footer>';
+const APP_ID = '250528';
+const DEBUG = false;
+
+const USING_DB = <USING_DB>;
 const DbConfig = array("servername" => "<servername>", "username" => "<username>", "DBPassword" => "<DBPassword>", "dbname" => "<dbname>", "dbtable" => "<dbtable>");
-const ADMIN_PASSWORD = '<ADMIN_PASSWORD>'; const DownloadTimes = <DownloadTimes>; const IsConfirmDownload = <IsConfirmDownload>;
+
+const ADMIN_PASSWORD = '<ADMIN_PASSWORD>';
+const DownloadTimes = <DownloadTimes>;
+const IsConfirmDownload = <IsConfirmDownload>;
+const SVIPSwitchMod = <SVIPSwitchMod>;

@@ -45,6 +45,13 @@ if (!(file_exists('functions.php') && file_exists('language.php'))) {
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
 	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
+// 确认会员账号模式是否正常
+if (USING_DB == false and SVIPSwitchMod != 0) {
+	http_response_code(503);
+	header('Content-Type: text/plain; charset=utf-8');
+	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
+	die("HTTP 503 服务不可用！\r\n配置错误，未启用数据库无法使用其他会员模式！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
+}
 // 保存启动时间
 $system_start_time = microtime(true);
 // 导入配置和函数
@@ -343,7 +350,7 @@ Function
 							}
 
 							// 获取SVIP BDUSS
-							switch ($SVIPSwitchMod) {
+							switch (SVIPSwitchMod) {
 								case 1:
 									//模式1：用到废为止
 									// 时间倒序输出第一项未被限速账号
@@ -385,7 +392,7 @@ Function
 									break;
 								case 3:
 									//模式3：手动切换，不管限速
-									// 时间倒序输出第一项账号
+									// 时间倒序输出第一项账号，不管限速
 									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
 									$Result = mysqli_query($conn, $sql);
 									if ($Result =  mysqli_fetch_assoc($Result)) {
@@ -418,7 +425,7 @@ Function
 							else $realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
 							$usingcache = false;
 
-							switch ($SVIPSwitchMod) {
+							switch (SVIPSwitchMod) {
 								case 1:
 									//模式1：用到废为止
 								case 2:

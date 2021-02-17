@@ -269,6 +269,7 @@ if ($is_login) connectdb();
 											}
 										});
 									}
+
 									function SettingFirstAccount(id) {
 										Swal.fire("正在设置，请稍等");
 										Swal.showLoading();
@@ -282,6 +283,7 @@ if ($is_login) connectdb();
 											}
 										});
 									}
+
 									function SettingNormalAccount(id) {
 										Swal.fire("正在设置，请稍等");
 										Swal.showLoading();
@@ -438,6 +440,65 @@ if ($is_login) connectdb();
 
 							</div>
 						</div>
+					<?php } elseif ($method == "SVIPSwitchMod") { ?>
+						<nav>
+							<ol class="breadcrumb my-4">
+								<li class="breadcrumb-item"><a href="index.php">baiduwp-php</a></li>
+								<li class="breadcrumb-item"><a href="settings.php">后台管理</a></li>
+								<li class="breadcrumb-item">会员账号切换模式</li>
+							</ol>
+						</nav>
+						<!-- 会员账号切换模式 -->
+						<div class="card">
+							<div class="card-header">
+								会员账号切换模式
+							</div>
+							<div class="card-body">
+								<h5 class="card-title">会员账号切换模式</h5>
+								<?php
+								switch (SVIPSwitchMod) {
+									case '0':
+										$Mod = "本地模式";
+										break;
+									case '1':
+										$Mod = "顺序模式";
+										break;
+									case '2':
+										$Mod = "轮换模式";
+										break;
+									case '3':
+										$Mod = "手动模式";
+										break;
+									default:
+										$Mod = "未知模式";
+										break;
+								}
+								echo "当前设置的会员账号切换模式：$Mod <br />";
+								?>
+								本地模式：不管是否限速，一直使用本地账号解析。<br />
+								顺序模式：一直使用设置的账号解析，用到会员账号失效切换下一账号；当数据库中会员账号失效后，会使用本地账号解析。<br />
+								轮换模式：解析一次就切换一次账号，只使用会员账号；当数据库中会员账号失效后，会使用本地账号解析。<br />
+								手动模式：不管是否限速，一直使用数据库中设置的账号。
+								<br>
+								注意！此功能需要修改config.php的信息，请小心使用。
+								<br><br>
+								<!-- 修改会员账号切换模式 -->
+								<h5 class="card-title">修改会员账号切换模式</h5>
+								<form class="ajaxform" action="api.php?m=ADMINAPI&act=setSVIPSwitchMod">
+									<div class="form-group">
+										<label>会员账号切换模式</label>
+										<select class="form-control" id="SVIPSwitchMod" name="SVIPSwitchMod">
+											<option value="0" <?php if (SVIPSwitchMod == "0") echo "selected=\"selected\""; ?>>本地模式</option>
+											<option value="1" <?php if (SVIPSwitchMod == "1") echo "selected=\"selected\""; ?>>顺序模式</option>
+											<option value="2" <?php if (SVIPSwitchMod == "2") echo "selected=\"selected\""; ?>>轮换模式</option>
+											<option value="3" <?php if (SVIPSwitchMod == "3") echo "selected=\"selected\""; ?>>手动模式</option>
+										</select>
+									</div>
+									<button type="submit" class="btn btn-primary">提交</button>
+								</form>
+
+							</div>
+						</div>
 					<?php } else { ?>
 						<nav>
 							<ol class="breadcrumb my-4">
@@ -531,6 +592,35 @@ if ($is_login) connectdb();
 											?>
 										</p>
 										<a href="?m=DownloadTimes" class="btn btn-primary">查看详细情况</a>
+										<br><br>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6 col-sm-12">
+										<h5 class="card-title">会员账号切换模式</h5>
+										<p class="card-text">
+											<?php
+											switch (SVIPSwitchMod) {
+												case '0':
+													$Mod = "本地模式";
+													break;
+												case '1':
+													$Mod = "顺序模式";
+													break;
+												case '2':
+													$Mod = "轮换模式";
+													break;
+												case '3':
+													$Mod = "手动模式";
+													break;
+												default:
+													$Mod = "未知模式";
+													break;
+											}
+											echo "当前设置的会员账号切换模式：$Mod";
+											?>
+										</p>
+										<a href="?m=SVIPSwitchMod" class="btn btn-primary">查看详细情况</a>
 										<br><br>
 									</div>
 								</div>

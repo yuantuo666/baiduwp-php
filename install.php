@@ -27,6 +27,18 @@ if (!(file_exists('functions.php') && file_exists('language.php'))) {
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
 	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并进入此页面安装！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
+if (file_exists('config.php')) {
+	// 如果已经安装过一次，必须管理员登录
+	session_start();
+	$is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
+	if ($is_login == false) {
+		// 转跳到管理员页面登录
+		http_response_code(403);
+		header('Content-Type: text/plain; charset=utf-8');
+		header('Refresh: 5;url=settings.php');
+		die("HTTP 403 禁止访问！\r\n检测到你已经安装过本程序，请先登录管理员账号后再访问本页面进行安装！\r\n将在五秒内跳转到管理员页面登录！");
+	}
+}
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
@@ -85,6 +97,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($BDUSS, 'BDUSS');
 			getConfig($STOKEN, 'STOKEN');
 			getConfig($SVIP_BDUSS, 'SVIP_BDUSS');
+			getConfig($SVIPSwitchMod, 'SVIPSwitchMod', '0'); // 有bug隐患 如果未开启数据库，必须为0
 
 			getConfig($USING_DB, 'USING_DB', true);
 			if (defined('DbConfig')) {
@@ -255,6 +268,24 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									<small class="form-text">一般情况无需修改</small>
 								</div>
 							</div>
+							<!-- 选择会员账号切换模式 -->
+							<div class="form-group row">
+								<label for="SVIPSwitchMod" class="col-sm-2 col-form-label">会员账号切换模式</label>
+								<div class="col-sm-10">
+									<select class="form-control" id="SVIPSwitchMod" name="SVIPSwitchMod">
+										<option value="0" <?php if ($SVIPSwitchMod == "0") echo "selected=\"selected\""; ?>>本地模式</option>
+										<option value="1" <?php if ($SVIPSwitchMod == "1") echo "selected=\"selected\""; ?>>顺序模式</option>
+										<option value="2" <?php if ($SVIPSwitchMod == "2") echo "selected=\"selected\""; ?>>轮换模式</option>
+										<option value="3" <?php if ($SVIPSwitchMod == "3") echo "selected=\"selected\""; ?>>手动模式</option>
+									</select>
+									<small class="form-text">
+										本地模式：不管是否限速，一直使用本地账号解析。<br />
+										顺序模式：一直使用设置的账号解析，用到会员账号失效切换下一账号；当数据库中会员账号失效后，会使用本地账号解析。<br />
+										轮换模式：解析一次就切换一次账号，只使用会员账号；当数据库中会员账号失效后，会使用本地账号解析。<br />
+										手动模式：不管是否限速，一直使用数据库中设置的账号。
+									</small>
+								</div>
+							</div>
 							<!-- 提供不清空数据选项 -->
 							<div class="form-group form-check">
 								<input type="checkbox" class="form-check-input" id="ReserveDBData" name="ReserveDBData" value="true">
@@ -272,8 +303,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						</div>
 						<!-- 已经读取了配置，没必要确认 -->
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
-						<small class="form-text">TIPS：1. 由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
-						<small class="form-text text-danger">2. 安装完成后请及时删除本安装文件。</small>
+						<small class="form-text">TIPS：由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
 						<br><br>
 
 
@@ -319,6 +349,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								item = $(this).val();
 								if (item == "false") {
 									$("div#DbConfig").slideUp();
+									$("select#SVIPSwitchMod").val("0");
 								} else {
 									$("div#DbConfig").slideDown();
 								}
@@ -457,6 +488,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$dbname = (!empty($_POST["DbConfig_dbname"])) ? $_POST["DbConfig_dbname"] : "";
 				$dbtable = (!empty($_POST["DbConfig_dbtable"])) ? $_POST["DbConfig_dbtable"] : "";
 				$ReserveDBData = (!empty($_POST["ReserveDBData"])) ? $_POST["ReserveDBData"] : "false"; // 是否保存以前数据库数据 未选中不会提交
+				$SVIPSwitchMod = (!empty($_POST["SVIPSwitchMod"])) ? $_POST["SVIPSwitchMod"] : "0";
 
 				if ($USING_DB == "true") { //注意判断要用string类型进行
 					// 连接数据库
@@ -516,6 +548,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<DBPassword>', $DBPassword, $update_config);
 				$update_config = str_replace('<dbname>', $dbname, $update_config);
 				$update_config = str_replace('<dbtable>', $dbtable, $update_config);
+				$update_config = str_replace('<SVIPSwitchMod>', $SVIPSwitchMod, $update_config);
 
 				$len = file_put_contents('config.php', $update_config);
 

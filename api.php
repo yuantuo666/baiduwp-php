@@ -59,7 +59,7 @@ if ($method == "ADMINAPI") {
 		//没有登录管理员账号
 		EchoInfo(-1, array("msg" => "未登录"));
 		exit;
-	}else{
+	} else {
 		connectdb();
 	}
 	$action = (!empty($_GET["act"])) ? $_GET["act"] : "";
@@ -139,23 +139,23 @@ if ($method == "ADMINAPI") {
 			}
 			break;
 		case "SvipSettingNormalAccount":
-				$id = (!empty($_GET["id"])) ? $_GET["id"] : "";
-				if ($id == "") {
-					// 参数错误
-					EchoInfo(-1, array("msg" => "传入参数错误"));
+			$id = (!empty($_GET["id"])) ? $_GET["id"] : "";
+			if ($id == "") {
+				// 参数错误
+				EchoInfo(-1, array("msg" => "传入参数错误"));
+			} else {
+				// 开始处理
+				$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= 1 WHERE `id`=$id";
+				$mysql_query = mysqli_query($conn, $sql);
+				if ($mysql_query != false) {
+					// 成功
+					EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为正常账号。3s后将刷新该页面。", "refresh" => true));
 				} else {
-					// 开始处理
-					$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= 1 WHERE `id`=$id";
-					$mysql_query = mysqli_query($conn, $sql);
-					if ($mysql_query != false) {
-						// 成功
-						EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为正常账号。3s后将刷新该页面。", "refresh" => true));
-					} else {
-						// 失败
-						EchoInfo(-1, array("msg" => "修改失败"));
-					}
+					// 失败
+					EchoInfo(-1, array("msg" => "修改失败"));
 				}
-				break;
+			}
+			break;
 		case "IPGetTable":
 			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
 			echo GetIPTablePage($page);
@@ -179,6 +179,14 @@ if ($method == "ADMINAPI") {
 		case "setDownloadTimes":
 			$origin_config = file_get_contents("config.php");
 			$update_config = str_replace('const DownloadTimes = ' . DownloadTimes . ';', 'const DownloadTimes = ' . $_POST["DownloadTimes"] . ';', $origin_config);
+			$len = file_put_contents('config.php', $update_config);
+
+			if ($len != false) EchoInfo(0, array("msg" => "设置成功", "detail" => "成功写入 config.php 共 $len 个字符。3s后将刷新该页面。", "refresh" => true));
+			else EchoInfo(-1, array("msg" => "添加失败", "detail" => "请检查 config.php 文件状态及当前用户权限。或者手动修改 config.php 中相关设置。"));
+			break;
+		case "setSVIPSwitchMod":
+			$origin_config = file_get_contents("config.php");
+			$update_config = str_replace('const SVIPSwitchMod = ' . SVIPSwitchMod . ';', 'const SVIPSwitchMod = ' . $_POST["SVIPSwitchMod"] . ';', $origin_config);
 			$len = file_put_contents('config.php', $update_config);
 
 			if ($len != false) EchoInfo(0, array("msg" => "设置成功", "detail" => "成功写入 config.php 共 $len 个字符。3s后将刷新该页面。", "refresh" => true));
