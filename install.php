@@ -31,12 +31,18 @@ if (file_exists('config.php')) {
 	// 如果已经安装过一次，必须管理员登录
 	session_start();
 	$is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
-	if ($is_login == false) {
-		// 转跳到管理员页面登录
-		http_response_code(403);
-		header('Content-Type: text/plain; charset=utf-8');
-		header('Refresh: 5;url=settings.php');
-		die("HTTP 403 禁止访问！\r\n检测到你已经安装过本程序，请先登录管理员账号后再访问本页面进行安装！\r\n将在五秒内跳转到管理员页面登录！");
+	if (!$is_login and !empty($_POST["setting_password"])) {
+		require_once('config.php');
+		// 开始验证密码
+		if ($_POST["setting_password"] === ADMIN_PASSWORD) {
+			// 密码正确
+			$_SESSION["admin_login"] = true;
+			$is_login = true;
+		} else {
+			// 密码错误
+			$_SESSION["admin_login"] = false;
+			$PasswordError = true;
+		}
 	}
 }
 // 通用响应头
@@ -76,10 +82,35 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 		</nav>
 
 		<?php
-		if (!isset($_POST["Sitename"])) {
+		if (!$is_login) { ?>
+			<!-- 登录 -->
+			<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
+				<div class="card">
+					<div class="card-header bg-dark text-light">Pandownload复刻版 - 管理员登录</div>
+					<div class="card-body">
+						<form id="form1" method="post">
+							<div class="form-group my-2">
+								<input type="text" class="form-control" name="setting_password" placeholder="Password">
+								<small class="form-text text-right">忘记密码可进入<b>config.php</b>中查看~</small>
+							</div>
+							<button onclick="Sumbitform()" class="mt-4 mb-3 form-control btn btn-success btn-block">登录</button>
+						</form>
+						<script>
+							<?php if (isset($PasswordError) and $PasswordError) echo "Swal.fire('管理员密码错误','如果忘记管理员密码请进入 config.php 查看','error');"; ?>
+
+							function Sumbitform() {
+								Swal.fire("正在登录，请稍等");
+								Swal.showLoading();
+								$("#form1").submit();
+							}
+						</script>
+					</div>
+				</div>
+			</div>
+		<?php } elseif (!isset($_POST["Sitename"])) {
 			// 如果已经安装过一次，读取相关基本设置
 			if (file_exists('config.php')) {
-				require('config.php');
+				require_once('config.php');
 				echo "<script>Swal.fire('提示','检测到你已安装过本程序<br />现已自动填入config.php中设置的数据','info');</script>";
 			}
 			function getConfig(&$var, string $name, $default = '')
