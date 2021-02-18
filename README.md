@@ -67,7 +67,14 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 
 ## 📦New Changes
-- 当前版本：`2.1.0`
+- 当前版本：`2.1.1`
+- 更新日期：2021-02-18
+- 修改内容：
+  - ⚠错误修复
+    - 修复数据库中会员账号失效后一直刷新页面问题
+    - 修复旧版本无法正常升级问题
+
+- 修改版本：`2.1.0`
 - 更新日期：2021-02-17
 <!-- 同志们，写更新日志要细致啊，不要写笼统的！ -->
 - 修改内容：
@@ -91,6 +98,12 @@ PanDownload 网页复刻版，PHP 语言版<br/>
     - 优化提示文本（语法、严谨程度等），给一些提示框增加图标
     - 增加部分配置异常的处理程序
     - 优化部分 PHP 和 JavaScript 代码
+
+## 💡Contact
+- 项目作者：Yuan_Tuo
+- 作者邮箱：yuantuo666@gmail.com
+- 作者首页：https://imwcr.cn/
+- Telegram：yuantuo666
 
 ## 🔔Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
