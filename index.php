@@ -430,7 +430,7 @@ Function
 									//模式1：用到废为止
 								case 2:
 									//模式2：轮番上
-									if (strstr('https://' . $realLink, "//qdall") or $realLink == "") {
+									if ($id != "-1" and (strstr('https://' . $realLink, "//qdall") or $realLink == "")) {
 										//限速进行标记 并刷新页面重新解析
 										$sql = "UPDATE `" . $dbtable . "_svip` SET `state`= -1 WHERE `id`=$id";
 										$mysql_query = mysqli_query($conn, $sql);
