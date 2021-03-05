@@ -130,6 +130,7 @@ async function checkVer() {
 async function addUri() {
 	let token = $('#token').val()
 	let aria2url = $('#url').val()
+	let filename = $('#filename b').text();
 	// Thanks to acgotaku/BaiduExporter
 	const httpurl = $('#http')[0].href
 	const httpsurl = $('#https')[0].href
@@ -143,7 +144,7 @@ async function addUri() {
 			id: 'baiduwp',
 			params: ['token:' + token]
 		})
-		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: ["token:" + token, [httpurl, httpsurl], { header: headerOption }] })
+		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: ["token:" + token, [httpurl, httpsurl], { header: headerOption ,out:filename}] })
 	}
 	else {
 		postVer = JSON.stringify({
