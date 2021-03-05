@@ -153,7 +153,7 @@ async function addUri() {
 			id: 'baiduwp',
 			params: []
 		})
-		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: [[httpurl, httpsurl], { header: headerOption }] })
+		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: [[httpurl, httpsurl], { header: headerOption ,out:filename}] })
 	}
 	const getVer = await fetch(aria2url, {
 		body: postVer,
