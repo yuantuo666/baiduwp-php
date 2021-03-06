@@ -82,7 +82,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 		</nav>
 
 		<?php
-		if (!$is_login) { ?>
+		if (file_exists('config.php') and !$is_login) { ?>
 			<!-- 登录 -->
 			<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 				<div class="card">
