@@ -15,8 +15,11 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ## 💴Donate
 [捐赠作者](https://imwcr.cn/?donate)
 
+## 💻Demo
+[暂不开放](http://imwcr.cn/api/bdwp/)<br />
+因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
+
 ## 🚧Blacklists
-<!-- - http://down.5nb.me/ 1.4.5版本（站长拒不修改） -->
 - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码
 - https://pan.qiafan.vip/ 1.4.5版本 无密码
 - http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259）
@@ -56,54 +59,40 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - `Google Chrome 88+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
   - `Firefox 85+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
-# 🔧Setting
+# 🔧Install & Setting
 首先Clone项目或进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件。<br />
 然后访问 `install.php` 文件并填写相关信息。<br />
 如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确。<br />
 最后点击提交即可。
 
-## 💻Demo
-[暂不开放](http://imwcr.cn/api/bdwp/)<br />
-因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
-
 ## 📦New Changes
-- 当前版本：`2.1.1`
-- 更新日期：2021-02-18
-- 修改内容：
-  - ⚠错误修复
-    - 修复数据库中会员账号失效后一直刷新页面问题
-    - 修复旧版本无法正常升级问题
-
-- 修改版本：`2.1.0`
-- 更新日期：2021-02-17
-<!-- 同志们，写更新日志要细致啊，不要写笼统的！ -->
+- 当前版本：`2.1.3`
+- 更新日期：2021-03-14
 - 修改内容：
   - 💥新增功能
-    - 安装程序 `install.php` 自动检测旧版本配置文件 `config.php` 是否存在，若存在自动导入旧版本配置
-    - 增加选择是否取消下载次数提醒功能
-    - ✨安装时支持保留数据库数据
-    - ✨后台管理页面支持删除数据
-    - ✨增加四种SVIP账号切换模式
-    - 增加首页公告自定义功能
-  - 💪安全增强
-    - 安装程序 `install.php` 自动检测是否安装过，如果安装则需进入管理员页面登录
+    - 兼容老方法获取randsk(BDCLND) #84
+    - aria2推送时附上文件名 #78 Thanks to @kwxiaozhu
   - ⚠错误修复
-    - 修复部分页面检查密码功能失效问题
-    - 修复首页小圆点无颜色错误
-    - 修复不支持色彩模式的浏览器无法显示 `Sweetalert2` 弹窗问题
-    - 修复解析数据一直为 `2.00GB` 问题
-    - 修复管理员密码错误不提示
+    - 安装页面未处理默认情况丢失前缀 #76
   - ♻代码优化
-    - ✨将 `settings.php` 内部分请求方式改为 `ajax` ，增加加载提示框 <!-- 搞了四个小时，累死 -->
-    - 优化提示文本（语法、严谨程度等），给一些提示框增加图标
-    - 增加部分配置异常的处理程序
-    - 优化部分 PHP 和 JavaScript 代码
+    - 首页安装后状态提示完善 #76 #81
+    - 根页面获取失败提示完善
+    - 账号拉黑提示 #83 #84 #86
+
+[查看更多](Update.md)
 
 ## 💡Contact
 - 项目作者：Yuan_Tuo
-- 作者邮箱：yuantuo666@gmail.com
+- 作者邮箱：yuantuo666@gmail.com (一周内一定有回复)
+  - 备用：2659324610@qq.com (不会及时查看)
 - 作者首页：https://imwcr.cn/
-- Telegram：yuantuo666
+- Telegram：
+  - [@yuantuo666](https://t.me/yuantuo666)
+  - [Telegram频道](https://t.me/baiduwp_php)
+
+因为作者及合作者都是学生，所以没有办法及时解决问题。<br />
+如果遇到问题请先仔细阅读此文档和[以前的issue](https://github.com/yuantuo666/baiduwp-php/issues?q=is%3Aissue)，确实无法解决请提起issue，我们将很乐意为你解决🙂。<br />
+所有的邮件我都会查看并回复的~
 
 ## 🔔Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "GitHub 项目")
