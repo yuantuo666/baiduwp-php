@@ -7,7 +7,7 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.0
+ * @version 2.1.3
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -141,6 +141,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				getDbConfig($DBPassword, 'DBPassword');
 				getDbConfig($dbname, 'dbname');
 				getDbConfig($dbtable, 'dbtable');
+			} else {
+				//未处理默认情况 #76
+				$servername = "127.0.0.1";
+				$username = "";
+				$DBPassword = "";
+				$dbname = "";
+				$dbtable = "bdwp";
 			}
 		?>
 			<!-- 设置页面 -->
@@ -336,6 +343,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
 						<small class="form-text">TIPS：1. 由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
 						<small class="form-text">2. 你可以手动在当前目录下新建一个 notice.html 文件，当加载首页时会自动引用该文件。</small>
+						<small class="form-text">3. 如果点击此页面任何按钮都没有反应，可能是相关的JavaScript文件加载失败，刷新页面即可。</small>
 						<br><br>
 
 
@@ -436,6 +444,11 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								DBPassword = $("input[name='DbConfig_DBPassword']").val();
 								dbname = $("input[name='DbConfig_dbname']").val();
 								dbtable = $("input[name='DbConfig_dbtable']").val();
+
+								if(dbtable==""){
+									Swal.fire("数据库表名前缀设置错误", "请检查你的数据库设置，数据库表名前缀不能为空！<br />你可以设置为bdwp或其他有效字符串。", "error");
+									return;
+								}
 
 								body = `servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
 

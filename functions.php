@@ -12,7 +12,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Functions = '2.1.0';
+$programVersion_Functions = '2.1.3';
 if (!defined('init')) { // 直接访问处理程序
 	header('Content-Type: text/plain; charset=utf-8');
 	if (!file_exists('config.php')) {
@@ -159,16 +159,26 @@ function getSign(string $surl, $randsk)
 	// 如果不修改这里,则要修改配置文件ini
 	$result = get($url, $header);
 	if (preg_match('/yunData.setData\((\{.*?\})\);/', $result, $matches)) {
-		$result = json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
+		$result_decode = json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
 		if (DEBUG) {
 			echo '<pre>getSign():';
-			var_dump($result);
+			var_dump($result_decode);
 			echo '</pre>';
 		}
-		return $result;
+		return $result_decode;
 	} else {
+		//有可能是账号被百度拉黑，导致获取到的页面不同 #83 #86
 		if (DEBUG) {
 			echo '<pre>getSign():no match</pre>';
+			var_dump(htmlspecialchars($result));
+		}
+
+		if (strstr($result, "neglect:1") != false) {
+			dl_error("根目录yunData获取失败", "当前账号已经被百度拉入黑名单<br />无法正常获取文件名及文件内容，请联系站长更换config.php中普通账号的BDUSS和STOKEN<br />此错误出现与会员账号及后台设置无关");
+			exit;
+		} else {
+			dl_error("根目录yunData获取失败", "页面未正常加载，或者百度已经升级页面，无法正常获取根目录yunData数据。");
+			// exit;
 		}
 		return 1;
 	}
@@ -268,11 +278,29 @@ function get_BDCLND($surl, $Pwd)
 		return $bdclnd;
 	} else {
 		if (DEBUG) {
-			echo '<pre>get_BDCLND():';
-			var_dump($header);
+			echo '<pre>【获取bdclnd失败，可能是不需要此参数】get_BDCLND():';
+			var_dump($result);
 			echo '</pre>';
 		}
-		return '';
+		echo '<script>Swal.fire("使用提示","检测到当前链接异常，保存到网盘重新分享后可获得更好的体验~","info");</script>';
+		// 尝试使用老方法获取
+		$header = head("https://pan.baidu.com/s/" . $surl, []);
+		$bdclnd = preg_match('/BDCLND=(.+?);/', $header, $matches);
+		if ($bdclnd) {
+			if (DEBUG) {
+				echo '<pre>【老版本方法】get_BDCLND():';
+				var_dump($matches[1]);
+				echo '</pre>';
+			}
+			return $matches[1];
+		} else {
+			if (DEBUG) {
+				echo '<pre>【老版本方法】get_BDCLND():';
+				var_dump($header);
+				echo '</pre>';
+			}
+			return '';
+		}
 	}
 }
 function connectdb(bool $isAPI = false)
@@ -305,7 +333,7 @@ function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password)
 
 	$Root = ($IsRoot) ? "1" : "0";
 	$Dir = urlencode($Dir);
-	$Data = "shorturl=$Shorturl&dir=$Dir&root=$Root&pwd=$Password&page=1&num=2000&order=time";
+	$Data = "shorturl=$Shorturl&dir=$Dir&root=$Root&pwd=$Password&page=1&num=1000&order=time";
 	$header = array("User-Agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
 	$result = json_decode(post($Url, $Data, $header), true);
 	if (DEBUG) {

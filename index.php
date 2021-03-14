@@ -9,14 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.0
+ * @version 2.1.3
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.1.0";
+$programVersion_Index = "2.1.3";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -160,7 +160,7 @@ Function
 			$pwd = (!empty($_POST["pwd"])) ? $_POST["pwd"] : "";
 			$dir = (!empty($_POST["dir"])) ? $_POST["dir"] : "";
 			$IsRoot = ($dir == "") ? true : false;
-			$Filejson = GetList($surl, $dir, $IsRoot, $pwd); // 解析子目录时，需添加1
+			// $Filejson = GetList($surl, $dir, $IsRoot, $pwd); // 解析子目录时，需添加1
 			// if ($Filejson["errno"] == 0) { // 一种新的解析方法，暂未完工
 			// 	// 解析正常
 			// } else {
@@ -201,7 +201,7 @@ Function
 							$filecontent .= '<li class="breadcrumb-item"><a href="javascript:OpenDir(\'' . $fullsrc . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $dir_list[$i] . '</a></li>';
 						}
 						$filecontent .= '<li class="breadcrumb-item active">' . $dir_list[$i] . '</li>'
-							. '<li class="ml-auto">已全部加载，共' . count($filejson["list"]) . '个</li></ol></nav>';
+							. '<li class="ml-auto">已加载' . count($filejson["list"]) . '个文件</li></ol></nav>';
 
 						$filecontent .= '<div><ul class="list-group">';
 						for ($i = 0; $i < count($filejson["list"]); $i++) { // 开始输出文件列表
@@ -247,7 +247,7 @@ Function
 						}
 						echo $filecontent . "</ul></div>";
 					}
-				} else dl_error("解析错误", "解析根页面时出错！\r\n可能原因：①提取码错误；②文件失效；③服务器未连接互联网；④服务器未安装curl（或其php插件）；⑤服务器IP被百度封禁。");
+				} else dl_error("解析错误", "解析根页面时出错！<br />可能原因：①提取码错误 或 文件失效：尝试保存到自己网盘后重新分享解析；<br />②服务器未连接互联网 或 IP被百度封禁：检查网络链接，尝试ping百度网站；<br />③服务器未安装curl（或其php插件）；<br />④网络状况不好：稍后重试。<br /><br />如果以上问题排除后仍无法解决，可能是百度网盘升级了页面，请按下方提示操作：",true);
 			}
 		} elseif (isset($_GET["download"])) { // 解析下载地址页面
 			if (!CheckPassword(true)) {

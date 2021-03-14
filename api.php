@@ -10,7 +10,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_API = '2.1.0';
+$programVersion_API = '2.1.3';
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -256,7 +256,7 @@ switch ($method) {
 					"sviptips" => $SvipTips
 				));
 			} else {
-				EchoInfo(-1, array("msg" => "数据库中没有数据", "sviptips" => "Unknown"));
+				EchoInfo(-1, array("msg" => "数据库中没有状态数据，请解析一次大于50MB文件以刷新账号状态", "sviptips" => "Unknown"));//防止产生误解，把提示写完全
 			}
 		} else {
 			// 未开启数据库

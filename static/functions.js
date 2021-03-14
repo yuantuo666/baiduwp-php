@@ -3,7 +3,7 @@
  *
  * 许多函数来源于github，详见项目里的Thanks
  *
- * @version 1.4.5
+ * @version 2.1.3
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -144,7 +144,7 @@ async function addUri() {
 			id: 'baiduwp',
 			params: ['token:' + token]
 		})
-		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: ["token:" + token, [httpurl, httpsurl], { header: headerOption ,out:filename}] })
+		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: ["token:" + token, [httpurl, httpsurl], { header: headerOption, out: filename }] })//修复aria2文件名问题
 	}
 	else {
 		postVer = JSON.stringify({
@@ -153,7 +153,7 @@ async function addUri() {
 			id: 'baiduwp',
 			params: []
 		})
-		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: [[httpurl, httpsurl], { header: headerOption ,out:filename}] })
+		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: [[httpurl, httpsurl], { header: headerOption, out: filename }] })//修复aria2文件名问题
 	}
 	const getVer = await fetch(aria2url, {
 		body: postVer,
