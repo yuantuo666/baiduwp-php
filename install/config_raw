@@ -3,12 +3,12 @@
  * PanDownload 网页复刻版，PHP 语言版配置文件
  * ！！！请勿修改本文件，如果手动修改后再在后台设置，可能导致config.php文件被清空！！！
  *
- * @version 2.1.0
+ * @version 2.1.3
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  */
-const programVersion = '2.1.0';
+const programVersion = '2.1.3';
 if (!defined('init')) {
 	http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./');
 	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的配置文件！\r\n禁止直接访问！");
