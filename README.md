@@ -13,6 +13,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
 
 ## 💴Donate
+![捐赠](https://imwcr.cn/resources/img/donate.jpg)
 [捐赠作者](https://imwcr.cn/?donate)
 
 ## 💻Demo
@@ -83,8 +84,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ## 💡Contact
 - 项目作者：Yuan_Tuo
-- 作者邮箱：yuantuo666@gmail.com (一周内一定有回复)
-  - 备用：2659324610@qq.com (不会及时查看)
+- 作者邮箱：yuantuo666@gmail.com
 - 作者首页：https://imwcr.cn/
 - Telegram：
   - [@yuantuo666](https://t.me/yuantuo666)
