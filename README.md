@@ -2,6 +2,9 @@
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供大家学习参考，严禁商业用途
 
+# 😱Warning
+## 本项目目前失效，详细信息参见[#93](https://github.com/yuantuo666/baiduwp-php/issues/93)
+
 ## 🔎实现原理
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
 本质就是用会员账号获取下载地址并发送给访客。
