@@ -3,7 +3,9 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供大家学习参考，严禁商业用途
 
 # 😱Warning
-## 本项目目前失效，详细信息参见[#93](https://github.com/yuantuo666/baiduwp-php/issues/93)
+由于百度修改分享页面代码，导致项目失效。<br/>
+正尝试修复，可Clone最新dev分支体验，详细信息参见[#93](https://github.com/yuantuo666/baiduwp-php/issues/93)<br/>
+目前已经修复文件目录获取、支持 50MB 以下文件下载。
 
 ## 🔎实现原理
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
