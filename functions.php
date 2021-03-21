@@ -12,7 +12,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Functions = '2.1.3';
+$programVersion_Functions = '2.1.4';
 if (!defined('init')) { // 直接访问处理程序
 	header('Content-Type: text/plain; charset=utf-8');
 	if (!file_exists('config.php')) {
