@@ -9,14 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.3
+ * @version 2.1.4
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.1.3";
+$programVersion_Index = "2.1.4";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -156,98 +156,148 @@ Function
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
 			echo '<script>setTimeout(() => Swal.fire("' . Language["TipTitle"] . '","' . Language["TimeoutTip"] . '","info"), 300000);</script>';
 			CheckPassword();
-			$surl = $_POST["surl"]; // 含有1
+			// $surl = $_POST["surl"]; // 含有1
 			$pwd = (!empty($_POST["pwd"])) ? $_POST["pwd"] : "";
 			$dir = (!empty($_POST["dir"])) ? $_POST["dir"] : "";
 			$IsRoot = ($dir == "") ? true : false;
-			// $Filejson = GetList($surl, $dir, $IsRoot, $pwd); // 解析子目录时，需添加1
-			// if ($Filejson["errno"] == 0) { // 一种新的解析方法，暂未完工
-			// 	// 解析正常
-			// } else {
-			// 	// 解析异常
+			$surl = (!empty($dir)) ? "1" . $_POST["surl"] : $_POST["surl"]; // 含有1
+			$surl_1 = substr($surl, 1); //不含1
 
-			// 	$ErrorMessage = [
-			// 		"mis_105" => "你所解析的文件不存在~",
-			// 		"mispw_9" => "验证码错误",
-			// 		"mis_2" => "不存在此目录",
-			// 		3 => "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！",
-			// 		0 => "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。",
-			// 		10 => "啊哦，来晚了，该分享文件已过期"
-			// 	];
-			// }
-
-
-			if (isset($_POST["dir"])) {
-				// 文件夹页面
-				if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
-				else $randsk = get_BDCLND('1' . $surl, $pwd);
-				$shareid = $_POST["share_id"];
-				//$root = getSign($surl, $randsk);第二次不需要再次获取
-				if ($randsk !== 1) {
-					$uk = $_POST["uk"]; // 分享者信息
-					$sign = $_POST["sign"];
-					$timestamp = $_POST["timestamp"];
-					$bdstoken = $_POST["bdstoken"];
-					$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
-					if ($filejson["errno"] != 0) dl_error("文件夹存在问题", "此文件夹存在问题，无法访问！", true); // 鬼知道发生了啥
-					else { // 终于正常了
-						// 面包屑导航
+			if (WECHAT_MOD) {
+				$Filejson = GetList($surl, $dir, $IsRoot, $pwd); // 解析子目录时，需添加1
+				if ($Filejson["errno"] == 0) { // 一种新的解析方法，暂未完工
+					// 解析正常
+					if (!$IsRoot) {
+						//文件夹页面
 						$filecontent = '<nav aria-label="breadcrumb"><ol class="breadcrumb my-4">
-						<li class="breadcrumb-item"><a href="javascript:OpenRoot(\'1' . $surl . '\',\'' . $pwd . '\');">' . Language["AllFiles"] . '</a></li>';
-						$dir_list = explode("/", $_POST["dir"]);
+						<li class="breadcrumb-item"><a href="javascript:OpenRoot(\'' . $surl . '\',\'' . $pwd . '\');">' . Language["AllFiles"] . '</a></li>';
+						$dir_list = explode("/", $dir);
 						for ($i = 1; $i <= count($dir_list) - 2; $i++) {
 							if ($i == 1 and strstr($dir_list[$i], "sharelink")) continue;
-							$fullsrc = strstr($_POST["dir"], $dir_list[$i], true) . $dir_list[$i];
-							$filecontent .= '<li class="breadcrumb-item"><a href="javascript:OpenDir(\'' . $fullsrc . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $dir_list[$i] . '</a></li>';
+							$fullsrc = strstr($dir, $dir_list[$i], true) . $dir_list[$i];
+							$filecontent .= '<li class="breadcrumb-item"><a href="javascript:OpenDir(\'' . $fullsrc . '\',\'' . $pwd . '\',\'\',\'\',\'' . $surl_1 . '\',\'\',\'\',\'\',\'\');">' . $dir_list[$i] . '</a></li>';
 						}
-						$filecontent .= '<li class="breadcrumb-item active">' . $dir_list[$i] . '</li>'
-							. '<li class="ml-auto">已加载' . count($filejson["list"]) . '个文件</li></ol></nav>';
+						$filecontent .= '<li class="breadcrumb-item active">' . $dir_list[$i] . '</li>';
+					} else {
+						$filecontent = '<nav aria-label="breadcrumb"><ol class="breadcrumb my-4">
+						<li class="breadcrumb-item">' . Language["AllFiles"] . '</li>';
+					}
+					$filecontent .= '<li class="ml-auto">[微信API] 已全部加载，共' . count($Filejson["data"]["list"]) . '个</li></ol></nav>';
 
-						$filecontent .= '<div><ul class="list-group">';
-						for ($i = 0; $i < count($filejson["list"]); $i++) { // 开始输出文件列表
-							$file = $filejson["list"][$i];
-							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
+					$filecontent .= '<div><ul class="list-group">';
+					for ($i = 0; $i < count($Filejson["data"]["list"]); $i++) { // 开始输出文件列表
+						$file = $Filejson["data"]["list"][$i];
+						if ($file["isdir"] == 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
+								<a href="' . $file["dlink"] . '" target="_blank">' . $file["server_filename"] . '</a>
+								<span class="float-right">' . formatSize((float)$file["size"]) . '</span></li>';
+						else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
+							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'\',\'\',\'' . $surl_1 . '\',\'\',\'\',\'\',\'\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+					}
+					echo $filecontent . "</ul></div>";
+
+					// exit;				
+				} else {
+					// 解析异常
+					$ErrorCode = $Filejson["errtype"];
+					$ErrorMessage = [
+						"mis_105" => "你所解析的文件不存在~",
+						"mispw_9" => "验证码错误",
+						"mis_2" => "不存在此目录",
+						3 => "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！",
+						0 => "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。",
+						10 => "啊哦，来晚了，该分享文件已过期"
+					];
+					if (isset($ErrorMessage[$ErrorCode])) dl_error("[微信API] 解析错误", $ErrorMessage[$ErrorCode]);
+					else dl_error("[微信API] 解析错误", "未知错误代码:" . $ErrorCode, true);
+					// exit;
+				}
+			} else {
+
+				if (isset($_POST["dir"])) {
+					// 文件夹页面
+					if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
+					else $randsk = get_BDCLND($surl, $pwd);
+					$shareid = $_POST["share_id"];
+					//$root = getSign($surl, $randsk);第二次不需要再次获取
+					if ($randsk !== 1) {
+						$uk = $_POST["uk"]; // 分享者信息
+						$sign = $_POST["sign"];
+						$timestamp = $_POST["timestamp"];
+						$bdstoken = $_POST["bdstoken"];
+						$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
+						if ($filejson["errno"] != 0) dl_error("文件夹存在问题", "此文件夹存在问题，无法访问！", true); // 鬼知道发生了啥
+						else { // 终于正常了
+							// 面包屑导航
+							$filecontent = '<nav aria-label="breadcrumb"><ol class="breadcrumb my-4">
+						<li class="breadcrumb-item"><a href="javascript:OpenRoot(\'' . $surl . '\',\'' . $pwd . '\');">' . Language["AllFiles"] . '</a></li>';
+							$dir_list = explode("/", $_POST["dir"]);
+							for ($i = 1; $i <= count($dir_list) - 2; $i++) {
+								if ($i == 1 and strstr($dir_list[$i], "sharelink")) continue;
+								$fullsrc = strstr($_POST["dir"], $dir_list[$i], true) . $dir_list[$i];
+								$filecontent .= '<li class="breadcrumb-item"><a href="javascript:OpenDir(\'' . $fullsrc . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $dir_list[$i] . '</a></li>';
+							}
+							$filecontent .= '<li class="breadcrumb-item active">' . $dir_list[$i] . '</li>'
+								. '<li class="ml-auto">[网页API] 已加载' . count($filejson["list"]) . '个文件</li></ol></nav>';
+
+							$filecontent .= '<div><ul class="list-group">';
+							for ($i = 0; $i < count($filejson["list"]); $i++) { // 开始输出文件列表
+								$file = $filejson["list"][$i];
+								if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
 								<span class="float-right">' . formatSize((float)$file["size"]) . '</span></li>';
-							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
-							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+								else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
+							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+							}
+							echo $filecontent . "</ul></div>";
 						}
-						echo $filecontent . "</ul></div>";
-					}
-				} else dl_error("解析错误", "解析子文件夹时，提取码错误或文件失效！");
-			} else {
-				// 根页面
-				$surl_1 = substr($surl, 1);
-				if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
-				else $randsk = get_BDCLND($surl, $pwd);
-				$root = getSign($surl_1, $randsk);
-				$filejson = FileList($root);
-				if ($filejson !== 1) {
-					$sign = $root["sign"];
-					$timestamp = $root["timestamp"];
-					$shareid = $root["shareid"];
-					$uk = $root["uk"];
-					$bdstoken = $root["bdstoken"];
-					if ($filejson["errno"] != 0)  dl_error("链接存在问题", "此链接存在问题，无法访问！", true); // 鬼知道发生了啥
-					else { // 终于正常了
-						$filecontent = '<nav aria-label="breadcrumb">
+					} else dl_error("解析错误", "解析子文件夹时，提取码错误或文件失效！");
+				} else {
+					// 根页面
+					if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
+					else $randsk = get_BDCLND($surl, $pwd);
+					$root = getSign($surl_1, $randsk);
+					$filejson = FileList($root);
+					if ($filejson !== 1) {
+						$url = "https://pan.baidu.com/share/tplconfig?surl=$surl&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+						$header = array(
+							"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
+							"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
+						);
+						$result = get($url, $header);
+						$result = json_decode($result, true, 512, JSON_BIGINT_AS_STRING);
+						if (DEBUG) {
+							echo '<pre>【限制版】根目录(sign,timestamp):';
+							var_dump($result);
+							echo '</pre>';
+						}
+						$sign = $result["data"]["sign"];
+						$timestamp = $result["data"]["timestamp"];
+						$uk = $root["share_uk"];
+
+						$shareid = $root["shareid"];
+						$bdstoken = $root["bdstoken"];
+						if ($root["errno"] != 0) if ($root["errno"] == 117) dl_error("文件过期(117)", "啊哦，来晚了，该分享文件已过期"); // 文件过期
+						else dl_error("链接存在问题", "此链接存在问题，无法访问！", true); // 鬼知道发生了啥
+						else { // 终于正常了
+							$filecontent = '<nav aria-label="breadcrumb">
 						<ol class="breadcrumb my-4">
 							<li class="breadcrumb-item" aria-current="page">' . Language["AllFiles"] . '</li>
-						<li class="ml-auto">已全部加载，共' . count($filejson["list"]) . '个</li>
+						<li class="ml-auto">[网页根目录] 已全部加载，共' . count($root["file_list"]) . '个</li>
 						</ol>
 						</nav>
 						<div><ul class="list-group">';
-						for ($i = 0; $i < count($filejson["list"]); $i++) {
-							$file = $filejson["list"][$i];
-							if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
+							for ($i = 0; $i < count($root["file_list"]); $i++) {
+								$file = $root["file_list"][$i];
+								if ($file["isdir"] === 0) $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-file mr-2"></i>
 								<a href="javascript:confirmdl(\'' . number_format($file["fs_id"], 0, '', '') . '\',' . $timestamp . ',\'' . $sign . '\',\'' . urlencode($randsk) . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $bdstoken . '\',\'' . $file["size"] . '\');">' . $file["server_filename"] . '</a>
 								<span class="float-right">' . formatSize((float)$file["size"]) . '</span></li>';
-							else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
+								else $filecontent .= '<li class="list-group-item border-muted text-muted py-2"><i class="far fa-folder mr-2"></i>
 							<a href="javascript:OpenDir(\'' . $file["path"] . '\',\'' . $pwd . '\',\'' . $shareid . '\',\'' . $uk . '\',\'' . $surl_1 . '\',\'' . urlencode($randsk) . '\',\'' . $sign . '\',\'' . $timestamp . '\',\'' . $bdstoken . '\');">' . $file["server_filename"] . '</a><span class="float-right"></span></li>';
+							}
+							echo $filecontent . "</ul></div>";
 						}
-						echo $filecontent . "</ul></div>";
-					}
-				} else dl_error("解析错误", "解析根页面时出错！<br />可能原因：①提取码错误 或 文件失效：尝试保存到自己网盘后重新分享解析；<br />②服务器未连接互联网 或 IP被百度封禁：检查网络链接，尝试ping百度网站；<br />③服务器未安装curl（或其php插件）；<br />④网络状况不好：稍后重试。<br /><br />如果以上问题排除后仍无法解决，可能是百度网盘升级了页面，请按下方提示操作：",true);
+					} else dl_error("解析错误", "解析根页面时出错！<br />可能原因：①提取码错误 或 文件失效：尝试保存到自己网盘后重新分享解析；<br />②服务器未连接互联网 或 IP被百度封禁：检查网络链接，尝试ping百度网站；<br />③服务器未安装curl（或其php插件）；<br />④网络状况不好：稍后重试。<br /><br />如果以上问题排除后仍无法解决，可能是百度网盘升级了页面，请按下方提示操作：", true);
+				}
 			}
 		} elseif (isset($_GET["download"])) { // 解析下载地址页面
 			if (!CheckPassword(true)) {
