@@ -158,28 +158,28 @@ function getSign(string $surl, $randsk)
 	);
 	// 如果不修改这里,则要修改配置文件ini
 	$result = get($url, $header);
-	if (preg_match('/yunData.setData\((\{.*?\})\);/', $result, $matches)) {
+
+	//有可能是账号被百度拉黑，导致获取到的页面不同 #83 #86
+	//百度全面拉黑 2021-03-18 19:40
+	//pd修复版及网页版失效
+	// if (DEBUG) {
+	// 	echo '<pre>getSign():no match</pre>';
+	// 	var_dump(htmlspecialchars($result));
+	// }
+	if (preg_match('/locals.mset\((\{.*?\})\);/', $result, $matches)) {
 		$result_decode = json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
 		if (DEBUG) {
-			echo '<pre>getSign():';
+			echo '<pre>【限制版】getSign():';
 			var_dump($result_decode);
 			echo '</pre>';
 		}
 		return $result_decode;
 	} else {
-		//有可能是账号被百度拉黑，导致获取到的页面不同 #83 #86
 		if (DEBUG) {
-			echo '<pre>getSign():no match</pre>';
+			echo '<pre>【限制版】getSign():no match</pre>';
 			var_dump(htmlspecialchars($result));
 		}
-
-		if (strstr($result, "neglect:1") != false) {
-			dl_error("根目录yunData获取失败", "当前账号已经被百度拉入黑名单<br />无法正常获取文件名及文件内容，请联系站长更换config.php中普通账号的BDUSS和STOKEN<br />此错误出现与会员账号及后台设置无关");
-			exit;
-		} else {
-			dl_error("根目录yunData获取失败", "页面未正常加载，或者百度已经升级页面，无法正常获取根目录yunData数据。");
-			// exit;
-		}
+		dl_error("根目录yunData获取失败", "页面未正常加载，或者百度已经升级页面，无法正常获取根目录yunData数据。");
 		return 1;
 	}
 }
