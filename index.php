@@ -387,7 +387,7 @@ Function
 						} else {
 
 							// 判断今天内是否获取过文件
-							if ((USING_DB and !$isipwhite and !$smallfile) { // 白名单和小文件跳过
+							if (USING_DB and !$isipwhite and !$smallfile) { // 白名单和小文件跳过
 								// 获取解析次数
 								$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
 								$mysql_query = mysqli_query($conn, $sql);
