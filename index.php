@@ -224,7 +224,7 @@ Function
 						$sign = $_POST["sign"];
 						$timestamp = $_POST["timestamp"];
 						$bdstoken = $_POST["bdstoken"];
-						$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
+						$filejson = GetDirRemote($_POST["dir"], $randsk, $shareid, $uk);
 						if ($filejson["errno"] != 0) dl_error("文件夹存在问题", "此文件夹存在问题，无法访问！", true); // 鬼知道发生了啥
 						else { // 终于正常了
 							// 面包屑导航
