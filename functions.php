@@ -188,7 +188,7 @@ function FileList($sign)
 	if ($sign === 1) return 1;
 	return $sign['file_list'] === null ? 1 : $sign['file_list'];
 }
-function GetDir(string $dir, string $randsk, string $shareid, string $uk)
+function GetDirRemote(string $dir, string $randsk, string $shareid, string $uk)
 {
 	$url = 'https://pan.baidu.com/share/list?shareid=' . $shareid . '&uk=' . $uk . '&dir=' . urlencode($dir);
 	$header = array(

@@ -224,7 +224,7 @@ Function
 						$sign = $_POST["sign"];
 						$timestamp = $_POST["timestamp"];
 						$bdstoken = $_POST["bdstoken"];
-						$filejson = GetDir($_POST["dir"], $randsk, $shareid, $uk);
+						$filejson = GetDirRemote($_POST["dir"], $randsk, $shareid, $uk);
 						if ($filejson["errno"] != 0) dl_error("文件夹存在问题", "此文件夹存在问题，无法访问！", true); // 鬼知道发生了啥
 						else { // 终于正常了
 							// 面包屑导航
@@ -387,7 +387,7 @@ Function
 						} else {
 
 							// 判断今天内是否获取过文件
-							if (!$isipwhite and !$smallfile) { // 白名单和小文件跳过
+							if (USING_DB and !$isipwhite and !$smallfile) { // 白名单和小文件跳过
 								// 获取解析次数
 								$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
 								$mysql_query = mysqli_query($conn, $sql);
