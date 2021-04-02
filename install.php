@@ -7,7 +7,6 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.4
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
@@ -128,6 +127,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($BDUSS, 'BDUSS');
 			getConfig($STOKEN, 'STOKEN');
 			getConfig($SVIP_BDUSS, 'SVIP_BDUSS');
+			getConfig($SVIP_STOKEN, 'SVIP_STOKEN');
 			getConfig($SVIPSwitchMod, 'SVIPSwitchMod', '0'); // 有bug隐患 如果未开启数据库，必须为0
 
 			getConfig($USING_DB, 'USING_DB', true);
@@ -242,14 +242,22 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">普通账号STOKEN</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613" value="<?php echo $STOKEN; ?>">
-								<small class="form-text">用来获取文件列表及信息，不需要SVIP也可。</small>
+								<small class="form-text">此信息必须与上一信息使用同一账号数据。用来获取文件列表及信息，不需要SVIP也可。</small>
 							</div>
 						</div>
+						<br />
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">超级会员账号BDUSS</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="SVIP_BDUSS" placeholder="例：W4tanVHelU2VGpxb**********0ZTZlUm1saEVtYnpTWjByfmxheWwxRFRtNlphQVFBQUFBJCQAAAAAAAAAAA……" value="<?php echo $SVIP_BDUSS; ?>">
 								<small class="form-text">用来获取文件告诉下载地址，必须为SVIP账号，否则将获取到限速地址。</small>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">超级会员账号STOKEM</label>
+							<div class="col-sm-10">
+								<input class="form-control" name="SVIP_STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613" value="<?php echo $SVIP_STOKEN; ?>">
+								<small class="form-text">此信息必须与上一信息使用同一账号数据。可以留空，仅为检测账号状态使用。</small>
 							</div>
 						</div>
 						<hr />
@@ -525,6 +533,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$BDUSS = (!empty($_POST["BDUSS"])) ? $_POST["BDUSS"] : "";
 				$STOKEN = (!empty($_POST["STOKEN"])) ? $_POST["STOKEN"] : "";
 				$SVIP_BDUSS = (!empty($_POST["SVIP_BDUSS"])) ? $_POST["SVIP_BDUSS"] : "";
+				$SVIP_STOKEN = (!empty($_POST["SVIP_STOKEN"])) ? $_POST["SVIP_STOKEN"] : "";
 
 				$USING_DB = (!empty($_POST["USING_DB"])) ? $_POST["USING_DB"] : "false";
 				$servername = (!empty($_POST["DbConfig_servername"])) ? $_POST["DbConfig_servername"] : "";
@@ -586,6 +595,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<BDUSS>', $BDUSS, $update_config);
 				$update_config = str_replace('<STOKEN>', $STOKEN, $update_config);
 				$update_config = str_replace('<SVIP_BDUSS>', $SVIP_BDUSS, $update_config);
+				$update_config = str_replace('<SVIP_STOKEN>', $SVIP_STOKEN, $update_config);
 
 				$update_config = str_replace('<USING_DB>', $USING_DB, $update_config);
 				$update_config = str_replace('<servername>', $servername, $update_config);

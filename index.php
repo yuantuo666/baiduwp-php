@@ -9,14 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.4
+ * @version 2.1.5
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.1.4";
+$programVersion_Index = "2.1.5";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -135,7 +135,7 @@ Function
 					<li class="nav-item"><a class="nav-link" href="./"><?php echo Language["IndexButton"]; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="?help" target="_blank"><?php echo Language["HelpButton"]; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="?usersettings"><?php echo Language["UserSettings"]; ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="https://imwcr.cn/" target="_blank">Made by Yuan_Tuo</a></li>
+					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github</a></li>
 				</ul>
 			</div>
 		</div>
@@ -153,6 +153,8 @@ Function
 			echo Language["HelpPage"];
 		} elseif (isset($_GET["usersettings"])) { // 用户设置页面
 			require("usersettings.php");
+		} elseif (isset($_GET["account"])) { // 账号状态页面
+			require("account.php");
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
 			echo '<script>setTimeout(() => Swal.fire("' . Language["TipTitle"] . '","' . Language["TimeoutTip"] . '","info"), 300000);</script>';
 			CheckPassword();
@@ -399,70 +401,9 @@ Function
 								}
 							}
 
-							// 获取SVIP BDUSS
-							switch (SVIPSwitchMod) {
-								case 1:
-									//模式1：用到废为止
-									// 时间倒序输出第一项未被限速账号
-									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
-									$Result = mysqli_query($conn, $sql);
-									if ($Result =  mysqli_fetch_assoc($Result)) {
-										$SVIP_BDUSS = $Result["svip_bduss"];
-										$id = $Result["id"];
-									} else {
-										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
-										$SVIP_BDUSS = SVIP_BDUSS;
-										$id = "-1";
-									}
-									break;
-								case 2:
-									//模式2：轮番上
-									// 时间顺序输出第一项未被限速账号
-									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
-
-									$Result = mysqli_query($conn, $sql);
-									if ($Result =  mysqli_fetch_assoc($Result)) {
-										$SVIP_BDUSS = $Result["svip_bduss"];
-										$id = $Result["id"];
-										//不论解析成功与否，将当前账号更新时间，下一次使用另一账号
-										// 开始处理
-										// 这里最新的时间表示可用账号，按顺序排序
-										$is_using = date("Y-m-d H:i:s");
-										$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
-										$mysql_query = mysqli_query($conn, $sql);
-										if ($mysql_query == false) {
-											// 失败 但可继续解析
-											dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
-										}
-									} else {
-										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
-										$SVIP_BDUSS = SVIP_BDUSS;
-										$id = "-1";
-									}
-									break;
-								case 3:
-									//模式3：手动切换，不管限速
-									// 时间倒序输出第一项账号，不管限速
-									$sql = "SELECT `id`,`svip_bduss` FROM `" . $dbtable . "_svip` ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
-									$Result = mysqli_query($conn, $sql);
-									if ($Result =  mysqli_fetch_assoc($Result)) {
-										$SVIP_BDUSS = $Result["svip_bduss"];
-										$id = $Result["id"];
-									} else {
-										// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
-										$SVIP_BDUSS = SVIP_BDUSS;
-										$id = "-1";
-									}
-									break;
-								case 0:
-									//模式0：使用本地解析
-								default:
-									$SVIP_BDUSS = SVIP_BDUSS;
-									$id = "-1";
-									break;
-							}
-
-
+							$DBSVIP = GetDBBDUSS();
+							$SVIP_BDUSS = $DBSVIP[0];
+							$id = $DBSVIP[1];
 
 							// 开始获取真实链接
 							if ($smallfile) $headerArray = array('User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36', 'Cookie: BDUSS=' . BDUSS . ';');
