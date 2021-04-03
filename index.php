@@ -524,45 +524,53 @@ SWITCHTIP;
 										echo '</p>';
 										?>
 										<p class="card-text">
-											<a href="javascript:void(0)" data-toggle="modal" data-target="#exampleModal">推送到Aria2</a>
+											<a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2">推送到Aria2</a>
 										</p>
 										<p class="card-text"><a href="?help" target="_blank"><?php echo Language["DownloadLink"] . Language["HelpButton"]; ?>（必读）</a></p>
 										<p class="card-text"><?php echo Language["DownloadTip"]; ?></p>
 
-										<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+										<div class="modal fade" id="SendToAria2" tabindex="-1" role="dialog" aria-hidden="true">
 											<div class="modal-dialog" role="document">
 												<div class="modal-content">
 													<div class="modal-header">
-														<h5 class="modal-title" id="exampleModalLabel"><?php echo Language["SendToAria2"]; ?></h5>
+														<h5 class="modal-title"><?php echo Language["SendToAria2"]; ?> Json-RPC</h5>
 														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 															<span aria-hidden="true">&times;</span>
 														</button>
 													</div>
 													<div class="modal-body">
 														<div class="form-group">
-															<p><label class="control-label">Json-RPC Url</label>
-																<input name="url" id="url" class="form-control" placeholder="http://127.0.0.1:6800/jsonrpc">
+															<p><label class="control-label">主机地址</label>
+																<input id="host" class="form-control" value="localhost">
+															</p>
+														</div>
+														<div class="form-group">
+															<p><label class="control-label">端口</label>
+																<input id="port" class="form-control" value="6800">
 															</p>
 														</div>
 														<div class="form-group">
 															<p><label class="control-label">Token</label>
-																<input name="token" id="token" class="form-control" placeholder="If none keep empty">
+																<input id="token" class="form-control" placeholder="没有请留空">
 															</p>
+														</div>
+														<div class="form-group">
+															<p>身份验证在部分版本不可用，此处不支持设置</p>
 														</div>
 													</div>
 													<div class="modal-footer">
 														<button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal"><?php echo Language["Send"]; ?></button>
-														<button type="button" class="btn btn-success" onclick="checkVer()"><?php echo Language["CheckVersion"]; ?></button>
 														<button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo Language["Close"]; ?></button>
 													</div>
 												</div>
 											</div>
 											<script>
 												$(function() {
-													if (getCookie('aria2url') != null) {
-														$('#url').attr('value', atou(getCookie('aria2url')))
+													if (getCookie('aria2host') != null) {
+														$('#host').attr('value', atou(getCookie('aria2host')));
+														$('#port').attr('value', atou(getCookie('aria2port')));
 														if (getCookie('aria2token') != null) {
-															$('#token').attr('value', atou(getCookie('aria2token')))
+															$('#token').attr('value', atou(getCookie('aria2token')));
 														}
 													}
 												})

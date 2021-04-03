@@ -3,8 +3,6 @@
  *
  * 许多函数来源于github，详见项目里的Thanks
  *
- * @version 2.1.3
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
@@ -76,7 +74,6 @@ function Getpw() {
 	}
 }
 
-// 以下推送到aria2代码来自TkzcM
 function utoa(str) {
 	return window.btoa(unescape(encodeURIComponent(str)));
 }
@@ -94,90 +91,71 @@ function getCookie(name) {
 	}
 	return null;
 }
-async function checkVer() {
-	let token = $('#token').val()
-	let aria2url = $('#url').val()
+function addUri() {
+	//配置
+	var host = $('#host').val();
+	var port = $('#port').val();
+	var uris = [$('#http')[0].href, $('#https')[0].href];
+	var token = $('#token').val();
+	var filename = $('#filename b').text();;
+
+
+	var options = {
+		"dir": './baiduwp-php',
+		"max-connection-per-server": "16",
+		"user-agent": "LogStatistic"
+	};
+	if (filename != "") {
+		options.out = filename;
+	}
+
+	json = {
+		"id": "baiduwp-php",
+		"jsonrpc": '2.0',
+		"method": 'aria2.addUri',
+		"params": [uris, options],
+	};
+
 	if (token != "") {
-		postVer = JSON.stringify({
-			jsonrpc: '2.0',
-			method: 'aria2.getVersion',
-			id: 'baiduwp',
-			params: ['token:' + token]
-		})
-	} else {
-		postVer = JSON.stringify({
-			jsonrpc: '2.0',
-			method: 'aria2.getVersion',
-			id: 'baiduwp',
-			params: []
-		})
+		json.params.push("token:" + token);
 	}
-	const getVer = await fetch(aria2url, {
-		body: postVer,
-		method: 'POST',
-		headers: { 'content-type': 'text/json' }
-	}).catch((error) => {
-		Swal.fire('Sorry~', '连接aria2失败', 'error')
-	});
-	if (getVer != null)
-		if (await getVer.status === 200) {
-			Swal.fire('成功', '发现' + JSON.parse(await getVer.text()).result.version + '版aria2，请点击Send', 'success')
-		}
-		else {
-			Swal.fire('Sorry~', '连接aria2失败', 'error')
-		}
-}
-async function addUri() {
-	let token = $('#token').val()
-	let aria2url = $('#url').val()
-	let filename = $('#filename b').text();
-	// Thanks to acgotaku/BaiduExporter
-	const httpurl = $('#http')[0].href
-	const httpsurl = $('#https')[0].href
-	const headerOption = ['User-Agent: LogStatistic']
-	let post
-	let postVer
-	if (token != "") {// 构造post请求
-		postVer = JSON.stringify({
-			jsonrpc: '2.0',
-			method: 'aria2.getVersion',
-			id: 'baiduwp',
-			params: ['token:' + token]
-		})
-		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: ["token:" + token, [httpurl, httpsurl], { header: headerOption, out: filename }] })//修复aria2文件名问题
-	}
-	else {
-		postVer = JSON.stringify({
-			jsonrpc: '2.0',
-			method: 'aria2.getVersion',
-			id: 'baiduwp',
-			params: []
-		})
-		post = JSON.stringify({ jsonrpc: '2.0', id: 'baiduwp', method: 'aria2.addUri', params: [[httpurl, httpsurl], { header: headerOption, out: filename }] })//修复aria2文件名问题
-	}
-	const getVer = await fetch(aria2url, {
-		body: postVer,
-		method: 'POST',
-		headers: { 'content-type': 'text/json' }
-	}).catch((error) => {
-		Swal.fire('Sorry~', '连接aria2失败', 'error')
-	});
-	if (getVer != null)
-		if (await getVer.status === 200) {
-			Swal.fire('detected aria2 version ' + JSON.parse(await getVer.text()).result.version, 'sending request...', 'success')
-			const sendLink = await fetch(aria2url, { body: post, method: 'POST', headers: { 'content-type': 'text/json' } }).catch((e) => { Swal.fire('Sorry~', e, 'error') })
-			if (sendLink != null)
-				if (await sendLink.status === 200) {
-					Swal.fire('成功发送', 'Good Luck', 'success')
-					document.cookie = 'aria2url=' + utoa(aria2url) // add aria2 config to cookie
-					if (token != "" && token != null) {
-						document.cookie = 'aria2token=' + utoa(token)
-					}
+
+	var ws = new WebSocket("ws://" + host + ":" + port + "/jsonrpc");
+	ws.onerror = function (event) {
+		console.log(event);
+		Swal.fire('链接错误', 'aria2链接错误，请打开控制台查看详情', 'error')
+	};
+	ws.onopen = () => { ws.send(JSON.stringify(json)); }
+
+	ws.onmessage = function wsmessage(event) {
+		console.log(event);
+		received_msg = JSON.parse(event.data);
+		switch (received_msg.method) {
+			case "aria2.onDownloadStart":
+				Swal.fire('aria2发送成功', '已经开始下载 ' + filename, 'success')
+				document.cookie = 'aria2host=' + utoa(host); // add aria2 config to cookie
+				document.cookie = 'aria2port=' + utoa(port);
+				if (token != "" && token != null) {
+					document.cookie = 'aria2token=' + utoa(token);
 				}
-				else {
-					Swal.fire('Sorry~', '连接aria2失败', 'error')
-				}
-		} else {
-			Swal.fire('Sorry~', '连接aria2失败', 'error')
+				window.open("https://imwcr.cn/api/webui-aria2/", "baiduwp-php")
+				break;
+
+			case "aria2.onDownloadError": ;
+				Swal.fire('下载错误', 'aria2下载错误', 'error')
+				break;
+
+			case "aria2.onDownloadComplete":
+				Swal.fire('下载完成', 'aria2下载完成', 'success')
+				break;
+
+			default:
+				break;
 		}
+
+		// version = received_msg.result.version;
+	};
+	ws.onclose = function () {
+
+	};
 }

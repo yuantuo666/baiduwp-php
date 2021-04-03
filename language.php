@@ -66,8 +66,16 @@ $lang = [
 				<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。你可以在下方选择你喜欢的方式进行下载。<br />
 					<div class="page-inner">
 						<section class="normal" id="section-">
+							<div id="aria2"><a class="anchor" href="#aria2"></a>
+								<h4>aria2（推荐）</h4>
+							</div>
+							<ol>
+								<li>前往<a href="https://github.com/aria2/aria2/releases">GitHub</a>下载aria2</li>
+								<li>下载<b>aria2-1.XX.0-win-XXbit-build1.zip</b>的文件并解压</li>
+								<li><b>右键复制下载链接</b>（如果 直接点击 或 右键调用IDM 将传入浏览器的 UA 导致下载失败），在 IDM 新建任务，粘贴链接即可下载。</li>
+							</ol>
 							<div id="IDM"><a class="anchor" href="#IDM"></a>
-								<h4>IDM（推荐）</h4>
+								<h4>IDM</h4>
 							</div>
 							<ol>
 								<li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
