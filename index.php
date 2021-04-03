@@ -153,8 +153,6 @@ Function
 			echo Language["HelpPage"];
 		} elseif (isset($_GET["usersettings"])) { // 用户设置页面
 			require("usersettings.php");
-		} elseif (isset($_GET["account"])) { // 账号状态页面
-			require("account.php");
 		} elseif (isset($_POST["surl"])) { // 解析链接页面
 			echo '<script>setTimeout(() => Swal.fire("' . Language["TipTitle"] . '","' . Language["TimeoutTip"] . '","info"), 300000);</script>';
 			CheckPassword();
