@@ -299,7 +299,9 @@ switch ($method) {
 		$DBPassword = (!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "";
 		$dbname = (!empty($_POST["dbname"])) ? $_POST["dbname"] : "";
 		$dbtable = (!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "";
-
+		if (!function_exists('mysqli_connect')) {
+			EchoInfo(-2, array("msg" => "<br/>您未安装或未启用 mysqli 扩展，<br/>不能使用数据库功能。<br/>请自行关闭数据库功能。"));
+		}
 		$conn = mysqli_connect($servername, $username, $DBPassword);
 		$GLOBALS['conn'] = $conn;
 		// Check connection

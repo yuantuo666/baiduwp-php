@@ -13,6 +13,12 @@ if (!defined('init')) {
 	http_response_code(403); header('Content-Type: text/plain; charset=utf-8'); header('Refresh: 3;url=./');
 	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的配置文件！\r\n禁止直接访问！");
 }
+if (!function_exists('curl_init')) {
+	http_response_code(503);
+	header('Content-Type: text/plain; charset=utf-8');
+	die("HTTP 503 服务不可用！\r\n您未安装或未启用 Curl 扩展，此程序无法运行！");
+}
+
 const Sitename = '<Sitename>';
 
 const BDUSS = '<BDUSS>';
