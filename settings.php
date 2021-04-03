@@ -502,6 +502,89 @@ if ($is_login) connectdb();
 						</nav>
 						<!-- 概览 -->
 						<div class="card">
+
+							<div class="card-header">账号状态检测</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-md-6 col-sm-12 card-item">
+										<h5>普通账号状态</h5>
+										<p class="card-text">
+											<?php
+											$Status = AccountStatus(BDUSS, STOKEN);
+											if ($Status[0] == 0) {
+												//正常
+												$AccountName = $Status[2];
+												echo "账号名称：$AccountName<br />";
+												if ($Status[3] == 1)
+													echo "登录状态：<span class=\"text-success\">正常</span><br />";
+												else
+													echo "登录状态：<span class=\"text-danger\">异常</span><br />";
+
+												$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
+												echo "会员状态：$AccountVIP<br />";
+												if ($Status[4] != 0) {
+													$AccountTime = time2Units($Status[4]);
+													if ($Status[4] <= 60480)
+														echo "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
+													else
+														echo "剩余时间：$AccountTime<br />";
+												}
+											} elseif ($Status[0] == -6) {
+												echo "id为 $id 的SVIP账号已经失效<br />";
+											} else {
+												echo "出现位置错误代码：" . $Status[0] . "<br />";
+											}
+											?>
+										</p>
+										<br />
+									</div>
+									<div class="col-md-6 col-sm-12 card-item">
+										<h5>会员账号状态</h5>
+										<p class="card-text">
+											<?php
+											// 获取对应BDUSS
+											$DBSVIP = GetDBBDUSS();
+											$SVIP_BDUSS = $DBSVIP[0];
+											$id = $DBSVIP[1];
+											$SVIP_STOKEN = $DBSVIP[2];
+											if ($SVIP_STOKEN == "") {
+												echo "id为 $id 的SVIP账号没有设置对应STOKEN，无法检测<br />";
+											} else {
+												$Status = AccountStatus($SVIP_BDUSS, $SVIP_STOKEN);
+												if ($Status[0] == 0) {
+													$AccountName = $Status[2];
+													echo "账号名称：$AccountName<br />";
+													if ($Status[3] == 1)
+														echo "登录状态：<span class=\"text-success\">正常</span><br />";
+													else
+														echo "登录状态：<span class=\"text-danger\">异常</span><br />";
+
+													$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
+													echo "会员状态：$AccountVIP<br />";
+													if ($Status[4] != 0) {
+														$AccountTime = time2Units($Status[4]);
+														if ($Status[4] <= 60480)
+															echo "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
+														else
+															echo "剩余时间：$AccountTime<br />";
+													}
+												} elseif ($Status[0] == -6) {
+													echo "id为 $id 的SVIP账号已经失效<br />";
+												} else {
+													echo "出现位置错误代码：" . $Status[0] . "<br />";
+												}
+											}
+											?>
+										</p>
+										<br />
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<br />
+
+						<div class="card">
 							<div class="card-header">
 								概览
 							</div>
@@ -629,6 +712,7 @@ if ($is_login) connectdb();
 
 
 		</div>
+
 	<?php
 			} ?>
 	</div>

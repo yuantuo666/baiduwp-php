@@ -24,23 +24,15 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 
 ## 🚧Blacklists
-- https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码
-- https://pan.qiafan.vip/ 1.4.5版本 无密码
 - http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259）
-<!-- - https://bd.fmvp.cc/ 1.4.5版本 无密码 -->
 
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
-- https://202.61.130.143/ 1.4.2版本
-- http://59.110.124.211:9090/ 1.0版本
-- http://yunpan.aoti.xyz:81/ 1.4.2版本
-- https://pan.jwls.live/ 1.4.3版本
-- https://bd.pkqjsq.top/ 1.4.3版本
-- http://pan.0ddt.com/ 1.0版本
+<!-- - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码 -->
+<!-- - https://bd.pkqjsq.top/ 1.4.3版本 -->
+<!-- - http://pan.0ddt.com/ 1.0版本 -->
 <!-- - https://129.146.174.245/ 1.4.5版本 -->
-<!-- - http://pan.wbeu.cn/ 1.4.5版本 -->
 <!-- - https://pan.lie01.com/ 1.4.3版本 -->
 <!-- - https://www.bdwp.cf/ 1.4.3版本 -->
-<!-- - http://39.105.69.60:82/ 1.0版本 -->
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。<br />
 版权信息可添加**Github项目地址**或**我个人主页地址**，内容可自定，但访客**必须可见**。<br />
@@ -65,18 +57,28 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 # 🔧Install & Setting
 首先Clone项目或进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件。<br />
-然后访问 `install.php` 文件并填写相关信息。<br />
+然后访问 `install.php` 文件并填写相关信息进行安装。<br />
 如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确。<br />
-最后点击提交即可。
+最后点击提交即可。<br />
+
+安装完成后可直接使用，站长可进入settings.php中进行相关设置。<br />
+在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**。<br />
 
 ## 📦New Changes
-- 当前版本：`2.1.4`
-- 更新日期：2021-03-28
+- 当前版本：`2.1.5`
+- 更新日期：2021-04-03
 - 修改内容：
   - 💥新增功能
-    - 支持通过微信API获取50MB以下文件
+    - 账号状态检查
+    - Aria2在线管理页面
   - ⚠错误修复
-    - 修复由于百度网盘更新页面js代码引起的项目失效
+    - 修复未开启数据库情况下无法正常获取文件下载地址   Thanks to kwxiaozhu
+    - 修复GetDir()支持PHP8  Thanks to zzjin
+    - 改用WebSocket推送下载链接到aria2
+  - ♻代码优化
+    - 增加账号失效提示
+    - 版权信息改为Github项目页面
+    - 删除不必要的版本检测和版本号
 
 [查看更多](Update.md)
 
