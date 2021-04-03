@@ -123,7 +123,7 @@ function addUri() {
 	var ws = new WebSocket("ws://" + host + ":" + port + "/jsonrpc");
 	ws.onerror = function (event) {
 		console.log(event);
-		Swal.fire('链接错误', 'aria2链接错误，请打开控制台查看详情', 'error')
+		Swal.fire('连接错误', 'aria2连接错误，请打开控制台查看详情', 'error')
 	};
 	ws.onopen = () => { ws.send(JSON.stringify(json)); }
 
@@ -138,7 +138,6 @@ function addUri() {
 				if (token != "" && token != null) {
 					document.cookie = 'aria2token=' + utoa(token);
 				}
-				window.open("https://imwcr.cn/api/webui-aria2/", "baiduwp-php")
 				break;
 
 			case "aria2.onDownloadError": ;
