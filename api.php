@@ -10,7 +10,6 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_API = '2.1.4';
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -35,12 +34,6 @@ if ($method != "CheckMySQLConnect") { // 如果是使用检查连接，还没有
 		die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
 	} else {
 		require('config.php');
-		if ($programVersion_API !== programVersion) {
-			http_response_code(503);
-			header('Content-Type: text/plain; charset=utf-8');
-			header('Refresh: 5;url=install.php');
-			die("HTTP 503 服务不可用！\r\n配置文件版本异常！\r\n将在五秒内跳转到安装程序！\r\n若重新安装无法解决问题，请重新 Clone 项目并配置！");
-		}
 	}
 }
 require('functions.php');
@@ -306,7 +299,9 @@ switch ($method) {
 		$DBPassword = (!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "";
 		$dbname = (!empty($_POST["dbname"])) ? $_POST["dbname"] : "";
 		$dbtable = (!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "";
-
+		if (!function_exists('mysqli_connect')) {
+			EchoInfo(-2, array("msg" => "<br/>您未安装或未启用 mysqli 扩展，<br/>不能使用数据库功能。<br/>请自行关闭数据库功能。"));
+		}
 		$conn = mysqli_connect($servername, $username, $DBPassword);
 		$GLOBALS['conn'] = $conn;
 		// Check connection

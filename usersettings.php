@@ -10,7 +10,6 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_UserSettings = '2.1.4';
 if (!defined('init')) { // 直接访问处理程序
 	header('Content-Type: text/plain; charset=utf-8');
 	if (!file_exists('config.php')) {
@@ -20,18 +19,12 @@ if (!defined('init')) { // 直接访问处理程序
 		die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
 	} else {
 		require('config.php');
-		if ($programVersion_UserSettings !== programVersion) {
-			http_response_code(503);
-			header('Content-Type: text/plain; charset=utf-8');
-			header('Refresh: 5;url=install.php');
-			die("HTTP 503 服务不可用！\r\n配置文件版本异常！\r\n将在五秒内跳转到安装程序！\r\n若重新安装无法解决问题，请重新 Clone 项目并配置！");
-		}
 	}
 	http_response_code(403);
 	header('Refresh: 3;url=./');
 	define('init', true);
 	require('config.php');
-	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目版本 " . programVersion . " 的有关文件！\r\n禁止直接访问！");
+	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目的有关文件！\r\n禁止直接访问！");
 }
 ?>
 <style>

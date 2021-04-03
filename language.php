@@ -35,10 +35,9 @@ $lang = [
 		"NotSupportWithUA" => "暂不支持当前文件。",
 		"NotSupportWithoutUA" => "目前只支持<b>50MB以下文件</b>或<b>设置UA</b>后使用在线预览功能。",
 		"DownloadLink" => "下载链接",
-		"DownloadTip" => "Tips:电脑端右键即可复制下载链接，手机端长按可复制下载链接。",
+		"DownloadTip" => "Tips:电脑端右键即可复制下载链接，手机端长按可复制下载链接。推荐使用Aria2下载，速度更快，使用方法请访问帮助页面。",
 		"SendToAria2" => "发送到aria2",
 		"Send" => "发送",
-		"CheckVersion" => "检查aria2版本",
 		"Close" => "关闭",
 		"IndexTitle" => "百度网盘在线解析",
 		"ShareLink" => "请输入分享链接(可输入带提取码链接)",
@@ -61,13 +60,21 @@ $lang = [
 	<div class="row justify-content-center">
 		<div class="col-md-7 col-sm-8 col-11">
 			<div class="alert alert-primary" role="alert">
-				<h5 class="alert-heading">提示</h5>
+				<h5 class="alert-heading">下载提示</h5>
 				<hr />
 				<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。你可以在下方选择你喜欢的方式进行下载。<br />
 					<div class="page-inner">
 						<section class="normal" id="section-">
+							<div id="aria2"><a class="anchor" href="#aria2"></a>
+								<h4>aria2（推荐）</h4>
+							</div>
+							<ol>
+								<li><a href="./resource/aria2.zip">点击此处</a> 下载 <b>aria2.zip</b></li>
+								<li>解压 <b>aria2.zip</b> 文件并运行其中的 <b>点此启动.bat</b></li>
+								<li>打开解析下载页面，点击 <b>推送到Aria2</b></li>
+							</ol>
 							<div id="IDM"><a class="anchor" href="#IDM"></a>
-								<h4>IDM（推荐）</h4>
+								<h4>IDM</h4>
 							</div>
 							<ol>
 								<li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
@@ -157,7 +164,6 @@ $lang = [
 		"DownloadTip" => "Tips:Copy the download link and put it in your download apps.",
 		"SendToAria2" => "Send to aria2",
 		"Send" => "Send",
-		"CheckVersion" => "Check version",
 		"Close" => "Close",
 		"IndexTitle" => "Get Download Link of pan.baidu.com",
 		"ShareLink" => "Please enter the share link",
@@ -185,8 +191,16 @@ $lang = [
 				<p class="card-text">Due to Baidu restrictions, you need to modify the browser "User Agent" before downloading. <br />
 					<div class="page-inner">
 						<section class="normal" id="section-">
+							<div id="aria2"><a class="anchor" href="#aria2"></a>
+								<h4>aria2(Recommend)</h4>
+							</div>
+							<ol>
+								<li><a href="./resource/aria2.zip">Click here</a> to download <b>aria2.zip</b></li>
+								<li>Unzip <b>aria2.zip</b> and run <b>点此启动.bat</b></li>
+								<li>Open the file download page and click <b>Send to aria2</b></li>
+							</ol>
 							<div id="IDM"><a class="anchor" href="#IDM"></a>
-								<h4>Internet Download Manager(Recommend)</h4>
+								<h4>Internet Download Manager</h4>
 							</div>
 							<ol>
 								<li>Options -> Downloads -> User-Angent for manually added downloads -> Type in <b>LogStatistic</b></li>
