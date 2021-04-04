@@ -5,6 +5,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 由于百度网盘修改分享页面JavaScript代码，导致所有旧版本失效，请更新至 `2.1.4` 或更新版本体验本项目。<br/>
 详细信息参见[#93](https://github.com/yuantuo666/baiduwp-php/issues/93)
 
+<div align="center"><a href="https://www.bilibili.com/video/BV1N5411A77n"><img src="https://i0.hdslb.com/bfs/archive/90b3c6b5ebfa199507b5cc628cd5a04ec8168f5f.jpg" width="500"><br /><b>点此查看本项目安装、配置、使用视频教程</b></a></div>
+
 ## 🔎实现原理
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
 本质就是用会员账号获取下载地址并发送给访客。
@@ -13,11 +15,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 📢欢迎各位转发本项目到各大论坛，但请一定要标注原地址！
 
-![speed.gif](https://i.loli.net/2020/10/01/2mEqkClnPev8ORd.gif)
-
-## 💴Donate
-![捐赠](https://imwcr.cn/resources/img/donate.jpg)
-[捐赠作者](https://imwcr.cn/?donate)
+![speed.gif](https://i.loli.net/2021/04/04/pRD1hA8rKLeEbn9.gif)
 
 ## 💻Demo
 [暂不开放](http://imwcr.cn/api/bdwp/)<br />
@@ -56,6 +54,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - `Firefox 85+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
 # 🔧Install & Setting
+[**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)
+
 首先Clone项目或进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件。<br />
 然后访问 `install.php` 文件并填写相关信息进行安装。<br />
 如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确。<br />
@@ -81,6 +81,11 @@ PanDownload 网页复刻版，PHP 语言版<br/>
     - 删除不必要的版本检测和版本号
 
 [查看更多](Update.md)
+
+## 💴Donate
+<img src="https://imwcr.cn/resources/img/donate.jpg" width="400"/>
+
+[捐赠作者](https://imwcr.cn/?donate)
 
 ## 💡Contact
 - 项目作者：Yuan_Tuo
