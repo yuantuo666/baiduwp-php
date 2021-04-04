@@ -5,7 +5,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 由于百度网盘修改分享页面JavaScript代码，导致所有旧版本失效，请更新至 `2.1.4` 或更新版本体验本项目。<br/>
 详细信息参见[#93](https://github.com/yuantuo666/baiduwp-php/issues/93)
 
-<div align="center"><a href="https://www.bilibili.com/video/BV1N5411A77n"><img src="https://i0.hdslb.com/bfs/archive/90b3c6b5ebfa199507b5cc628cd5a04ec8168f5f.jpg" width="500"><br /><b>点此查看本项目安装、配置、使用视频教程</b></a></div>
+<div align="center"><a href="https://www.bilibili.com/video/BV1N5411A77n"><img src="https://i.loli.net/2021/04/04/9NJ2lC4T78o1XmZ.png" width="500"><br /><b>点此查看本项目安装、配置、使用视频教程</b></a></div>
 
 ## 🔎实现原理
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
