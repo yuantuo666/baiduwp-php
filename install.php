@@ -254,7 +254,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							</div>
 						</div>
 						<div class="form-group row">
-							<label class="col-sm-2 col-form-label">超级会员账号STOKEM</label>
+							<label class="col-sm-2 col-form-label">超级会员账号STOKEN</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="SVIP_STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613" value="<?php echo $SVIP_STOKEN; ?>">
 								<small class="form-text">此信息必须与上一信息使用同一账号数据。可以留空，仅为检测账号状态使用。</small>
