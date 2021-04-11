@@ -97,7 +97,7 @@ if (DEBUG) {
 	<?php
 	if (isset($_POST["surl"])) {
 		echo '<script>';
-		if (IsConfirmDownload) {
+		if (USING_DB and IsConfirmDownload) {
 			$Language = Language;
 			$JSCode['echo'](
 				<<<Function
@@ -349,7 +349,7 @@ Function
 					$bdstoken = $_POST["bdstoken"];
 					$filesize = $_POST["filesize"];
 					$smallfile = ((int)$filesize < 52428800) ? true : false; // 如果是小文件 那么可以不需要传入SVIP的BDUSS 仅需普通用户的即可
-					$smallfile = false; // 小文件竟然也会限速，醉了，现在先不搞这个
+					// $smallfile = false; // 小文件竟然也会限速，醉了，现在先不搞这个
 					// 文件小于50MB可以使用这种方法获取：
 					// $nouarealLink="";// 重置
 					// if((int)$filesize<=52428800){
@@ -488,11 +488,14 @@ SWITCHTIP;
 									<div class="alert alert-primary" role="alert">
 										<h5 class="alert-heading"><?php echo Language["DownloadLinkSuccess"]; ?></h5>
 										<hr />
-										<p class="card-text"><?php if ($usingcache) echo "下载链接从数据库中提取，不消耗免费次数。";
-																elseif ($smallfile) echo "<span style=\"color:red;\">恭喜你，中奖啦！本次解析不消耗次数哦~</span>";
-																else echo "服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。"; ?></p>
-										<?php echo FileInfo($filename, $size, $md5, $server_ctime); ?>
 										<?php
+										if (USING_DB) {
+											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费次数。</p>";
+											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">恭喜你，中奖啦！本次解析不消耗次数哦~</span></p>";
+											else echo "<p class=\"card-text\">服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。</p>";
+										}
+										echo FileInfo($filename, $size, $md5, $server_ctime);
+
 										echo '<hr><p class="card-text">' . Language["Rreview"] . '</p>';
 										if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic" or $smallfile) {
 
@@ -522,7 +525,7 @@ SWITCHTIP;
 										echo '</p>';
 										?>
 										<p class="card-text">
-											<a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2">推送到Aria2</a>
+											<a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
 										</p>
 										<p class="card-text"><a href="?help" target="_blank"><?php echo Language["DownloadLink"] . Language["HelpButton"]; ?>（必读）</a></p>
 										<p class="card-text"><?php echo Language["DownloadTip"]; ?></p>
@@ -538,23 +541,17 @@ SWITCHTIP;
 													</div>
 													<div class="modal-body">
 														<div class="form-group">
-															<p><label class="control-label">主机地址</label>
-																<input id="host" class="form-control" value="localhost">
+															<p><label class="control-label">RPC地址</label>
+																<input id="wsurl" class="form-control" value="ws://localhost:6800/jsonrpc">
 															</p>
-														</div>
-														<div class="form-group">
-															<p><label class="control-label">端口</label>
-																<input id="port" class="form-control" value="6800">
-															</p>
+															<small>推送aria2默认配置:<b>ws://localhost:6800/jsonrpc</b><br />推送Motrix默认配置:<b>ws://localhost:16800/jsonrpc</b></small>
 														</div>
 														<div class="form-group">
 															<p><label class="control-label">Token</label>
 																<input id="token" class="form-control" placeholder="没有请留空">
 															</p>
 														</div>
-														<div class="form-group">
-															<p>身份验证在部分版本不可用，此处不支持设置</p>
-														</div>
+														<small>填写的信息在推送成功后将会被自动保存。</small>
 													</div>
 													<div class="modal-footer">
 														<button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal"><?php echo Language["Send"]; ?></button>
@@ -564,12 +561,11 @@ SWITCHTIP;
 											</div>
 											<script>
 												$(function() {
-													if (getCookie('aria2host') != null) {
-														$('#host').attr('value', atou(getCookie('aria2host')));
-														$('#port').attr('value', atou(getCookie('aria2port')));
-														if (getCookie('aria2token') != null) {
-															$('#token').attr('value', atou(getCookie('aria2token')));
-														}
+													if (getCookie('aria2wsurl') != null) {
+														$('#wsurl').attr('value', atou(getCookie('aria2wsurl')))
+													}
+													if (getCookie('aria2token') != null) {
+														$('#token').attr('value', atou(getCookie('aria2token')));
 													}
 												})
 											</script>
@@ -592,8 +588,10 @@ SWITCHTIP;
 			<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 				<div class="card">
 					<div class="card-header bg-dark text-light">
-						<text id="parsingtooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询信息"><?php echo Language["IndexTitle"]; ?></text>
-						<span style="float: right;" id="sviptooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询SVIP账号状态"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
+						<?php if (USING_DB) { ?>
+							<text id="parsingtooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询信息"><?php echo Language["IndexTitle"]; ?></text>
+							<span style="float: right;" id="sviptooltip" data-placement="top" data-html="true" title="请稍等，正在连接服务器查询SVIP账号状态"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
+						<?php } else echo Language["IndexTitle"]; ?>
 					</div>
 					<div class="card-body">
 						<form name="form1" method="post" onsubmit="return validateForm()">
@@ -615,61 +613,63 @@ SWITCHTIP;
 						<?php if (file_exists("notice.html")) echo file_get_contents("notice.html"); ?>
 					</div>
 				</div>
-				<script>
-					// 主页部分脚本
-					$(document).ready(function() {
+				<?php if (USING_DB) { ?>
+					<script>
+						// 主页部分脚本
+						$(document).ready(function() {
 
-						$("#sviptooltip").tooltip(); // 初始化
-						$("#parsingtooltip").tooltip(); // 初始化
+							$("#sviptooltip").tooltip(); // 初始化
+							$("#parsingtooltip").tooltip(); // 初始化
 
-						async function getAPI(method) { // 获取 API 数据
-							try {
-								const response = await fetch(`api.php?m=${method}`, { // fetch API
-									credentials: 'same-origin' // 发送验证信息 (cookies)
-								});
-								if (response.ok) { // 判断是否出现 HTTP 异常
-									return {
-										success: true,
-										data: await response.json() // 如果正常，则获取 JSON 数据
+							async function getAPI(method) { // 获取 API 数据
+								try {
+									const response = await fetch(`api.php?m=${method}`, { // fetch API
+										credentials: 'same-origin' // 发送验证信息 (cookies)
+									});
+									if (response.ok) { // 判断是否出现 HTTP 异常
+										return {
+											success: true,
+											data: await response.json() // 如果正常，则获取 JSON 数据
+										}
+									} else { // 若不正常，返回异常信息
+										return {
+											success: false,
+											msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+										};
 									}
-								} else { // 若不正常，返回异常信息
+								} catch (reason) { // 若与服务器连接异常
 									return {
 										success: false,
-										msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+										msg: '连接服务器过程中出现异常，消息：' + reason.message
 									};
 								}
-							} catch (reason) { // 若与服务器连接异常
-								return {
-									success: false,
-									msg: '连接服务器过程中出现异常，消息：' + reason.message
-								};
 							}
-						}
 
-						getAPI('LastParse').then(function(response) {
-							if (response.success) {
-								const data = response.data;
-								if (data.error == 0) {
-									// 请求成功
-									if (data.svipstate == 1) {
-										$("#svipstate-point").addClass("point-success");
-									} else {
-										$("#svipstate-point").addClass("point-danger");
+							getAPI('LastParse').then(function(response) {
+								if (response.success) {
+									const data = response.data;
+									if (data.error == 0) {
+										// 请求成功
+										if (data.svipstate == 1) {
+											$("#svipstate-point").addClass("point-success");
+										} else {
+											$("#svipstate-point").addClass("point-danger");
+										}
 									}
+									$("#svipstate").text(data.sviptips);
+									$("#sviptooltip").attr("data-original-title", data.msg);
 								}
-								$("#svipstate").text(data.sviptips);
-								$("#sviptooltip").attr("data-original-title", data.msg);
-							}
-						});
+							});
 
-						getAPI('ParseCount').then(function(response) {
-							if (response.success) {
-								$("#parsingtooltip").attr("data-original-title", response.data.msg);
-							}
-						});
+							getAPI('ParseCount').then(function(response) {
+								if (response.success) {
+									$("#parsingtooltip").attr("data-original-title", response.data.msg);
+								}
+							});
 
-					});
-				</script>
+						});
+					</script>
+				<?php } ?>
 			</div>
 		<?php
 		}

@@ -93,8 +93,7 @@ function getCookie(name) {
 }
 function addUri() {
 	//配置
-	var host = $('#host').val();
-	var port = $('#port').val();
+	var wsurl = $('#wsurl').val();
 	var uris = [$('#http')[0].href, $('#https')[0].href];
 	var token = $('#token').val();
 	var filename = $('#filename b').text();;
@@ -117,35 +116,37 @@ function addUri() {
 	};
 
 	if (token != "") {
-		json.params.push("token:" + token);
+		json.params.unshift("token:" + token);//坑死了，必须要加在第一个
 	}
 
-	var ws = new WebSocket("ws://" + host + ":" + port + "/jsonrpc");
-	ws.onerror = function (event) {
+	var ws = new WebSocket(wsurl);
+	ws.onerror = (event) => {
 		console.log(event);
-		Swal.fire('连接错误', 'aria2连接错误，请打开控制台查看详情', 'error')
+		Swal.fire('连接错误', 'aria2连接错误，请打开控制台查看详情', 'error');
 	};
 	ws.onopen = () => { ws.send(JSON.stringify(json)); }
 
-	ws.onmessage = function wsmessage(event) {
+	ws.onmessage = (event) => {
 		console.log(event);
 		received_msg = JSON.parse(event.data);
+		if (received_msg.error !== undefined){
+			if (received_msg.error.code == 1) Swal.fire('通过RPC连接失败', '请打开控制台查看详细错误信息，返回信息：' + received_msg.error.message, 'error');
+		}
 		switch (received_msg.method) {
 			case "aria2.onDownloadStart":
-				Swal.fire('aria2发送成功', '已经开始下载 ' + filename, 'success')
-				document.cookie = 'aria2host=' + utoa(host); // add aria2 config to cookie
-				document.cookie = 'aria2port=' + utoa(port);
+				Swal.fire('aria2发送成功', 'aria2已经开始下载 ' + filename, 'success');
+				document.cookie = 'aria2wsurl=' + utoa(wsurl); // add aria2 config to cookie
 				if (token != "" && token != null) {
 					document.cookie = 'aria2token=' + utoa(token);
 				}
 				break;
 
 			case "aria2.onDownloadError": ;
-				Swal.fire('下载错误', 'aria2下载错误', 'error')
+				Swal.fire('下载错误', 'aria2下载错误', 'error');
 				break;
 
 			case "aria2.onDownloadComplete":
-				Swal.fire('下载完成', 'aria2下载完成', 'success')
+				Swal.fire('下载完成', 'aria2下载完成', 'success');
 				break;
 
 			default:

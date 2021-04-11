@@ -35,8 +35,8 @@ $lang = [
 		"NotSupportWithUA" => "暂不支持当前文件。",
 		"NotSupportWithoutUA" => "目前只支持<b>50MB以下文件</b>或<b>设置UA</b>后使用在线预览功能。",
 		"DownloadLink" => "下载链接",
-		"DownloadTip" => "Tips:电脑端右键即可复制下载链接，手机端长按可复制下载链接。推荐使用Aria2下载，速度更快，使用方法请访问帮助页面。",
-		"SendToAria2" => "发送到aria2",
+		"DownloadTip" => "Tips:电脑端右键即可复制下载链接，手机端长按可复制下载链接。推荐使用Aria2、Motrix下载，速度更快，使用方法请访问帮助页面。",
+		"SendToAria2" => "发送到Aria2",
 		"Send" => "发送",
 		"Close" => "关闭",
 		"IndexTitle" => "百度网盘在线解析",
@@ -65,13 +65,22 @@ $lang = [
 				<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。你可以在下方选择你喜欢的方式进行下载。<br />
 					<div class="page-inner">
 						<section class="normal" id="section-">
+							<div id="Motrix"><a class="anchor" href="#Motrix"></a>
+								<h4>Motrix（推荐）</h4>
+							</div>
+							<ol>
+								<li>前往 <a href="https://motrix.app/">Motrix官网</a> 下载 <b>Motrix</b> 对应版本</li>
+								<li>安装后运行Motrix。</li>
+								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
+								<li>在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送。</li>
+							</ol>
 							<div id="aria2"><a class="anchor" href="#aria2"></a>
 								<h4>aria2（推荐）</h4>
 							</div>
 							<ol>
 								<li><a href="./resource/aria2.zip">点击此处</a> 下载 <b>aria2.zip</b></li>
 								<li>解压 <b>aria2.zip</b> 文件并运行其中的 <b>点此启动.bat</b></li>
-								<li>打开解析下载页面，点击 <b>推送到Aria2</b></li>
+								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
 							</ol>
 							<div id="IDM"><a class="anchor" href="#IDM"></a>
 								<h4>IDM</h4>
@@ -191,6 +200,15 @@ $lang = [
 				<p class="card-text">Due to Baidu restrictions, you need to modify the browser "User Agent" before downloading. <br />
 					<div class="page-inner">
 						<section class="normal" id="section-">
+							<div id="Motrix"><a class="anchor" href="#Motrix"></a>
+								<h4>Motrix(Recommend)</h4>
+							</div>
+							<ol>
+								<li>Download <b>Motrix</b> from <a href="https://motrix.app/">https://motrix.app/</a>.</li>
+								<li>Install and run Motrix.</li>
+								<li>Open the file download page and click <b>Send to aria2(Motrix)</b></li>
+								<li>Type <b>ws://localhost:16800/jsonrpc</b> in the "RPC地址".Click send button.</li>
+							</ol>
 							<div id="aria2"><a class="anchor" href="#aria2"></a>
 								<h4>aria2(Recommend)</h4>
 							</div>
