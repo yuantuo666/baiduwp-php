@@ -69,19 +69,19 @@ $lang = [
 								<h4>AriaNgGUI（Android推荐）</h4>
 							</div>
 							<ol>
-								<li>前往 <a href="https://motrix.app/">Motrix官网</a> 下载 <b>Motrix</b> 对应版本</li>
-								<li>安装后运行Motrix。</li>
+						                <li><a href="./resource/AriaNgGUI.apk">点击此处</a> 下载 <b>AriaNgGUI.apk</b></li>
+								<li>安装后运行AriaNgGUI。</li>
 								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
-								<li>在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送</li>
+								<li>直接点击发送，或在“RPC地址”中输入 <b>ws://localhost:6800/jsonrpc</b> 并 点击发送</li>
 							</ol>
 							<div id="Motrix"><a class="anchor" href="#Motrix"></a>
 								<h4>Motrix（推荐）</h4>
 							</div>
 							<ol>
-								<li><a href="./resource/AriaNgGUI.apj">点击此处</a> 下载 <b>AriaNgGUI.apk</b></li>
-								<li>安装后运行AriaNgGUI。</li>
+		                                                <li>前往 <a href="https://motrix.app/">Motrix官网</a> 下载 <b>Motrix</b> 对应版本</li>
+								<li>安装后运行Motrix。</li>
 								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
-								<li>直接点击发送，或在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送</li>
+								<li>在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送</li>
 							</ol>
 							<div id="aria2"><a class="anchor" href="#aria2"></a>
 								<h4>aria2（推荐）</h4>
