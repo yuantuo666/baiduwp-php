@@ -99,7 +99,7 @@ $lang = [
 								<li><b>右键复制下载链接</b>（如果 直接点击 或 右键调用IDM 将传入浏览器的 UA 导致下载失败），在 IDM 新建任务，粘贴链接即可下载</li>
 							</ol>
 							<div id="ADM"><a class="anchor" href="#ADM"></a>
-								<h4>ADM Pro（Android推荐）</h4>
+								<h4>ADM Pro（Android）</h4>
 								<ol>
 									<li>设置 -> 下载中 -> 浏览器标识 -> 自定义 浏览器标识</li>
 									<li>填入 <b>LogStatistic</b></li>
