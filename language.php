@@ -62,17 +62,26 @@ $lang = [
 			<div class="alert alert-primary" role="alert">
 				<h5 class="alert-heading">下载提示</h5>
 				<hr />
-				<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。你可以在下方选择你喜欢的方式进行下载。<br />
+				<p class="card-text">因百度限制，需修改浏览器 User Agent 后下载。你可以在下方选择你喜欢的方式进行下载<br />
 					<div class="page-inner">
 						<section class="normal" id="section-">
-							<div id="Motrix"><a class="anchor" href="#Motrix"></a>
-								<h4>Motrix（推荐）</h4>
+							<div id="ariang"><a class="anchor" href="#ariang"></a>
+								<h4>AriaNgGUI（Android推荐）</h4>
 							</div>
 							<ol>
 								<li>前往 <a href="https://motrix.app/">Motrix官网</a> 下载 <b>Motrix</b> 对应版本</li>
 								<li>安装后运行Motrix。</li>
 								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
-								<li>在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送。</li>
+								<li>在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送</li>
+							</ol>
+							<div id="Motrix"><a class="anchor" href="#Motrix"></a>
+								<h4>Motrix（推荐）</h4>
+							</div>
+							<ol>
+								<li><a href="./resource/AriaNgGUI.apj">点击此处</a> 下载 <b>AriaNgGUI.apk</b></li>
+								<li>安装后运行AriaNgGUI。</li>
+								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
+								<li>直接点击发送，或在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送</li>
 							</ol>
 							<div id="aria2"><a class="anchor" href="#aria2"></a>
 								<h4>aria2（推荐）</h4>
@@ -80,14 +89,14 @@ $lang = [
 							<ol>
 								<li><a href="./resource/aria2.zip">点击此处</a> 下载 <b>aria2.zip</b></li>
 								<li>解压 <b>aria2.zip</b> 文件并运行其中的 <b>点此启动.bat</b></li>
-								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
+								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b> 并 点击发送</li>
 							</ol>
 							<div id="IDM"><a class="anchor" href="#IDM"></a>
 								<h4>IDM</h4>
 							</div>
 							<ol>
 								<li>选项 -> 下载 -> 手动添加任务时使用的用户代理（UA）-> 填入 <b>LogStatistic</b></li>
-								<li><b>右键复制下载链接</b>（如果 直接点击 或 右键调用IDM 将传入浏览器的 UA 导致下载失败），在 IDM 新建任务，粘贴链接即可下载。</li>
+								<li><b>右键复制下载链接</b>（如果 直接点击 或 右键调用IDM 将传入浏览器的 UA 导致下载失败），在 IDM 新建任务，粘贴链接即可下载</li>
 							</ol>
 							<div id="ADM"><a class="anchor" href="#ADM"></a>
 								<h4>ADM Pro（Android推荐）</h4>
@@ -108,7 +117,7 @@ $lang = [
 									<li>Group 填入 百度网盘</li>
 									<li>Append? 选择 Replace</li>
 									<li>Indicator Flag 填入 Log，点击 Add 保存</li>
-									<li>保存后点击扩展图标，出现“百度网盘”，进入并选择“百度网盘分享下载”。</li>
+									<li>保存后点击扩展图标，出现“百度网盘”，进入并选择“百度网盘分享下载”</li>
 								</ol>
 								<blockquote>
 									<p>Chrome 应用商店打不开或者其他 Chromium 内核的浏览器，<a href="resource/UserAgentSwitcher.crx" target="_blank">请点此下载</a></p>
