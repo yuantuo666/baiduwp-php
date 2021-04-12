@@ -100,7 +100,6 @@ function addUri() {
 
 
 	var options = {
-		"dir": './baiduwp-php',
 		"max-connection-per-server": "16",
 		"user-agent": "LogStatistic"
 	};
