@@ -453,6 +453,8 @@ SWITCHTIP;
 									break;
 								case 3:
 									//模式3：手动切换，不管限速
+								case 4:
+									//模式4：轮番上(无视限速)
 								case 0:
 									//模式0：使用本地解析
 								default:
