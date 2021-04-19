@@ -349,7 +349,7 @@ Function
 					$bdstoken = $_POST["bdstoken"];
 					$filesize = $_POST["filesize"];
 					$smallfile = ((int)$filesize < 52428800) ? true : false; // 如果是小文件 那么可以不需要传入SVIP的BDUSS 仅需普通用户的即可
-					// $smallfile = false; // 小文件竟然也会限速，醉了，现在先不搞这个
+					$smallfile = false; // 小文件竟然也会限速，醉了，现在先不搞这个
 					// 文件小于50MB可以使用这种方法获取：
 					// $nouarealLink="";// 重置
 					// if((int)$filesize<=52428800){
