@@ -112,7 +112,7 @@ function addUri() {
 		json.params.unshift("token:" + token);//坑死了，必须要加在第一个
 	}
 
-	patt = /^wss?\:\/\/(([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))(\.([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))*(\.[A-Za-z0-9]{2,10})(\/.*)?$/;
+	patt = /^wss?\:\/\/([\w.]+\/?)\S*/;
 	if (!patt.test(wsurl)) {
 		Swal.fire('地址错误', 'ws 或 wss 输入错误，请检查是否填写正确', 'error');
 		return;
