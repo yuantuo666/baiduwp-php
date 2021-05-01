@@ -121,6 +121,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($Password, 'Password');
 			getConfig($ADMIN_PASSWORD, 'ADMIN_PASSWORD');
 			getConfig($DownloadTimes, 'DownloadTimes', '5');
+			getConfig($DownloadLinkAvailableTime, 'DownloadLinkAvailableTime', '8');
 			getConfig($IsConfirmDownload, 'IsConfirmDownload', true);
 			getConfig($Footer, 'Footer');
 
@@ -201,7 +202,14 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">下载次数限制修改</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="DownloadTimes" value="<?php echo $DownloadTimes; ?>">
-								<small class="form-text">设置每一个IP的下载次数。</small>
+								<small class="form-text">设置每一个IP的下载次数。（仅开启数据库有效）</small>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">下载链接有效时间</label>
+							<div class="col-sm-10">
+								<input class="form-control" name="DownloadLinkAvailableTime" value="<?php echo $DownloadLinkAvailableTime; ?>">
+								<small class="form-text">设置解析出来的下载链接有效时间，超出对应时间则重新获取。（仅开启数据库有效，默认及最大为8小时，单位小时）</small>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -529,6 +537,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$Password = (!empty($_POST["Password"])) ? $_POST["Password"] : "";
 				$ADMIN_PASSWORD = (!empty($_POST["ADMIN_PASSWORD"])) ? $_POST["ADMIN_PASSWORD"] : "";
 				$DownloadTimes = (!empty($_POST["DownloadTimes"])) ? $_POST["DownloadTimes"] : "";
+				$DownloadLinkAvailableTime = (!empty($_POST["DownloadLinkAvailableTime"])) ? $_POST["DownloadLinkAvailableTime"] : "";
 				$IsConfirmDownload = (!empty($_POST["IsConfirmDownload"])) ? $_POST["IsConfirmDownload"] : "true";
 				$Footer = (!empty($_POST["Footer"])) ? $_POST["Footer"] : "";
 
@@ -591,6 +600,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<Password>', $Password, $update_config);
 				$update_config = str_replace('<ADMIN_PASSWORD>', $ADMIN_PASSWORD, $update_config);
 				$update_config = str_replace('<DownloadTimes>', $DownloadTimes, $update_config);
+				$update_config = str_replace('<DownloadLinkAvailableTime>', $DownloadLinkAvailableTime, $update_config);
 				$update_config = str_replace('<IsConfirmDownload>', $IsConfirmDownload, $update_config);
 				$update_config = str_replace('<Footer>', $Footer, $update_config);
 
