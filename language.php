@@ -35,7 +35,7 @@ $lang = [
 		"NotSupportWithUA" => "暂不支持当前文件。",
 		"NotSupportWithoutUA" => "目前只支持 <b>50MB以下文件</b> 或 <b>设置UA</b> 后使用在线预览功能。",
 		"DownloadLink" => "下载链接",
-		"DownloadTip" => "Tips: 电脑端右键即可复制下载链接，手机端长按可复制下载链接。推荐使用Aria2、Motrix下载，速度更快，使用方法请访问帮助页面。",
+		"DownloadTip" => "Tips: 电脑端右键即可复制下载链接，手机端长按可复制下载链接。推荐使用 Aria2、Motrix 下载，速度更快，使用方法请访问帮助页面。",
 		"SendToAria2" => "发送到 Aria2",
 		"Send" => "发送",
 		"Close" => "关闭",
@@ -71,16 +71,16 @@ $lang = [
 							<ol>
 								<li>前往 <a href="https://motrix.app/">Motrix官网</a> 下载 <b>Motrix</b> 对应版本</li>
 								<li>安装后运行Motrix。</li>
-								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
+								<li>打开解析下载页面，点击 <b>推送到 Aria2(Motrix)</b></li>
 								<li>在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送。</li>
 							</ol>
 							<div id="aria2"><a class="anchor" href="#aria2"></a>
-								<h4>aria2（推荐）</h4>
+								<h4>Aria2（推荐）</h4>
 							</div>
 							<ol>
 								<li><a href="./resource/aria2.zip">点击此处</a> 下载 <b>aria2.zip</b></li>
 								<li>解压 <b>aria2.zip</b> 文件并运行其中的 <b>点此启动.bat</b></li>
-								<li>打开解析下载页面，点击 <b>推送到Aria2(Motrix)</b></li>
+								<li>打开解析下载页面，点击 <b>推送到 Aria2(Motrix)</b></li>
 							</ol>
 							<div id="IDM"><a class="anchor" href="#IDM"></a>
 								<h4>IDM</h4>
@@ -210,7 +210,7 @@ $lang = [
 								<li>Type <b>ws://localhost:16800/jsonrpc</b> in the "RPC地址".Click send button.</li>
 							</ol>
 							<div id="aria2"><a class="anchor" href="#aria2"></a>
-								<h4>aria2(Recommend)</h4>
+								<h4>Aria2(Recommend)</h4>
 							</div>
 							<ol>
 								<li><a href="./resource/aria2.zip">Click here</a> to download <b>aria2.zip</b></li>

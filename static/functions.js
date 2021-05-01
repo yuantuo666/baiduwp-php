@@ -121,7 +121,7 @@ function addUri() {
 
 	ws.onerror = event => {
 		console.log(event);
-		Swal.fire('连接错误', 'aria2 连接错误，请打开控制台查看详情', 'error');
+		Swal.fire('连接错误', 'Aria2 连接错误，请打开控制台查看详情', 'error');
 	};
 	ws.onopen = () => { ws.send(JSON.stringify(json)); }
 
@@ -133,18 +133,18 @@ function addUri() {
 		}
 		switch (received_msg.method) {
 			case "aria2.onDownloadStart":
-				Swal.fire('aria2 发送成功', 'aria2已经开始下载 ' + filename, 'success');
-				 
+				Swal.fire('Aria2 发送成功', 'Aria2 已经开始下载 ' + filename, 'success');
+
 				localStorage.setItem('aria2wsurl', wsurl);// add aria2 config to SessionStorage
-				if (token != "" && token != null) localStorage.setItem('aria2token', token);			
+				if (token != "" && token != null) localStorage.setItem('aria2token', token);
 				break;
 
 			case "aria2.onDownloadError": ;
-				Swal.fire('下载错误', 'aria2 下载错误', 'error');
+				Swal.fire('下载错误', 'Aria2 下载错误', 'error');
 				break;
 
 			case "aria2.onDownloadComplete":
-				Swal.fire('下载完成', 'aria2 下载完成', 'success');
+				Swal.fire('下载完成', 'Aria2 下载完成', 'success');
 				break;
 
 			default:
@@ -152,8 +152,5 @@ function addUri() {
 		}
 
 		// version = received_msg.result.version;
-	};
-	ws.onclose = () => {
-
 	};
 }

@@ -493,7 +493,7 @@ SWITCHTIP;
 										<?php
 										if (USING_DB) {
 											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费次数。</p>";
-											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">恭喜你，中奖啦！本次解析不消耗次数哦~</span></p>";
+											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">此文件很小，不消耗解析次数。</span></p>";
 											else echo "<p class=\"card-text\">服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。</p>";
 										}
 										echo FileInfo($filename, $size, $md5, $server_ctime);
