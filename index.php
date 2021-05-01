@@ -563,12 +563,10 @@ SWITCHTIP;
 											</div>
 											<script>
 												$(function() {
-													if (getCookie('aria2wsurl') != null) {
-														$('#wsurl').attr('value', atou(getCookie('aria2wsurl')))
-													}
-													if (getCookie('aria2token') != null) {
-														$('#token').attr('value', atou(getCookie('aria2token')));
-													}
+													if (localStorage.getItem('aria2wsurl') != null)
+														$('#wsurl').attr('value', localStorage.getItem('aria2wsurl'));
+													if (localStorage.getItem('aria2token') != null)
+														$('#token').attr('value', localStorage.getItem('aria2token'));
 												})
 											</script>
 										</div>

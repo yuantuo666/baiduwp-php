@@ -74,13 +74,6 @@ function Getpw() {
 	}
 }
 
-function utoa(str) {
-	return window.btoa(unescape(encodeURIComponent(str)));
-}
-// base64 encoded ascii to ucs-2 string
-function atou(str) {
-	return decodeURIComponent(escape(window.atob(str)));
-}
 function getCookie(name) {
 	var nameEQ = name + "=";
 	var ca = document.cookie.split(';');
@@ -119,34 +112,39 @@ function addUri() {
 		json.params.unshift("token:" + token);//坑死了，必须要加在第一个
 	}
 
+	patt = /^wss?\:\/\/(([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))(\.([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))*(\.[A-Za-z0-9]{2,10})(\/.*)?$/;
+	if (!patt.test(wsurl)) {
+		Swal.fire('地址错误', 'ws 或 wss 输入错误，请检查是否填写正确', 'error');
+		return;
+	}
 	var ws = new WebSocket(wsurl);
-	ws.onerror = (event) => {
+
+	ws.onerror = event => {
 		console.log(event);
-		Swal.fire('连接错误', 'aria2连接错误，请打开控制台查看详情', 'error');
+		Swal.fire('连接错误', 'aria2 连接错误，请打开控制台查看详情', 'error');
 	};
 	ws.onopen = () => { ws.send(JSON.stringify(json)); }
 
-	ws.onmessage = (event) => {
+	ws.onmessage = event => {
 		console.log(event);
 		received_msg = JSON.parse(event.data);
-		if (received_msg.error !== undefined){
-			if (received_msg.error.code == 1) Swal.fire('通过RPC连接失败', '请打开控制台查看详细错误信息，返回信息：' + received_msg.error.message, 'error');
+		if (received_msg.error !== undefined) {
+			if (received_msg.error.code === 1) Swal.fire('通过RPC连接失败', '请打开控制台查看详细错误信息，返回信息：' + received_msg.error.message, 'error');
 		}
 		switch (received_msg.method) {
 			case "aria2.onDownloadStart":
-				Swal.fire('aria2发送成功', 'aria2已经开始下载 ' + filename, 'success');
-				document.cookie = 'aria2wsurl=' + utoa(wsurl); // add aria2 config to cookie
-				if (token != "" && token != null) {
-					document.cookie = 'aria2token=' + utoa(token);
-				}
+				Swal.fire('aria2 发送成功', 'aria2已经开始下载 ' + filename, 'success');
+				 
+				localStorage.setItem('aria2wsurl', wsurl);// add aria2 config to SessionStorage
+				if (token != "" && token != null) localStorage.setItem('aria2token', token);			
 				break;
 
 			case "aria2.onDownloadError": ;
-				Swal.fire('下载错误', 'aria2下载错误', 'error');
+				Swal.fire('下载错误', 'aria2 下载错误', 'error');
 				break;
 
 			case "aria2.onDownloadComplete":
-				Swal.fire('下载完成', 'aria2下载完成', 'success');
+				Swal.fire('下载完成', 'aria2 下载完成', 'success');
 				break;
 
 			default:
@@ -155,7 +153,7 @@ function addUri() {
 
 		// version = received_msg.result.version;
 	};
-	ws.onclose = function () {
+	ws.onclose = () => {
 
 	};
 }
