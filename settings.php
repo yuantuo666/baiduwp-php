@@ -482,11 +482,11 @@ if ($is_login) connectdb();
 									<div class="form-group">
 										<label>会员账号切换模式</label>
 										<select class="form-control" id="SVIPSwitchMod" name="SVIPSwitchMod">
-											<option value="0" <?php if ($SVIPSwitchMod == "0") echo "selected=\"selected\""; ?>>本地模式</option>
-											<option value="1" <?php if ($SVIPSwitchMod == "1") echo "selected=\"selected\""; ?>>顺序模式</option>
-											<option value="2" <?php if ($SVIPSwitchMod == "2") echo "selected=\"selected\""; ?>>会员账号轮换模式</option>
-											<option value="4" <?php if ($SVIPSwitchMod == "4") echo "selected=\"selected\""; ?>>所有账号轮换模式</option>
-											<option value="3" <?php if ($SVIPSwitchMod == "3") echo "selected=\"selected\""; ?>>手动模式</option>
+											<option value="0" <?php if (SVIPSwitchMod == "0") echo "selected=\"selected\""; ?>>本地模式</option>
+											<option value="1" <?php if (SVIPSwitchMod == "1") echo "selected=\"selected\""; ?>>顺序模式</option>
+											<option value="2" <?php if (SVIPSwitchMod == "2") echo "selected=\"selected\""; ?>>会员账号轮换模式</option>
+											<option value="4" <?php if (SVIPSwitchMod == "4") echo "selected=\"selected\""; ?>>所有账号轮换模式</option>
+											<option value="3" <?php if (SVIPSwitchMod == "3") echo "selected=\"selected\""; ?>>手动模式</option>
 										</select>
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
