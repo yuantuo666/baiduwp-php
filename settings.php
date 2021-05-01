@@ -470,7 +470,8 @@ if ($is_login) connectdb();
 								?>
 								本地模式：不管是否限速，一直使用本地账号解析。<br />
 								顺序模式：一直使用设置的账号解析，用到会员账号失效切换下一账号；当数据库中会员账号失效后，会使用本地账号解析。<br />
-								轮换模式：解析一次就切换一次账号，只使用会员账号；当数据库中会员账号失效后，会使用本地账号解析。<br />
+								会员账号轮换模式：解析一次就切换一次账号，只使用会员账号；当数据库中会员账号失效后，会使用本地账号解析。<br />
+								所有账号轮换模式：解析一次就切换一次账号，无视是否限速。<br />
 								手动模式：不管是否限速，一直使用数据库中设置的账号。
 								<br>
 								注意！此功能需要修改config.php的信息，请小心使用。
@@ -483,7 +484,8 @@ if ($is_login) connectdb();
 										<select class="form-control" id="SVIPSwitchMod" name="SVIPSwitchMod">
 											<option value="0" <?php if (SVIPSwitchMod == "0") echo "selected=\"selected\""; ?>>本地模式</option>
 											<option value="1" <?php if (SVIPSwitchMod == "1") echo "selected=\"selected\""; ?>>顺序模式</option>
-											<option value="2" <?php if (SVIPSwitchMod == "2") echo "selected=\"selected\""; ?>>轮换模式</option>
+											<option value="2" <?php if (SVIPSwitchMod == "2") echo "selected=\"selected\""; ?>>会员账号轮换模式</option>
+											<option value="4" <?php if (SVIPSwitchMod == "4") echo "selected=\"selected\""; ?>>所有账号轮换模式</option>
 											<option value="3" <?php if (SVIPSwitchMod == "3") echo "selected=\"selected\""; ?>>手动模式</option>
 										</select>
 									</div>
@@ -684,10 +686,13 @@ if ($is_login) connectdb();
 													$Mod = "顺序模式";
 													break;
 												case '2':
-													$Mod = "轮换模式";
+													$Mod = "会员账号轮换模式";
 													break;
 												case '3':
 													$Mod = "手动模式";
+													break;
+												case '4':
+													$Mod = "所有账号轮换模式";
 													break;
 												default:
 													$Mod = "未知模式";

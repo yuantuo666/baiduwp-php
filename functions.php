@@ -531,6 +531,33 @@ function GetDBBDUSS()
 				$id = "-1";
 			}
 			break;
+		case 4:
+			//模式4：轮番上(无视限速)
+			// 时间顺序输出第一项限速账号
+			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `" . $dbtable . "_svip` ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
+
+			$Result = mysqli_query($conn, $sql);
+			if ($Result =  mysqli_fetch_assoc($Result)) {
+				$SVIP_BDUSS = $Result["svip_bduss"];
+				$SVIP_STOKEN = $Result["svip_stoken"];
+				$id = $Result["id"];
+				//不论解析成功与否，将当前账号更新时间，下一次使用另一账号
+				// 开始处理
+				// 这里最新的时间表示可用账号，按顺序排序
+				$is_using = date("Y-m-d H:i:s");
+				$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+				$mysql_query = mysqli_query($conn, $sql);
+				if ($mysql_query == false) {
+					// 失败 但可继续解析
+					dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
+				}
+			} else {
+				// 数据库中所有SVIP账号已经用完，启用本地SVIP账号
+				$SVIP_BDUSS = SVIP_BDUSS;
+				$SVIP_STOKEN = SVIP_STOKEN;
+				$id = "-1";
+			}
+			break;
 		case 0:
 			//模式0：使用本地解析
 		default:
@@ -548,57 +575,57 @@ function GetDBBDUSS()
  */
 function AccountStatus(string $BDUSS, string $STOKEN)
 {
-    $Url = "https://pan.baidu.com/api/gettemplatevariable?channel=chunlei&web=1&app_id=250528&clienttype=0";
-    $Header = [
-        "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-        "Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;"
-    ];
-    $Data = "fields=[%22username%22,%22loginstate%22,%22is_vip%22,%22is_svip%22,%22is_evip%22]";
-    $Result = post($Url, $Data, $Header);
-    $Result = json_decode($Result, true);
-    if (DEBUG) {
-        echo '<pre>账号状态:';
-        var_dump($Result);
-        echo '</pre>';
-    }
-    if ($Result["errno"] == 0) {
-        // 正常
-        $Username = $Result["result"]["username"];
-        $LoginStatus = $Result["result"]["loginstate"];
-        if ($Result["result"]["is_vip"] == 1) {
-            $SVIP = 1; //会员账号
-        } elseif ($Result["result"]["is_svip"] == 1 or $Result["result"]["is_evip"] == 1) {
-            $SVIP = 2; //超级会员账号
-        } else {
-            $SVIP = 0; //普通账号
-            return array(0, $SVIP, $Username, $LoginStatus, 0);
-        }
+	$Url = "https://pan.baidu.com/api/gettemplatevariable?channel=chunlei&web=1&app_id=250528&clienttype=0";
+	$Header = [
+		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
+		"Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;"
+	];
+	$Data = "fields=[%22username%22,%22loginstate%22,%22is_vip%22,%22is_svip%22,%22is_evip%22]";
+	$Result = post($Url, $Data, $Header);
+	$Result = json_decode($Result, true);
+	if (DEBUG) {
+		echo '<pre>账号状态:';
+		var_dump($Result);
+		echo '</pre>';
+	}
+	if ($Result["errno"] == 0) {
+		// 正常
+		$Username = $Result["result"]["username"];
+		$LoginStatus = $Result["result"]["loginstate"];
+		if ($Result["result"]["is_vip"] == 1) {
+			$SVIP = 1; //会员账号
+		} elseif ($Result["result"]["is_svip"] == 1 or $Result["result"]["is_evip"] == 1) {
+			$SVIP = 2; //超级会员账号
+		} else {
+			$SVIP = 0; //普通账号
+			return array(0, $SVIP, $Username, $LoginStatus, 0);
+		}
 
-        $Url = "https://pan.baidu.com/rest/2.0/membership/user?channel=chunlei&web=1&app_id=250528&clienttype=0";
-        $Header = [
-            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-            "Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;"
-        ];
-        $Data = "method=query";
-        $Result = post($Url, $Data, $Header);
-        $Result = json_decode($Result, true);
-        if (DEBUG) {
-            echo '<pre>会员状态:';
-            var_dump($Result);
-            echo '</pre>';
-        }
-        if (isset($Result["reminder"]["svip"])) {
-            //存在会员信息
-            $LeftSeconds = $Result["reminder"]["svip"]["leftseconds"];
-            return array(0, $SVIP, $Username, $LoginStatus, $LeftSeconds);
-        }
-    } elseif ($Result["errno"] == -6) {
-        // 账号失效
-        return array(-6);
-    } else {
-        //未知错误
-        return array($Result["errno"]);
-    }
+		$Url = "https://pan.baidu.com/rest/2.0/membership/user?channel=chunlei&web=1&app_id=250528&clienttype=0";
+		$Header = [
+			"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
+			"Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;"
+		];
+		$Data = "method=query";
+		$Result = post($Url, $Data, $Header);
+		$Result = json_decode($Result, true);
+		if (DEBUG) {
+			echo '<pre>会员状态:';
+			var_dump($Result);
+			echo '</pre>';
+		}
+		if (isset($Result["reminder"]["svip"])) {
+			//存在会员信息
+			$LeftSeconds = $Result["reminder"]["svip"]["leftseconds"];
+			return array(0, $SVIP, $Username, $LoginStatus, $LeftSeconds);
+		}
+	} elseif ($Result["errno"] == -6) {
+		// 账号失效
+		return array(-6);
+	} else {
+		//未知错误
+		return array($Result["errno"]);
+	}
 }
 /**
  * 时间差计算
@@ -610,30 +637,30 @@ function AccountStatus(string $BDUSS, string $STOKEN)
  */
 function time2Units(int $time)
 {
-    $year   = floor($time / 60 / 60 / 24 / 365);
-    $time  -= $year * 60 * 60 * 24 * 365;
-    $month  = floor($time / 60 / 60 / 24 / 30);
-    $time  -= $month * 60 * 60 * 24 * 30;
-    $day    = floor($time / 60 / 60 / 24);
-    $time  -= $day * 60 * 60 * 24;
-    $hour   = floor($time / 60 / 60);
-    $time  -= $hour * 60 * 60;
-    $minute = floor($time / 60);
-    $time  -= $minute * 60;
-    $second = $time;
-    $elapse = '';
+	$year   = floor($time / 60 / 60 / 24 / 365);
+	$time  -= $year * 60 * 60 * 24 * 365;
+	$month  = floor($time / 60 / 60 / 24 / 30);
+	$time  -= $month * 60 * 60 * 24 * 30;
+	$day    = floor($time / 60 / 60 / 24);
+	$time  -= $day * 60 * 60 * 24;
+	$hour   = floor($time / 60 / 60);
+	$time  -= $hour * 60 * 60;
+	$minute = floor($time / 60);
+	$time  -= $minute * 60;
+	$second = $time;
+	$elapse = '';
 
-    $unitArr = array(
-        '年'  => 'year', '个月' => 'month',  '天' => 'day',
-        '小时' => 'hour', '分钟' => 'minute', '秒' => 'second'
-    );
+	$unitArr = array(
+		'年'  => 'year', '个月' => 'month',  '天' => 'day',
+		'小时' => 'hour', '分钟' => 'minute', '秒' => 'second'
+	);
 
-    foreach ($unitArr as $cn => $u) {
-        if ($$u > 0) {
-            $elapse = $$u . $cn;
-            break;
-        }
-    }
+	foreach ($unitArr as $cn => $u) {
+		if ($$u > 0) {
+			$elapse = $$u . $cn;
+			break;
+		}
+	}
 
-    return $elapse;
+	return $elapse;
 }
