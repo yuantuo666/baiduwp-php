@@ -537,7 +537,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$Password = (!empty($_POST["Password"])) ? $_POST["Password"] : "";
 				$ADMIN_PASSWORD = (!empty($_POST["ADMIN_PASSWORD"])) ? $_POST["ADMIN_PASSWORD"] : "";
 				$DownloadTimes = (!empty($_POST["DownloadTimes"])) ? $_POST["DownloadTimes"] : "";
-				$DownloadLinkAvailableTime = (!empty($_POST["DownloadLinkAvailableTime"])) ? $_POST["DownloadLinkAvailableTime"] : "";
+				$DownloadLinkAvailableTime = (!empty($_POST["DownloadLinkAvailableTime"])) ? $_POST["DownloadLinkAvailableTime"] : "8";
 				$IsConfirmDownload = (!empty($_POST["IsConfirmDownload"])) ? $_POST["IsConfirmDownload"] : "true";
 				$Footer = (!empty($_POST["Footer"])) ? $_POST["Footer"] : "";
 
