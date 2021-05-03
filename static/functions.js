@@ -154,3 +154,12 @@ function addUri() {
 		// version = received_msg.result.version;
 	};
 }
+
+function makeQRCode(element, text, hw = 512) {
+	return new QRCode(element, {
+		text,
+		correctLevel: QRCode.CorrectLevel.M,
+		height: hw,
+		width: hw
+	});
+}

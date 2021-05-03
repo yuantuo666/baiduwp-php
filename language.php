@@ -86,7 +86,7 @@ $lang = [
 								<h4>Aria2（安卓）</h4>
 							</div>
 							<ol>
-								<li><a href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">点击此处</a> 下载 <b>Aria2Android.apk</b></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">点击此处</a> 下载 <b>Aria2Android.apk</b></li>
 								<li>安装并运行 <b>Aria2Android.apk</b></li>
 								<li>将 RPC -> RPC令牌(token) 设置好后，点击右下角启动 aria2</li>
 								<li>打开解析下载页面，将上一步设置的 <b>token</b> 输入框中，点击 <b>推送到 Aria2(Motrix)</b></li>
@@ -128,9 +128,9 @@ $lang = [
 								<li>本项目与PanDownload无关。</li>
 								<li>本项目仅以学习为目的，不得用于其他用途。</li>
 								<li>当前项目版本：' . programVersion . '</li>
-								<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-								<li>项目作者：<a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
-								<li>项目协作者：<a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
+								<li>项目作者：<a data-qrcode-attr="href" href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+								<li>项目协作者：<a data-qrcode-attr="href" href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 							</ol>
 						</section>
 						<script>
@@ -215,7 +215,7 @@ $lang = [
 								<h4>Aria2(Android)</h4>
 							</div>
 							<ol>
-								<li><a href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">Click here</a>  to download  <b>Aria2Android.apk</b></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">Click here</a>  to download  <b>Aria2Android.apk</b></li>
 								<li>Install <b>Aria2Android.apk</b> and run the APP</li>
 								<li>Set your RPC token and then click the bottom button to run aria2</li>
 								<li>Open the file download page and put your <b>token</b> in the box, then click <b>Send to aria2(Motrix)</b></li>
@@ -257,9 +257,9 @@ $lang = [
 								<li>本项目与PanDownload无关。</li>
 								<li>本项目仅以学习为目的，不得用于其他用途。</li>
 								<li>当前项目版本：' . programVersion . '</li>
-								<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-								<li>项目作者：<a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
-								<li>项目协作者：<a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
+								<li>项目作者：<a data-qrcode-attr="href" href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+								<li>项目协作者：<a data-qrcode-attr="href" href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 							</ol>
 						</section>
 						<script>
