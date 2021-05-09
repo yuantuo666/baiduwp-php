@@ -9,14 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.6
+ * @version 2.1.7
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.1.6";
+$programVersion_Index = "2.1.7";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -91,6 +91,7 @@ if (DEBUG) {
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx"></script>
 	<script src="static/color.js"></script>
 	<script src="static/functions.js"></script>
 	<script defer src="static/ready.js"></script>
@@ -349,7 +350,7 @@ Function
 					$bdstoken = $_POST["bdstoken"];
 					$filesize = $_POST["filesize"];
 					$smallfile = ((int)$filesize < 52428800) ? true : false; // 如果是小文件 那么可以不需要传入SVIP的BDUSS 仅需普通用户的即可
-					// $smallfile = false; // 小文件竟然也会限速，醉了，现在先不搞这个
+					$smallfile = false; // 小文件竟然也会限速，醉了，现在先不搞这个
 					// 文件小于50MB可以使用这种方法获取：
 					// $nouarealLink="";// 重置
 					// if((int)$filesize<=52428800){
@@ -377,8 +378,9 @@ Function
 						if (USING_DB) {
 							connectdb();
 
+							$DownloadLinkAvailableTime = (is_int(DownloadLinkAvailableTime)) ? DownloadLinkAvailableTime : 8;
 							// 查询数据库中是否存在已经保存的数据
-							$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL 8 HOUR);";
+							$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL $DownloadLinkAvailableTime HOUR);";
 							$mysql_query = mysqli_query($conn, $sql);
 						}
 						if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
@@ -493,7 +495,7 @@ SWITCHTIP;
 										<?php
 										if (USING_DB) {
 											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费次数。</p>";
-											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">恭喜你，中奖啦！本次解析不消耗次数哦~</span></p>";
+											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">此文件很小，不消耗解析次数。</span></p>";
 											else echo "<p class=\"card-text\">服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。</p>";
 										}
 										echo FileInfo($filename, $size, $md5, $server_ctime);
@@ -563,12 +565,10 @@ SWITCHTIP;
 											</div>
 											<script>
 												$(function() {
-													if (getCookie('aria2wsurl') != null) {
-														$('#wsurl').attr('value', atou(getCookie('aria2wsurl')))
-													}
-													if (getCookie('aria2token') != null) {
-														$('#token').attr('value', atou(getCookie('aria2token')));
-													}
+													if (localStorage.getItem('aria2wsurl') != null)
+														$('#wsurl').attr('value', localStorage.getItem('aria2wsurl'));
+													if (localStorage.getItem('aria2token') != null)
+														$('#token').attr('value', localStorage.getItem('aria2token'));
 												})
 											</script>
 										</div>
