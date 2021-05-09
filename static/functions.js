@@ -93,7 +93,6 @@ function addUri() {
 
 
 	var options = {
-		"dir": './', //推送手机端时不存在此目录会报错
 		"max-connection-per-server": "16",
 		"user-agent": "LogStatistic"
 	};
