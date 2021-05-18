@@ -68,3 +68,21 @@ form input, form button {
 .point-danger {
 	background-color: #dc3545;
 }
+
+.qrcode {
+	position: absolute;
+	transform: translate(2rem, -50%);
+	display: none;
+	opacity: 0;
+	transition: opacity .4s ease-in-out;
+}
+
+[data-qrcode-attr]:hover + .qrcode, [data-qrcode-text]:hover + .qrcode {
+	display: inline;
+	opacity: 1;
+}
+
+.qrcode img {
+	width: 150px;
+	height: 150px;
+}
