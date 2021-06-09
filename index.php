@@ -323,7 +323,7 @@ Function
 						connectdb();
 
 						// 查询数据库中是否存在已经保存的数据
-						$sql = "SELECT * FROM `" . $dbtable . "_ip` WHERE `ip`='$ip';";
+						$sql = "SELECT * FROM `" . $dbtable . "_ip` WHERE `ip` LIKE '$ip';";
 						$mysql_query = mysqli_query($conn, $sql);
 						if ($result = mysqli_fetch_assoc($mysql_query)) {
 							// 存在 判断类型

@@ -384,6 +384,7 @@ if ($is_login) connectdb();
 									<div class="form-group">
 										<label>IP地址</label>
 										<input type="text" class="form-control form-control-sm" name="ip">
+										<small>现在已经支持对 ip 段匹配，设置时用"%"替换对应数字即可实现。例如想屏蔽 123.123.123.0 到 123.123.123.255 ，可输入"123.123.123.%"。同理，想屏蔽 123.123.0.0 到 123.123.255.255 ，可输入 "123.123.%.%"。</small>
 									</div>
 									<div class="form-group">
 										<label>备注</label>
