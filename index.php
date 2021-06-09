@@ -91,6 +91,7 @@ if (DEBUG) {
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx"></script>
 	<script src="static/color.js"></script>
 	<script src="static/functions.js"></script>
 	<script defer src="static/ready.js"></script>

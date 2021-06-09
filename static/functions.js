@@ -93,7 +93,6 @@ function addUri() {
 
 
 	var options = {
-		"dir": './', //推送手机端时不存在此目录会报错
 		"max-connection-per-server": "16",
 		"user-agent": "LogStatistic"
 	};
@@ -153,4 +152,13 @@ function addUri() {
 
 		// version = received_msg.result.version;
 	};
+}
+
+function makeQRCode(element, text, hw = 512) {
+	return new QRCode(element, {
+		text,
+		correctLevel: QRCode.CorrectLevel.M,
+		height: hw,
+		width: hw
+	});
 }

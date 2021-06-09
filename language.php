@@ -69,7 +69,7 @@ $lang = [
 								<h4>Motrix（推荐）</h4>
 							</div>
 							<ol>
-								<li>前往 <a href="https://motrix.app/">Motrix官网</a> 下载 <b>Motrix</b> 对应版本</li>
+								<li>前往 <a href="https://motrix.app/" target="_blank">Motrix官网</a> 下载 <b>Motrix</b> 对应版本</li>
 								<li>安装后运行Motrix。</li>
 								<li>打开解析下载页面，点击 <b>推送到 Aria2(Motrix)</b></li>
 								<li>在“RPC地址”中输入 <b>ws://localhost:16800/jsonrpc</b> 并 点击发送。</li>
@@ -86,7 +86,7 @@ $lang = [
 								<h4>Aria2（安卓）</h4>
 							</div>
 							<ol>
-								<li><a href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">点击此处</a> 下载 <b>Aria2Android.apk</b></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">点击此处</a> 下载 <b>Aria2Android.apk</b></li>
 								<li>安装并运行 <b>Aria2Android.apk</b></li>
 								<li>将 RPC -> RPC令牌(token) 设置好后，点击右下角启动 aria2</li>
 								<li>打开解析下载页面，将上一步设置的 <b>token</b> 输入框中，点击 <b>推送到 Aria2(Motrix)</b></li>
@@ -128,9 +128,9 @@ $lang = [
 								<li>本项目与PanDownload无关。</li>
 								<li>本项目仅以学习为目的，不得用于其他用途。</li>
 								<li>当前项目版本：' . programVersion . '</li>
-								<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-								<li>项目作者：<a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
-								<li>项目协作者：<a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
+								<li>项目作者：<a data-qrcode-attr="href" href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+								<li>项目协作者：<a data-qrcode-attr="href" href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 							</ol>
 						</section>
 						<script>
@@ -198,7 +198,7 @@ $lang = [
 								<h4>Motrix(Recommend)</h4>
 							</div>
 							<ol>
-								<li>Download <b>Motrix</b> from <a href="https://motrix.app/">https://motrix.app/</a>.</li>
+								<li>Download <b>Motrix</b> from <a href="https://motrix.app/" target="_blank">https://motrix.app/</a>.</li>
 								<li>Install and run Motrix.</li>
 								<li>Open the file download page and click <b>Send to aria2(Motrix)</b></li>
 								<li>Type <b>ws://localhost:16800/jsonrpc</b> in the "RPC地址".Click send button.</li>
@@ -215,7 +215,7 @@ $lang = [
 								<h4>Aria2(Android)</h4>
 							</div>
 							<ol>
-								<li><a href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">Click here</a>  to download  <b>Aria2Android.apk</b></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/devgianlu/Aria2Android/releases/download/v2.6.1/app-foss-release.apk">Click here</a>  to download  <b>Aria2Android.apk</b></li>
 								<li>Install <b>Aria2Android.apk</b> and run the APP</li>
 								<li>Set your RPC token and then click the bottom button to run aria2</li>
 								<li>Open the file download page and put your <b>token</b> in the box, then click <b>Send to aria2(Motrix)</b></li>
@@ -257,9 +257,9 @@ $lang = [
 								<li>本项目与PanDownload无关。</li>
 								<li>本项目仅以学习为目的，不得用于其他用途。</li>
 								<li>当前项目版本：' . programVersion . '</li>
-								<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-								<li>项目作者：<a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
-								<li>项目协作者：<a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
+								<li><a data-qrcode-attr="href" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
+								<li>项目作者：<a data-qrcode-attr="href" href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+								<li>项目协作者：<a data-qrcode-attr="href" href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 							</ol>
 						</section>
 						<script>
@@ -313,7 +313,7 @@ if (isset($_COOKIE['Language'])) { // 判断用户是否设置语言
 	} else { // 若语言配置错误
 		setcookie('Language', '', time() - 31536000); // 删除 Cookie
 		setLanguage(); // 按照未设置语言来自动决定语言
-		echo "<div>There was a problem with your language configuration and it has been reset for you. <a href=\"usersettings.php\" target=\"_blank\">Click here to select language.</div>"; // 输出配置错误提示
+		echo "<div>There was a problem with your language configuration and it has been reset for you. <a href=\"?usersettings\" target=\"_blank\">Click here to select language.</div>"; // 输出配置错误提示
 	}
 } else { // 若未设置
 	setLanguage(); // 自动决定语言
@@ -322,7 +322,7 @@ if (isset($_COOKIE['Language'])) { // 判断用户是否设置语言
 
 if (!defined('Lang')) { // 如果没有支持的语言
 	define('Lang', 'en'); // 设为英语
-	echo "<div>This project is not available in your language, the following is the English version. <a href=\"usersettings.php\" target=\"_blank\">Click here to select language.</div>"; // 输出没有支持的语言提示
+	echo "<div>This project is not available in your language, the following is the English version. <a href=\"?usersettings\" target=\"_blank\">Click here to select language.</div>"; // 输出没有支持的语言提示
 }
 
 define("Language", $lang[Lang]); // 定义使用的语言
