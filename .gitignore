@@ -1,2 +1,8 @@
+# 配置文件
 config.php
 .vscode/
+
+# 程序文件导出
+ProgramFilesExporter/
+ProgramFiles/
+ProgramFiles.*
