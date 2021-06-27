@@ -384,6 +384,7 @@ if ($is_login) connectdb();
 									<div class="form-group">
 										<label>IP地址</label>
 										<input type="text" class="form-control form-control-sm" name="ip">
+										<small>现在已经支持对 IP 地址进行模糊匹配，您可以使用“%”代替任意个字符，“_”代替单个字符，更多使用方法请自行搜索 <a href="https://cn.bing.com/search?q=SQL+%E9%80%9A%E9%85%8D%E7%AC%A6" target="_blank" title="SQL 通配符 - 国内版 Bing">SQL 通配符</a>。</small>
 									</div>
 									<div class="form-group">
 										<label>备注</label>

@@ -9,14 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.7
+ * @version 2.1.8
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.1.7";
+$programVersion_Index = "2.1.8";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -324,7 +324,7 @@ Function
 						connectdb();
 
 						// 查询数据库中是否存在已经保存的数据
-						$sql = "SELECT * FROM `" . $dbtable . "_ip` WHERE `ip`='$ip';";
+						$sql = "SELECT * FROM `" . $dbtable . "_ip` WHERE `ip` LIKE '$ip';";
 						$mysql_query = mysqli_query($conn, $sql);
 						if ($result = mysqli_fetch_assoc($mysql_query)) {
 							// 存在 判断类型
@@ -473,8 +473,8 @@ SWITCHTIP;
 							// 记录下使用者ip，下次进入时提示
 							if (USING_DB and !$usingcache) {
 								$ptime = date("Y-m-d H:i:s");
-								$Sqlfilename = htmlspecialchars($filename); // 防止出现一些刁钻的文件名无法处理
-								$Sqlpath = htmlspecialchars($path);
+								$Sqlfilename = htmlspecialchars($filename, ENT_QUOTES); // 防止出现一些刁钻的文件名无法处理
+								$Sqlpath = htmlspecialchars($path, ENT_QUOTES);
 								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink','$ptime','$id')";
 								$mysql_query = mysqli_query($conn, $sql);
 								if ($mysql_query == false) {
@@ -496,7 +496,7 @@ SWITCHTIP;
 										if (USING_DB) {
 											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费次数。</p>";
 											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">此文件很小，不消耗解析次数。</span></p>";
-											else echo "<p class=\"card-text\">服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。</p>";
+											else echo "<p class=\"card-text\">服务器将保存下载地址" . DownloadLinkAvailableTime . "小时，时限内再次解析不消耗免费次数。</p>";
 										}
 										echo FileInfo($filename, $size, $md5, $server_ctime);
 
@@ -520,13 +520,9 @@ SWITCHTIP;
 										if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
 										echo '
 								<p class="card-text">
-									<a id="http" href="http://' . $realLink . '" style="display: none;">' . Language["DownloadLink"] . '（不安全）</a>';
-										if ($smallfile) {
-											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（无需设置UA，8小时有效）</a>';
-										} else {
-											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（需设置UA，8小时有效）</a>';
-										}
-										echo '</p>';
+									<a id="http" href="http://' . $realLink . '" style="display: none;">' . Language["DownloadLink"] . '（不安全）</a>' .
+											'<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] .
+											'（' . ($smallfile ? '无需' : '需要') . '设置 UA，' . DownloadLinkAvailableTime . '小时内有效）</a></p>';
 										?>
 										<p class="card-text">
 											<a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
