@@ -496,7 +496,7 @@ SWITCHTIP;
 										if (USING_DB) {
 											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费次数。</p>";
 											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">此文件很小，不消耗解析次数。</span></p>";
-											else echo "<p class=\"card-text\">服务器将保存下载地址".DownloadLinkAvailableTime."小时，时限内再次解析不消耗免费次数。</p>";
+											else echo "<p class=\"card-text\">服务器将保存下载地址" . DownloadLinkAvailableTime . "小时，时限内再次解析不消耗免费次数。</p>";
 										}
 										echo FileInfo($filename, $size, $md5, $server_ctime);
 
@@ -520,13 +520,9 @@ SWITCHTIP;
 										if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
 										echo '
 								<p class="card-text">
-									<a id="http" href="http://' . $realLink . '" style="display: none;">' . Language["DownloadLink"] . '（不安全）</a>';
-										if ($smallfile) {
-											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（无需设置UA，'.DownloadLinkAvailableTime.'小时有效）</a>';
-										} else {
-											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（需设置UA，'.DownloadLinkAvailableTime.'小时有效）</a>';
-										}
-										echo '</p>';
+									<a id="http" href="http://' . $realLink . '" style="display: none;">' . Language["DownloadLink"] . '（不安全）</a>' .
+											'<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] .
+											'（' . ($smallfile ? '无需' : '需要') . '设置 UA，' . DownloadLinkAvailableTime . '小时内有效）</a></p>';
 										?>
 										<p class="card-text">
 											<a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
