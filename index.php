@@ -473,8 +473,8 @@ SWITCHTIP;
 							// 记录下使用者ip，下次进入时提示
 							if (USING_DB and !$usingcache) {
 								$ptime = date("Y-m-d H:i:s");
-								$Sqlfilename = htmlspecialchars($filename); // 防止出现一些刁钻的文件名无法处理
-								$Sqlpath = htmlspecialchars($path);
+								$Sqlfilename = htmlspecialchars($filename, ENT_QUOTES); // 防止出现一些刁钻的文件名无法处理
+								$Sqlpath = htmlspecialchars($path, ENT_QUOTES);
 								$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink','$ptime','$id')";
 								$mysql_query = mysqli_query($conn, $sql);
 								if ($mysql_query == false) {
@@ -496,7 +496,7 @@ SWITCHTIP;
 										if (USING_DB) {
 											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费次数。</p>";
 											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">此文件很小，不消耗解析次数。</span></p>";
-											else echo "<p class=\"card-text\">服务器将保存下载地址8小时，时限内再次解析不消耗免费次数。</p>";
+											else echo "<p class=\"card-text\">服务器将保存下载地址".DownloadLinkAvailableTime."小时，时限内再次解析不消耗免费次数。</p>";
 										}
 										echo FileInfo($filename, $size, $md5, $server_ctime);
 
@@ -522,9 +522,9 @@ SWITCHTIP;
 								<p class="card-text">
 									<a id="http" href="http://' . $realLink . '" style="display: none;">' . Language["DownloadLink"] . '（不安全）</a>';
 										if ($smallfile) {
-											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（无需设置UA，8小时有效）</a>';
+											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（无需设置UA，'.DownloadLinkAvailableTime.'小时有效）</a>';
 										} else {
-											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（需设置UA，8小时有效）</a>';
+											echo '<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] . '（需设置UA，'.DownloadLinkAvailableTime.'小时有效）</a>';
 										}
 										echo '</p>';
 										?>
