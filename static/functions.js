@@ -108,19 +108,19 @@ function addUri() {
 	};
 
 	if (token != "") {
-		json.params.unshift("token:" + token);//坑死了，必须要加在第一个
+		json.params.unshift("token:" + token); // 坑死了，必须要加在第一个
 	}
 
-	patt = /^wss?\:\/\/(((([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))(\.([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))*(\.[A-Za-z0-9]{2,10}))|localhost|(([01]?\d?\d)|(2[0-4]\d)|(25[0-5]))(\.([01]?\d?\d)|(2[0-4]\d)|(25[0-5])){3}|((\[[A-Za-z0-9:]{2,39}\])|([A-Za-z0-9:]{2,39})))(\:\d{1,5})?(\/.*)?$/;
+	patt = /^wss?\:\/\/(((([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))(\.(([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+)))*(\.[A-Za-z0-9]{2,10}))|(localhost)|((([01]?\d?\d)|(2[0-4]\d)|(25[0-5]))(\.([01]?\d?\d)|(2[0-4]\d)|(25[0-5])){3})|((\[[A-Za-z0-9:]{2,39}\])|([A-Za-z0-9:]{2,39})))(\:\d{1,5})?(\/.*)?$/;
 	if (!patt.test(wsurl)) {
-		Swal.fire('地址错误', 'ws 或 wss 输入错误，请检查是否填写正确', 'error');
+		Swal.fire('地址错误', 'WebSocket 地址不符合验证规则，请检查是否填写正确！', 'error');
 		return;
 	}
 	var ws = new WebSocket(wsurl);
 
 	ws.onerror = event => {
 		console.log(event);
-		Swal.fire('连接错误', 'Aria2 连接错误，请打开控制台查看详情', 'error');
+		Swal.fire('连接错误', 'Aria2 连接错误，请打开控制台查看详情！', 'error');
 	};
 	ws.onopen = () => { ws.send(JSON.stringify(json)); }
 
@@ -132,18 +132,18 @@ function addUri() {
 		}
 		switch (received_msg.method) {
 			case "aria2.onDownloadStart":
-				Swal.fire('Aria2 发送成功', 'Aria2 已经开始下载 ' + filename, 'success');
+				Swal.fire('Aria2 发送成功', 'Aria2 已经开始下载！' + filename, 'success');
 
 				localStorage.setItem('aria2wsurl', wsurl);// add aria2 config to SessionStorage
 				if (token != "" && token != null) localStorage.setItem('aria2token', token);
 				break;
 
 			case "aria2.onDownloadError": ;
-				Swal.fire('下载错误', 'Aria2 下载错误', 'error');
+				Swal.fire('下载错误', 'Aria2 下载错误！', 'error');
 				break;
 
 			case "aria2.onDownloadComplete":
-				Swal.fire('下载完成', 'Aria2 下载完成', 'success');
+				Swal.fire('下载完成', 'Aria2 下载完成！', 'success');
 				break;
 
 			default:
@@ -154,11 +154,33 @@ function addUri() {
 	};
 }
 
-function makeQRCode(element, text, hw = 512) {
+function makeQRCode(element, text, size = 512, correctLevel = QRCode.CorrectLevel.M) { // 二维码
 	return new QRCode(element, {
-		text,
-		correctLevel: QRCode.CorrectLevel.M,
-		height: hw,
-		width: hw
+		text, correctLevel,
+		height: size, width: size
 	});
+}
+
+async function getAPI(method) { // 获取 API 数据
+	try {
+		const response = await fetch(`api.php?m=${method}`, { // fetch API
+			credentials: 'same-origin' // 发送验证信息 (cookies)
+		});
+		if (response.ok) { // 判断是否出现 HTTP 异常
+			return {
+				success: true,
+				data: await response.json() // 如果正常，则获取 JSON 数据
+			}
+		} else { // 若不正常，返回异常信息
+			return {
+				success: false,
+				msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+			};
+		}
+	} catch (reason) { // 若与服务器连接异常
+		return {
+			success: false,
+			msg: '连接服务器过程中出现异常，消息：' + reason.message
+		};
+	}
 }

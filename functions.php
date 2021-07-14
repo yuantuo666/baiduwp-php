@@ -250,7 +250,7 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 function dl_error(string $title, string $content, bool $jumptip = false)
 {
 	if ($jumptip) {
-		$content .= '<br>请打开调试模式，并将错误信息复制提交issue到<a href="https://github.com/yuantuo666/baiduwp-php">github项目</a>。';
+		$content .= '<br>请打开调试模式，并将错误信息以议题的形式提交到<a href="https://github.com/yuantuo666/baiduwp-php/issues">GitHub项目</a>。';
 	}
 	if (Language["LanguageName"] != "Chinese") {
 		$content = "To know more about it, you can translate the information following.<br />Raw Title:$title<br />Raw Message:$content<br /><br />If you still have question, please copy the information and sent to the email(yuantuo666@gmail.com) for help.";
@@ -345,7 +345,7 @@ function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password)
 $getConstant = function (string $name) {
 	return constant($name);
 };
-/* 
+/*
  * 优化 JavaScript 代码体积
  * beta 版本
  */
@@ -365,7 +365,7 @@ $JSCode = array("get" => function (string $value) {
 	global $JSCode;
 	echo $JSCode['get']($value);
 });
-/* 
+/*
  * 将settings.php里面的代码移到functions.php里面来
  * 方便api调用
  */
@@ -464,7 +464,7 @@ function GetIPTablePage(string $page)
 }
 /**
  * 获取数据库中的BDUSS数据
- * 
+ *
  * @return array 返回BDUSS和对应id id=-1表示本地解析
  */
 function GetDBBDUSS()
@@ -570,7 +570,7 @@ function GetDBBDUSS()
 }
 /**
  * 用于获取账号状态
- * 
+ *
  * @return array [errno,会员状态,用户名,登录状态,会员剩余时间]
  */
 function AccountStatus(string $BDUSS, string $STOKEN)
@@ -663,4 +663,180 @@ function time2Units(int $time)
 	}
 
 	return $elapse;
+}
+
+
+function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, array $info = []) // 检查更新程序
+{
+
+	$filePath = "update.json"; // 缓存文件路径
+	if (!function_exists('download')) { // 似乎是 PHP 的 Bug ，无语了，下同
+		function download(bool $includePreRelease, array &$info) // 下载
+		{
+			$header = array(
+				"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67"
+			);
+			if ($includePreRelease) { // 若包括 Pre-Release
+				array_push($info, "Include-PreRelease");
+				$result = getAPI('https://api.github.com/repos/yuantuo666/baiduwp-php/releases', $header);
+				if ($result) {
+					return json_decode($result, true)[0]; // 返回首个结果
+				}
+				array_push($info, "API-Download-Newest-Error");
+				return false;
+			} else { // 若不包括
+				$result = getAPI('https://api.github.com/repos/yuantuo666/baiduwp-php/releases/latest', $header);
+				if ($result) {
+					return json_decode($result, true);
+				}
+				array_push($info, "API-Download-Latest-Error");
+				return false;
+			}
+		}
+	}
+	if (!function_exists('downloadError')) {
+		function downloadError(array &$info) // 下载失败
+		{
+			array_push($info, "Download-Error");
+			return array("code" => 1, "info" => $info);
+		}
+	}
+	if (!function_exists('getAPI')) {
+		function getAPI(string $url, array $header) // 获取 API 数据
+		{
+			$ch = curl_init($url);
+			setCurl($ch, $header);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 10); // 设置超时时间为 10s
+			$result = curl_exec($ch);
+			curl_close($ch);
+			return $result;
+		}
+	}
+	if ($enforce) { // 是否强制检查更新
+		array_push($info, "Enforce-Check");
+		$result = download($includePreRelease, $info); // 下载
+		if (!$result) { // 若出错则直接 return
+			return downloadError($info);
+		}
+	} else { // 不强制检查更新
+		if (file_exists($filePath)) { // 检查更新缓存是否存在
+			$lastm = filemtime($filePath); // 获取文件最后修改时间
+			if ((!$lastm) || ($lastm + 3600 < time())) { // 获取失败或超时（一小时）则重新获取
+				if (!$lastm) {
+					array_push($info, "CacheFile-Get-LastM-Error"); // 获取失败
+				} else {
+					array_push($info, "CacheFile-Expired"); // 超时
+				}
+				$result = download($includePreRelease, $info); // 下载并检查是否出错
+				if (!$result) {
+					return downloadError($info);
+				}
+			} else {
+				$file = fopen($filePath, "r"); // 打开文件
+				if ($file) { // 若打开成功
+					$result = fread($file, filesize($filePath)); // 读取文件
+					if (!$result) { // 若读取失败
+						array_push($info, "Read-CacheFile-Error");
+						$result = download($includePreRelease, $info); // 下载并检查是否出错
+						if (!$result) {
+							return downloadError($info);
+						}
+					} else { // 若读取成功
+						$result = json_decode($result, true); // 解码
+						if (isset($result['prerelease'])) { // 测试是否包含 PreRelease（检查缓存文件是否存在问题）
+							if ($result['prerelease'] && !$includePreRelease) { // 若不检查预发行版本但缓存为预发行
+								array_push($info, "CacheFile-Is-PreRelease-But-Exclude-It");
+								$result = download($includePreRelease, $info); // 下载并检查是否出错
+								if (!$result) {
+									return downloadError($info);
+								}
+							} else if (!$result['prerelease'] && $includePreRelease) { // 若检查预发行但缓存非预发行（这个只是用来防止万一，所以下载失败了不终止）
+								array_push($info, "CacheFile-Isnot-PreRelease-But-Include-It--Try-To-Get");
+								$download_result = download($includePreRelease, $info); // 下载并检查是否出错
+								if (!$download_result) { // 下载失败的话还使用缓存
+									array_push($info, "Download-Error");
+									array_push($info, "Use-Cache");
+								} else { // 若下载成功则用新的
+									$result = $download_result;
+								}
+							} else { // 没有问题，使用缓存
+								array_push($info, "Use-Cache");
+							}
+						} else { // 缓存文件存在问题
+							array_push($info, "Invalid-CacheFile");
+							$result = download($includePreRelease, $info); // 下载并检查是否出错
+							if (!$result) {
+								return downloadError($info);
+							}
+						}
+					}
+					fclose($file); // 关闭文件
+				} else { // 打开失败
+					array_push($info, "Open-CacheFile-Error");
+					$result = download($includePreRelease, $info); // 下载并检查是否出错
+					if (!$result) {
+						return downloadError($info);
+					}
+				}
+			}
+		} else { // 文件不存在
+			array_push($info, "No-CacheFile");
+			$result = download($includePreRelease, $info); // 下载并检查是否出错
+			if (!$result) {
+				return downloadError($info);
+			}
+		}
+	}
+
+	if (!(isset($result['tag_name']) && isset($result['assets']) && isset($result['html_url']))) { // 若缓存文件存在问题
+		array_push($info, "Invalid-CacheFile");
+		$result = download($includePreRelease, $info); // 下载并检查是否出错
+		if (!$result) {
+			return downloadError($info);
+		}
+	}
+
+	$version = substr($result['tag_name'], 1); // 解析数据
+	$isPreRelease = $result['prerelease'];
+	$url = "";
+	$page_url = $result['html_url'];
+	foreach ($result['assets'] as &$asset) {
+		if ($asset['name'] === 'ProgramFiles.zip') {
+			$url = $asset['browser_download_url'];
+			break;
+		}
+	}
+
+	$file = fopen($filePath, "w"); // 打开文件
+	if ($file) { // 若打开成功
+		fwrite($file, json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); // 写入文件
+		if (!$result) { // 若写入失败
+			array_push($info, "Write-NewFile-Error");
+		}
+		fclose($file); // 关闭文件
+	} else { // 打开失败
+		array_push($info, "Open-NewFile-Error");
+	}
+
+
+	$commonReturn = array(
+		"code" => 0, "version" => $version, "PreRelease" => $isPreRelease,
+		"file_url" => $url, "page_url" => $page_url, "info" => $info, "now_version" => programVersion
+	);
+	$compare = version_compare(programVersion, $version); // 比较版本
+	if ($compare === -1 || $compare === 0) { // 更新或相同
+		$commonReturn['have_update'] = ($compare === -1) ? true : false; // 更新则为 true
+		return $commonReturn;
+	} else { // 版本存在问题（比最新版还高？）
+		if (in_array('Try-Get-Version-Include-PreRelease', $info)) { // 若已尝试获取预发行，则直接返回版本有误提示
+			array_push($info, "Invalid-Version");
+			$commonReturn['code'] = 2;
+			$commonReturn['info'] = $info;
+			return $commonReturn;
+		} else { // 试图强制检查预发行版更新
+			array_push($info, "Try-Get-Version-Include-PreRelease");
+			array_splice($info, array_search('Use-Cache', $info), 1);
+			return CheckUpdate(true, true, $info);
+		}
+	}
 }

@@ -48,9 +48,9 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - 更换后台 SVIP 账号
   - 更换服务器 IP
 - 使用了较新的 JavaScript 和 CSS 特性，旧版浏览器对此的支持性很差，使用新版的现代浏览器才能正常使用！建议使用的浏览器：
-  - `Microsoft Edge 90+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
-  - `Google Chrome 90+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
-  - `Firefox 89+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
+  - `Microsoft Edge 91+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
+  - `Google Chrome 91+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
+  - `Firefox 90+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
 # 🔧Install & Setting
 [**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)
@@ -64,14 +64,25 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**。<br />
 
 ## 📦New Changes
-- 当前版本：`2.1.8`
-- 更新日期：2021-06-27
+- 当前版本: `2.1.9`
+- 更新日期：2021-07-14
 - 修改内容：
-  - 💥新增功能
-    - 增加对 IP 段的黑白名单设置
-  - ⚠错误修复
-    - 修复带单引号的文件名写入数据库时出错的问题 #131
-    - 修复用户界面显示的解析链接有效时间并不会随设置变化的问题 #132
+  - 新增功能
+    - 下载链接生成二维码 #123
+    - 自动检查更新
+  - 功能优化
+    - 在跟随浏览器模式下，颜色模式随浏览器设置实时更新
+    - 优化颜色模式逻辑
+    - 优化用户设置页面前端逻辑
+    - 优化二维码生成
+    - 优化样式表加载
+    - 优化 JS 逻辑和加载
+  - 错误修复
+    - 修复了正则表达式有误导致的子域名无法正常使用 Aira2 下载问题 #137
+  - 其它
+    - 更新 .gitignore
+    - 格式化代码
+
 
 [查看更多](Update.md)
 
@@ -93,7 +104,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 **作者及合作者都是学生，因未来一段时间课余时间很少，对此项目维护将会减少。** #130<br />
 如果遇到问题请先 **仔细阅读此文档** 、查看[视频教程](https://www.bilibili.com/video/BV1N5411A77n)
- 以及 [以前的 Issues](https://github.com/yuantuo666/baiduwp-php/issues)<br />
+ 以及 [以前的议题](https://github.com/yuantuo666/baiduwp-php/issues)<br />
 
 如果是**设置账号的 Cookies（BDUSS 和 STOKEN）配置环境**相关的问题，请尽可能自行解决！[Google](https://www.google.com/ "谷歌") [Bing](https://cn.bing.com/ "必应")<br />
 

@@ -9,14 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.8
+ * @version 2.1.9
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.1.8";
+$programVersion_Index = "2.1.9";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -82,9 +82,9 @@ if (DEBUG) {
 	<title><?php echo Sitename; ?></title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
-	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-nightfall.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
@@ -479,11 +479,12 @@ SWITCHTIP;
 								$mysql_query = mysqli_query($conn, $sql);
 								if ($mysql_query == false) {
 									// 保存错误
-									dl_error(Language["DatabaseError"], "数据库错误，请联系站长修护");
+									dl_error(Language["DatabaseError"], "数据库错误，请联系站长修复。");
 									exit;
 								}
-								echo "<script>var d=new Date();d.setDate(d.getDate()+1);d.setHours(0);d.setMinutes(0);d.setSeconds(0);document.cookie='SESSID=Nbef-cz-Zvbo_Uvp;expires='+d.toGMTString();</script>";
-								// 为了防止一些换ip调用，这里写一个cookie
+								// echo "<script>var d=new Date();d.setDate(d.getDate()+1);d.setHours(0);d.setMinutes(0);d.setSeconds(0);document.cookie='SESSID=Nbef-cz-Zvbo_Uvp;expires='+d.toGMTString();</script>";
+								// // 为了防止一些换ip调用，这里写一个cookie
+								// 奇怪的代码增加了？
 							}
 
 		?>
@@ -494,8 +495,8 @@ SWITCHTIP;
 										<hr />
 										<?php
 										if (USING_DB) {
-											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费次数。</p>";
-											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">此文件很小，不消耗解析次数。</span></p>";
+											if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费解析次数。</p>";
+											elseif ($smallfile) echo "<p class=\"card-text\"><span style=\"color:red;\">此文件很小，不消耗免费解析次数。</span></p>";
 											else echo "<p class=\"card-text\">服务器将保存下载地址" . DownloadLinkAvailableTime . "小时，时限内再次解析不消耗免费次数。</p>";
 										}
 										echo FileInfo($filename, $size, $md5, $server_ctime);
@@ -507,9 +508,9 @@ SWITCHTIP;
 											if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
 												echo '<img src="https://' . $realLink . '" class="img-fluid rounded" style="width: 100%;">';
 											} elseif ($type == ".mp4") {
-												echo '<video src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</video>';
+												echo '<video src="https://' . $realLink . '" controls="controls" style="width: 100%;">您的浏览器不支持播放此视频！</video>';
 											} elseif ($type == ".mp3" || $type == ".wav") {
-												echo '<audio src="https://' . $realLink . '" controls="controls" style="width: 100%;">浏览器不支持</audio>';
+												echo '<audio src="https://' . $realLink . '" controls="controls" style="width: 100%;">您的浏览器不支持播放此音频！</audio>';
 											} else {
 												echo '<p class="card-text">' . Language["NotSupportWithUA"] . '</p>';
 											}
@@ -520,9 +521,10 @@ SWITCHTIP;
 										if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
 										echo '
 								<p class="card-text">
-									<a id="http" href="http://' . $realLink . '" style="display: none;">' . Language["DownloadLink"] . '（不安全）</a>' .
-											'<a id="https" href="https://' . $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"] .
-											'（' . ($smallfile ? '无需' : '需要') . '设置 UA，' . DownloadLinkAvailableTime . '小时内有效）</a></p>';
+									<a id="http" data-qrcode-attr="href" data-qrcode-level="L" href="http://' . $realLink . '" style="display: none;">'
+											. Language["DownloadLink"] . '（不安全）</a>' . '<a id="https" data-qrcode-attr="href" data-qrcode-level="L" href="https://'
+											. $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"]
+											. '（' . ($smallfile ? '无需' : '需要') . '设置 UA，' . DownloadLinkAvailableTime . '小时内有效）</a></p>';
 										?>
 										<p class="card-text">
 											<a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
@@ -561,11 +563,11 @@ SWITCHTIP;
 											</div>
 											<script>
 												$(function() {
-													if (localStorage.getItem('aria2wsurl') != null)
+													if (localStorage.getItem('aria2wsurl') !== null)
 														$('#wsurl').attr('value', localStorage.getItem('aria2wsurl'));
-													if (localStorage.getItem('aria2token') != null)
+													if (localStorage.getItem('aria2token') !== null)
 														$('#token').attr('value', localStorage.getItem('aria2token'));
-												})
+												});
 											</script>
 										</div>
 									</div>
@@ -619,30 +621,6 @@ SWITCHTIP;
 							$("#sviptooltip").tooltip(); // 初始化
 							$("#parsingtooltip").tooltip(); // 初始化
 
-							async function getAPI(method) { // 获取 API 数据
-								try {
-									const response = await fetch(`api.php?m=${method}`, { // fetch API
-										credentials: 'same-origin' // 发送验证信息 (cookies)
-									});
-									if (response.ok) { // 判断是否出现 HTTP 异常
-										return {
-											success: true,
-											data: await response.json() // 如果正常，则获取 JSON 数据
-										}
-									} else { // 若不正常，返回异常信息
-										return {
-											success: false,
-											msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
-										};
-									}
-								} catch (reason) { // 若与服务器连接异常
-									return {
-										success: false,
-										msg: '连接服务器过程中出现异常，消息：' + reason.message
-									};
-								}
-							}
-
 							getAPI('LastParse').then(function(response) {
 								if (response.success) {
 									const data = response.data;
@@ -664,7 +642,6 @@ SWITCHTIP;
 									$("#parsingtooltip").attr("data-original-title", response.data.msg);
 								}
 							});
-
 						});
 					</script>
 				<?php } ?>

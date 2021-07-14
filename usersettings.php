@@ -105,37 +105,33 @@ if (!defined('init')) { // 直接访问处理程序
 		$('#Language-Select option[value="en"]').text('<?php echo Language["CurrentSetting"]; ?>' + $('#Language-Select option[value="en"]').text());
 		$('#Language-Select option[value="en"]')[0].selected = true;
 	}
-	if (window.matchMedia('(prefers-color-scheme: dark)').matches) { // 获取浏览器设置
-		$('#Browser-ColorMode').text('<?php echo Language["DarkMode"]; ?>'); // 深色模式
-	} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-		$('#Browser-ColorMode').text('<?php echo Language["LightMode"]; ?>'); // 浅色模式
+
+	const dark = window.matchMedia('(prefers-color-scheme: dark)'),
+		light = window.matchMedia('(prefers-color-scheme: light)');
+
+	function changeColorMode() { // 更改颜色模式显示
+		if (dark.matches) { // 获取浏览器设置
+			$('#Browser-ColorMode').text('<?php echo Language["DarkMode"]; ?>'); // 深色模式
+		} else if (light.matches) { // 获取浏览器设置
+			$('#Browser-ColorMode').text('<?php echo Language["LightMode"]; ?>'); // 浅色模式
+		}
 	}
-	window.matchMedia('(prefers-color-scheme: dark)').addListener(function(e) { // 当色彩模式改变为深色模式
-		if (e.matches) {
-			$('#Browser-ColorMode').text('<?php echo Language["DarkMode"]; ?>');
-		}
-	});
-	window.matchMedia('(prefers-color-scheme: light)').addListener(function(e) { // 当色彩模式改变为浅色模式
-		if (e.matches) {
-			$('#Browser-ColorMode').text('<?php echo Language["LightMode"]; ?>');
-		}
-	});
+
+	dark.addEventListener('change', changeColorMode); // 当色彩模式改变为深色模式
+	light.addEventListener('change', changeColorMode); // 当色彩模式改变为浅色模式
+	changeColorMode(); // 初始化
+
 	$('#ColorMode-Select').on('change', function() {
 		if (this.value === 'auto') {
 			localStorage.removeItem('colorMode');
-			location.reload();
 		} else {
 			localStorage.setItem('colorMode', this.value);
-			location.reload();
 		}
+		location.reload();
 	});
+
 	$('#Language-Select').on('change', function() {
-		if (this.value === 'auto') {
-			document.cookie = 'Language=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-			location.reload();
-		} else {
-			document.cookie = `Language=${this.value}; expires=${new Date(Date.now() + 31536000000)}`;
-			location.reload();
-		}
+		const expires = (this.value === 'auto') ? 'Thu, 01 Jan 1970 00:00:00 GMT' : new Date(Date.now() + 31536000000);
+		document.cookie = `Language=${this.value}; expires=${expires}`;
 	});
 </script>
