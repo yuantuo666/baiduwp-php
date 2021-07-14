@@ -82,9 +82,9 @@ if (DEBUG) {
 	<title><?php echo Sitename; ?></title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
+	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
-	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
@@ -522,9 +522,9 @@ SWITCHTIP;
 										echo '
 								<p class="card-text">
 									<a id="http" data-qrcode-attr="href" data-qrcode-level="L" href="http://' . $realLink . '" style="display: none;">'
-										. Language["DownloadLink"] . '（不安全）</a>' . '<a id="https" data-qrcode-attr="href" data-qrcode-level="L" href="https://'
-										. $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"]
-										. '（' . ($smallfile ? '无需' : '需要') . '设置 UA，' . DownloadLinkAvailableTime . '小时内有效）</a></p>';
+											. Language["DownloadLink"] . '（不安全）</a>' . '<a id="https" data-qrcode-attr="href" data-qrcode-level="L" href="https://'
+											. $realLink . '" target="_blank" rel="nofollow noopener noreferrer">' . Language["DownloadLink"]
+											. '（' . ($smallfile ? '无需' : '需要') . '设置 UA，' . DownloadLinkAvailableTime . '小时内有效）</a></p>';
 										?>
 										<p class="card-text">
 											<a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
@@ -563,11 +563,11 @@ SWITCHTIP;
 											</div>
 											<script>
 												$(function() {
-													if (localStorage.getItem('aria2wsurl') != null)
+													if (localStorage.getItem('aria2wsurl') !== null)
 														$('#wsurl').attr('value', localStorage.getItem('aria2wsurl'));
-													if (localStorage.getItem('aria2token') != null)
+													if (localStorage.getItem('aria2token') !== null)
 														$('#token').attr('value', localStorage.getItem('aria2token'));
-												})
+												});
 											</script>
 										</div>
 									</div>
@@ -621,30 +621,6 @@ SWITCHTIP;
 							$("#sviptooltip").tooltip(); // 初始化
 							$("#parsingtooltip").tooltip(); // 初始化
 
-							async function getAPI(method) { // 获取 API 数据
-								try {
-									const response = await fetch(`api.php?m=${method}`, { // fetch API
-										credentials: 'same-origin' // 发送验证信息 (cookies)
-									});
-									if (response.ok) { // 判断是否出现 HTTP 异常
-										return {
-											success: true,
-											data: await response.json() // 如果正常，则获取 JSON 数据
-										}
-									} else { // 若不正常，返回异常信息
-										return {
-											success: false,
-											msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
-										};
-									}
-								} catch (reason) { // 若与服务器连接异常
-									return {
-										success: false,
-										msg: '连接服务器过程中出现异常，消息：' + reason.message
-									};
-								}
-							}
-
 							getAPI('LastParse').then(function(response) {
 								if (response.success) {
 									const data = response.data;
@@ -666,7 +642,6 @@ SWITCHTIP;
 									$("#parsingtooltip").attr("data-original-title", response.data.msg);
 								}
 							});
-
 						});
 					</script>
 				<?php } ?>

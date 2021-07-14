@@ -1,6 +1,10 @@
 # 配置文件
 config.php
 .vscode/
+update.json
+
+# 用户文件
+notice.html
 
 # 程序文件导出
 ProgramFilesExporter/

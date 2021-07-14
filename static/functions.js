@@ -160,3 +160,27 @@ function makeQRCode(element, text, size = 512, correctLevel = QRCode.CorrectLeve
 		height: size, width: size
 	});
 }
+
+async function getAPI(method) { // 获取 API 数据
+	try {
+		const response = await fetch(`api.php?m=${method}`, { // fetch API
+			credentials: 'same-origin' // 发送验证信息 (cookies)
+		});
+		if (response.ok) { // 判断是否出现 HTTP 异常
+			return {
+				success: true,
+				data: await response.json() // 如果正常，则获取 JSON 数据
+			}
+		} else { // 若不正常，返回异常信息
+			return {
+				success: false,
+				msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+			};
+		}
+	} catch (reason) { // 若与服务器连接异常
+		return {
+			success: false,
+			msg: '连接服务器过程中出现异常，消息：' + reason.message
+		};
+	}
+}

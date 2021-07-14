@@ -58,9 +58,9 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<meta name="author" content="LC" />
 	<title>PanDownload 复刻版 - 安装程序</title>
 	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-nightfall.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
+	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
@@ -68,6 +68,65 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="static/color.js"></script>
+	<script>
+		async function getAPI(method) { // 获取 API 数据
+			try {
+				const response = await fetch(`api.php?m=${method}`, { // fetch API
+					credentials: 'same-origin' // 发送验证信息 (cookies)
+				});
+				if (response.ok) { // 判断是否出现 HTTP 异常
+					return {
+						success: true,
+						data: await response.json() // 如果正常，则获取 JSON 数据
+					}
+				} else { // 若不正常，返回异常信息
+					return {
+						success: false,
+						msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+					};
+				}
+			} catch (reason) { // 若与服务器连接异常
+				return {
+					success: false,
+					msg: '连接服务器过程中出现异常，消息：' + reason.message
+				};
+			}
+		}
+
+		getAPI('CheckUpdate').then(function(response) {
+			if (response.success) {
+				console.log('检查更新信息：');
+				console.log(response);
+				const data = response.data;
+				if (data.code === 0) {
+					if (data.have_update) {
+						const div = document.createElement('div');
+						div.id = 'CheckUpdate';
+						div.style.margin = '0.3rem 1rem';
+						div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（当前版本为${data.now_version}）！请联系站长更新！ &nbsp;
+					<a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+						document.body.insertAdjacentElement('beforeBegin', div);
+					}
+				} else if (data.code === 2) {
+					const div = document.createElement('div');
+					div.id = 'CheckUpdate';
+					div.style.margin = '0.3rem 1rem';
+					div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
+				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+					document.body.insertAdjacentElement('beforeBegin', div);
+				} else if (data.code === 1) {
+					console.log('服务器获取更新失败！详细信息：');
+					console.log(data);
+				} else {
+					console.log('服务器获取更新失败，且错误码不在支持列表中！详细信息：');
+					console.log(data);
+				}
+			} else {
+				console.log('检查更新失败！详细信息：');
+				console.log(response);
+			}
+		});
+	</script>
 </head>
 
 <body>
@@ -463,7 +522,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								dbname = $("input[name='DbConfig_dbname']").val();
 								dbtable = $("input[name='DbConfig_dbtable']").val();
 
-								if(dbtable==""){
+								if (dbtable == "") {
 									Swal.fire("数据库表名前缀设置错误", "请检查你的数据库设置，数据库表名前缀不能为空！<br />你可以设置为bdwp或其他有效字符串。", "error");
 									return;
 								}
