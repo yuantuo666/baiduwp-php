@@ -48,9 +48,9 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - 更换后台 SVIP 账号
   - 更换服务器 IP
 - 使用了较新的 JavaScript 和 CSS 特性，旧版浏览器对此的支持性很差，使用新版的现代浏览器才能正常使用！建议使用的浏览器：
-  - `Microsoft Edge 90+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
-  - `Google Chrome 90+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
-  - `Firefox 89+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
+  - `Microsoft Edge 91+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
+  - `Google Chrome 91+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
+  - `Firefox 90+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
 # 🔧Install & Setting
 [**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)
@@ -69,13 +69,20 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - 修改内容：
   - 新增功能
     - 下载链接生成二维码
+    - 自动检查更新
   - 功能优化
-    - 在跟随浏览器模式下，颜色模式随浏览器设置实时更新，无需刷新
+    - 在跟随浏览器模式下，颜色模式随浏览器设置实时更新
+    - 优化颜色模式逻辑
     - 优化用户设置页面前端逻辑
-    - 颜色模式逻辑优化
-    - 二维码生成优化
+    - 优化二维码生成
+    - 优化样式表加载
+    - 优化 JS 逻辑和加载
   - 错误修复
     - 修复了正则表达式有误导致的子域名无法正常使用 Aira2 下载问题 #137
+  - 其它
+    - 更新 .gitignore
+    - 格式化代码
+
 
 [查看更多](Update.md)
 

@@ -666,39 +666,52 @@ function time2Units(int $time)
 }
 
 
-function CheckUpdate(bool $includePreRelease = false, bool $enforce = false) // 检查更新程序
+function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, array $info = []) // 检查更新程序
 {
 
 	$filePath = "update.json"; // 缓存文件路径
-	$info = []; // 信息列表
-	function download(bool $includePreRelease, array &$info) // 下载
-	{
-		$header = array(
-			"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67"
-		);
-		if ($includePreRelease) { // 若包括 Pre-Release
-			array_push($info, "Include-PreRelease");
-			$result = get('https://api.github.com/repos/yuantuo666/baiduwp-php/releases', $header);
-			if ($result) {
-				return json_decode($result, true)[0]; // 返回首个结果
+	if (!function_exists('download')) { // 似乎是 PHP 的 Bug ，无语了，下同
+		function download(bool $includePreRelease, array &$info) // 下载
+		{
+			$header = array(
+				"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67"
+			);
+			if ($includePreRelease) { // 若包括 Pre-Release
+				array_push($info, "Include-PreRelease");
+				$result = getAPI('https://api.github.com/repos/yuantuo666/baiduwp-php/releases', $header);
+				if ($result) {
+					return json_decode($result, true)[0]; // 返回首个结果
+				}
+				array_push($info, "API-Download-Newest-Error");
+				return false;
+			} else { // 若不包括
+				$result = getAPI('https://api.github.com/repos/yuantuo666/baiduwp-php/releases/latest', $header);
+				if ($result) {
+					return json_decode($result, true);
+				}
+				array_push($info, "API-Download-Latest-Error");
+				return false;
 			}
-			array_push($info, "API-Download-Newest-Error");
-			return false;
-		} else { // 若不包括
-			$result = get('https://api.github.com/repos/yuantuo666/baiduwp-php/releases/latest', $header);
-			if ($result) {
-				return json_decode($result, true);
-			}
-			array_push($info, "API-Download-Latest-Error");
-			return false;
 		}
 	}
-	function downloadError(array &$info) // 下载失败
-	{
-		array_push($info, "Download-Error");
-		return array("code" => 1, "info" => $info);
+	if (!function_exists('downloadError')) {
+		function downloadError(array &$info) // 下载失败
+		{
+			array_push($info, "Download-Error");
+			return array("code" => 1, "info" => $info);
+		}
 	}
-
+	if (!function_exists('getAPI')) {
+		function getAPI(string $url, array $header) // 获取 API 数据
+		{
+			$ch = curl_init($url);
+			setCurl($ch, $header);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 10); // 设置超时时间为 10s
+			$result = curl_exec($ch);
+			curl_close($ch);
+			return $result;
+		}
+	}
 	if ($enforce) { // 是否强制检查更新
 		array_push($info, "Enforce-Check");
 		$result = download($includePreRelease, $info); // 下载
@@ -796,7 +809,7 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false) // 
 
 	$file = fopen($filePath, "w"); // 打开文件
 	if ($file) { // 若打开成功
-		fwrite($file, json_encode($result)); // 写入文件
+		fwrite($file, json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); // 写入文件
 		if (!$result) { // 若写入失败
 			array_push($info, "Write-NewFile-Error");
 		}
@@ -805,21 +818,25 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false) // 
 		array_push($info, "Open-NewFile-Error");
 	}
 
+
+	$commonReturn = array(
+		"code" => 0, "version" => $version, "PreRelease" => $isPreRelease,
+		"file_url" => $url, "page_url" => $page_url, "info" => $info, "now_version" => programVersion
+	);
 	$compare = version_compare(programVersion, $version); // 比较版本
 	if ($compare === -1 || $compare === 0) { // 更新或相同
-		$commonReturn = array(
-			"code" => 0, "version" => $version, "PreRelease" => $isPreRelease,
-			"file_url" => $url, "page_url" => $page_url, "info" => $info, "now_version" => programVersion
-		);
 		$commonReturn['have_update'] = ($compare === -1) ? true : false; // 更新则为 true
 		return $commonReturn;
 	} else { // 版本存在问题（比最新版还高？）
-		if ($includePreRelease && !in_array('Use-Cache', $info)) { // 若检查更新时包含预发行并且不是使用缓存，则直接返回版本有误提示
+		if (in_array('Try-Get-Version-Include-PreRelease', $info)) { // 若已尝试获取预发行，则直接返回版本有误提示
 			array_push($info, "Invalid-Version");
-			return array("code" => 2, "info" => $info);
+			$commonReturn['code'] = 2;
+			$commonReturn['info'] = $info;
+			return $commonReturn;
 		} else { // 试图强制检查预发行版更新
 			array_push($info, "Try-Get-Version-Include-PreRelease");
-			return CheckUpdate(true, true);
+			array_splice($info, array_search('Use-Cache', $info), 1);
+			return CheckUpdate(true, true, $info);
 		}
 	}
 }
