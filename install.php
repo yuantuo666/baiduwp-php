@@ -103,15 +103,15 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						const div = document.createElement('div');
 						div.id = 'CheckUpdate';
 						div.style.margin = '0.3rem 1rem';
-						div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（当前版本为${data.now_version}）！请联系站长更新！ &nbsp;
-					<a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+						div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
+					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
 						document.body.insertAdjacentElement('beforeBegin', div);
 					}
 				} else if (data.code === 2) {
 					const div = document.createElement('div');
 					div.id = 'CheckUpdate';
 					div.style.margin = '0.3rem 1rem';
-					div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
+					div.innerHTML = `Baiduwp-PHP 项目版本异常！当前版本：${data.now_version}，项目最新版本为：${data.version}${data.isPreRelease ? '（预发行版本）' : ''}！
 				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
 					document.body.insertAdjacentElement('beforeBegin', div);
 				} else if (data.code === 1) {
@@ -683,8 +683,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				} else {
 					die("写入 config.php 文件失败，请检查 config.php 文件状态及当前用户权限。");
 				}
-				header('Refresh: 5;url=./');
-				echo "恭喜你！安装成功了~<br />浏览器将会在5s内自动跳转，若没有跳转可<a href='./'>点此链接</a>前往主页查看。";
+				echo "恭喜你！安装成功了~<br /><a href='./'>点此链接</a>前往主页查看。";
 			}
 				?>
 				</div>
