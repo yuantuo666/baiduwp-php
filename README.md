@@ -64,24 +64,14 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**。<br />
 
 ## 📦New Changes
-- 当前版本: `2.1.9`
-- 更新日期：2021-07-14
+- 当前版本: `2.1.9.1`
+- 更新日期：2021-07-22
 - 修改内容：
-  - 新增功能
-    - 下载链接生成二维码 #123
-    - 自动检查更新
-  - 功能优化
-    - 在跟随浏览器模式下，颜色模式随浏览器设置实时更新
-    - 优化颜色模式逻辑
-    - 优化用户设置页面前端逻辑
-    - 优化二维码生成
-    - 优化样式表加载
-    - 优化 JS 逻辑和加载
-  - 错误修复
-    - 修复了正则表达式有误导致的子域名无法正常使用 Aira2 下载问题 #137
-  - 其它
-    - 更新 .gitignore
-    - 格式化代码
+  - 安全性更新
+    - 修复 API SQL 注入问题 #148
+  - 问题修复
+    - 修复 `install` 和 `settings` 页面更新提示有误的问题
+    - 修复 `install` 写入 HTTP 响应正文后仍写入响应头的 bug（取消了自动跳转功能）
 
 
 [查看更多](Update.md)
@@ -98,15 +88,15 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - Telegram：
   - [@yuantuo666](https://t.me/yuantuo666)
   - [Telegram频道](https://t.me/baiduwp_php)
-- 协作者：LC @lc6464
+- 合作者：LC @lc6464
   - [个人网站](https://lcwebsite.cn/ "LC的网站")
   - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
 
 **作者及合作者都是学生，因未来一段时间课余时间很少，对此项目维护将会减少。** #130<br />
 如果遇到问题请先 **仔细阅读此文档** 、查看[视频教程](https://www.bilibili.com/video/BV1N5411A77n)
- 以及 [以前的议题](https://github.com/yuantuo666/baiduwp-php/issues)<br />
+以及查看[以前的议题](https://github.com/yuantuo666/baiduwp-php/issues)<br />
 
-如果是**设置账号的 Cookies（BDUSS 和 STOKEN）配置环境**相关的问题，请尽可能自行解决！[Google](https://www.google.com/ "谷歌") [Bing](https://cn.bing.com/ "必应")<br />
+如果是**设置账号的 Cookies（BDUSS 和 STOKEN）**及**配置环境**等方面的问题，请尽可能自行解决！[Google](https://www.google.com/ "谷歌") [Bing](https://cn.bing.com/ "必应")<br />
 
 
 ## 🔔Thanks

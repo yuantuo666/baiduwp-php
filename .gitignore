@@ -1,7 +1,10 @@
-# 配置文件
-config.php
+# 配置文件等
 .vscode/
+config.php
 update.json
+config/
+cache/
+update/
 
 # 用户文件
 notice.html

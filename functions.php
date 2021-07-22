@@ -377,12 +377,13 @@ function EchoInfo(int $error, array $Result)
 }
 function GetAnalyseTablePage(string $page)
 {
+	$page = (int)$page;
 	if ($page <= 0) exit;
 	$EachPageNum = 10;
 	$conn = $GLOBALS['conn'];
 	$dbtable = $GLOBALS['dbtable'];
 	$AllRow = "";
-	$StartNum = ((int)$page - 1) * $EachPageNum;
+	$StartNum = ($page - 1) * $EachPageNum;
 	$sql = "SELECT * FROM `$dbtable` ORDER BY `ptime` DESC LIMIT $StartNum,$EachPageNum";
 	$mysql_query = mysqli_query($conn, $sql);
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
