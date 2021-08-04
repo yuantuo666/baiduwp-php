@@ -61,6 +61,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 最后点击提交即可。<br />
 
 安装完成后可直接使用，站长可进入settings.php中进行相关设置。<br />
+获取 Cookie 可以通过浏览器直接获取（操作方法见视频），或者通过这个浏览器插件获取：[GetBaiduPanCookies](https://github.com/dylanbai8/GetBaiduPanCookies)。<br />
 在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**。<br />
 
 ## 📦New Changes
