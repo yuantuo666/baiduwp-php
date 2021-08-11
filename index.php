@@ -83,8 +83,8 @@ if (DEBUG) {
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
+	<link rel="stylesheet" id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
+	<link rel="stylesheet" id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
@@ -254,12 +254,26 @@ Function
 					} else dl_error("解析错误", "解析子文件夹时，提取码错误或文件失效！");
 				} else {
 					// 根页面
-					if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
-					else $randsk = get_BDCLND($surl, $pwd);
-					$root = getSign($surl_1, $randsk);
+					if (!empty($_POST["uk"]) and !empty($_POST["shareid"])) {
+						// 使用老版本（估计是2012-2013年左右）分享链接
+						// example: https://pan.baidu.com/share/link?shareid=136181&uk=3373607811
+						//          https://pan.baidu.com/share/link?shareid=146328&uk=470983691
+						$randsk = get_BDCLND("", "", $_POST["uk"], $_POST["shareid"]);
+						$root = getSign("", $randsk, $_POST["uk"], $_POST["shareid"]);
+					} else {
+						// 新版本链接
+						$randsk = get_BDCLND($surl, $pwd);
+						$root = getSign($surl_1, $randsk);
+					}
 					$filejson = FileList($root);
 					if ($filejson !== 1) {
-						$url = "https://pan.baidu.com/share/tplconfig?surl=$surl&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+						$shareid = $root["shareid"];
+						$bdstoken = $root["bdstoken"];
+						$uk = $root["share_uk"];
+
+						// 为兼容旧版本，此处采用 shareid 和 uk 来获取
+						// $url = "https://pan.baidu.com/share/tplconfig?surl=$surl&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+						$url = "https://pan.baidu.com/share/tplconfig?shareid=$shareid&uk=$uk&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
 						$header = array(
 							"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 							"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
@@ -273,10 +287,7 @@ Function
 						}
 						$sign = $result["data"]["sign"];
 						$timestamp = $result["data"]["timestamp"];
-						$uk = $root["share_uk"];
 
-						$shareid = $root["shareid"];
-						$bdstoken = $root["bdstoken"];
 						if ($root["errno"] != 0) if ($root["errno"] == 117) dl_error("文件过期(117)", "啊哦，来晚了，该分享文件已过期"); // 文件过期
 						else dl_error("链接存在问题", "此链接存在问题，无法访问！", true); // 鬼知道发生了啥
 						else { // 终于正常了

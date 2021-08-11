@@ -7,10 +7,10 @@ const colorMode = localStorage.getItem('colorMode'); // 获取色彩模式配置
 		document.querySelector('#Swal2-Dark').disabled = false;
 	}
 	function LightMod() { // 更改为浅色模式
-		document.querySelector('#ColorMode-Light').disabled = false;
 		document.querySelector('#ColorMode-Dark').disabled = true;
-		document.querySelector('#Swal2-Light').disabled = false;
+		document.querySelector('#ColorMode-Light').disabled = false;
 		document.querySelector('#Swal2-Dark').disabled = true;
+		document.querySelector('#Swal2-Light').disabled = false;
 	}
 	function followBrowser() {
 		const dark = window.matchMedia('(prefers-color-scheme: dark)'),

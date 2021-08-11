@@ -24,7 +24,7 @@
 }
 
 form input, form button {
-	height: 3em;
+	height: 3em !important;
 }
 
 .alert {
