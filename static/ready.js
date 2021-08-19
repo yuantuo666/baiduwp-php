@@ -68,7 +68,7 @@ getAPI('CheckUpdate').then(function (response) {
 				div.style.margin = '0.3rem 1rem';
 				div.style.display = 'none';
 				div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
-					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
 				document.body.insertAdjacentElement('beforeBegin', div);
 				if (localStorage.getItem('UpdateTip') != "false")
 					$('#CheckUpdate').show(1500);
@@ -79,7 +79,7 @@ getAPI('CheckUpdate').then(function (response) {
 			div.style.margin = '0.3rem 1rem';
 			div.style.display = 'none';
 			div.innerHTML = `Baiduwp-PHP 项目版本异常！当前版本：${data.now_version}，项目最新版本为：${data.version}${data.isPreRelease ? '（预发行版本）' : ''}！
-				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">近期不再显示</a></div>`;
+				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
 			document.body.insertAdjacentElement('beforeBegin', div);
 			if (localStorage.getItem('UpdateTip') != "false")
 				$('#CheckUpdate').show(1500);
