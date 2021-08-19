@@ -190,6 +190,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($SVIP_STOKEN, 'SVIP_STOKEN');
 			getConfig($SVIPSwitchMod, 'SVIPSwitchMod', '0'); // 有bug隐患 如果未开启数据库，必须为0
 
+			getConfig($DefaultLanguage, 'DefaultLanguage', 'en');
+
 			getConfig($USING_DB, 'USING_DB', true);
 			if (defined('DbConfig')) {
 				function getDbConfig(&$var, string $key)
@@ -223,6 +225,24 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<div class="col-sm-10">
 								<input class="form-control" value="Pandownload 复刻版" name="Sitename" value="<?php echo $Sitename; ?>">
 								<small class="form-text">设置你的站点名称，将在首页标题处显示。</small>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">站点默认语言</label>
+							<div class="col-sm-10">
+								<div class="form-check  form-check-inline">
+									<input class="form-check-input" type="radio" name="DefaultLanguage" id="DefaultLanguage1" value="false" <?php if (!$DefaultLanguage) echo "checked"; ?>>
+									<label class="form-check-label" for="DefaultLanguage1">
+										简体中文 (zh-CN)
+									</label>
+								</div>
+								<div class="form-check  form-check-inline">
+									<input class="form-check-input" type="radio" name="DefaultLanguage" id="DefaultLanguage2" value="true" <?php if ($DefaultLanguage) echo "checked"; ?>>
+									<label class="form-check-label" for="DefaultLanguage2">
+										English (en)
+									</label>
+								</div>
+								<small class="form-text">本项目目前支持 简体中文 和 English 两种语言，系统将会通过访客浏览器传入的 header 信息进行判断。当无法判断访客使用的语言时，将会启用设置的默认语言。</small>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -614,6 +634,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$ReserveDBData = (!empty($_POST["ReserveDBData"])) ? $_POST["ReserveDBData"] : "false"; // 是否保存以前数据库数据 未选中不会提交
 				$SVIPSwitchMod = (!empty($_POST["SVIPSwitchMod"])) ? $_POST["SVIPSwitchMod"] : "0";
 
+				$DefaultLanguage = (!empty($_POST["DefaultLanguage"])) ? $_POST["DefaultLanguage"] : "en";
+
 				if ($USING_DB == "true") { //注意判断要用string类型进行
 					// 连接数据库
 					$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
@@ -675,6 +697,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<dbname>', $dbname, $update_config);
 				$update_config = str_replace('<dbtable>', $dbtable, $update_config);
 				$update_config = str_replace('<SVIPSwitchMod>', $SVIPSwitchMod, $update_config);
+
+				$update_config = str_replace('<DefaultLanguage>', $DefaultLanguage, $update_config);
 
 				$len = file_put_contents('config.php', $update_config);
 
