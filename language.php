@@ -275,6 +275,7 @@ $lang = [
 ];
 
 $lang['zh'] = $lang['zh-CN']; // 将 zh 的值设为和 zh-CN 相同
+$lang['zh-cn'] = $lang['zh-CN']; // 将 zh-cn 的值设为和 zh-CN 相同，支持苹果 Safari 浏览器
 
 define('BrowserLanguage', $_SERVER["HTTP_ACCEPT_LANGUAGE"]); // 浏览器传入的语言（Accept-Language）（一个字符串）
 
