@@ -70,7 +70,7 @@ if ($is_login) connectdb();
 	<meta name="version" content="<?php echo programVersion; ?>" />
 	<title><?php echo Sitename; ?> - Settings</title>
 	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" href="static/index.css" />
+	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
@@ -81,7 +81,7 @@ if ($is_login) connectdb();
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jquery-form@4.3.0/dist/jquery.form.min.js"></script>
-	<script src="static/color.js"></script>
+	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
 	<script>
 		async function getAPI(method) { // 获取 API 数据
 			try {

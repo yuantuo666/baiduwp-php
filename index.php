@@ -81,7 +81,7 @@ if (DEBUG) {
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
 	<title><?php echo Sitename; ?></title>
 	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" href="static/index.css" />
+	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
 	<link rel="stylesheet" id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
@@ -92,9 +92,9 @@ if (DEBUG) {
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx"></script>
-	<script src="static/color.js"></script>
-	<script src="static/functions.js"></script>
-	<script defer src="static/ready.js"></script>
+	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
+	<script src="static/functions.js?v=<?php echo programVersion; ?>"></script>
+	<script defer src="static/ready.js?v=<?php echo programVersion; ?>"></script>
 	<?php
 	if (isset($_POST["surl"])) {
 		echo '<script>';
@@ -476,9 +476,10 @@ SWITCHTIP;
 						}
 
 						// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
-						if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-						<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
-						<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
+						if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">'
+							. '<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p>'
+							. '<p class="card-text">请检查你是否在 <code>config.php</code> 中配置 <b>普通账号</b> 的 BDUSS 和 STOKEN！</p>'
+							. '<p class="card-text">未配置 或 普通账号失效均会导致失败！（账号失效的原因包括但不限于 退出登录、修改密码）</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
 						else {
 
 							// 记录下使用者ip，下次进入时提示
