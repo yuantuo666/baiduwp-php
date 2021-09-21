@@ -141,10 +141,15 @@ function CheckPassword(bool $IsReturnBool = false)
 }
 // 解析分享链接
 // 改用微信接口，不需要使用verifyPwd获取randsk
-function getSign(string $surl, $randsk)
+function getSign(string $surl, $randsk, $uk = "", $shareid = "")
 {
 	if ($randsk === 1) return 1;
-	$url = 'https://pan.baidu.com/s/1' . $surl;
+	if ($surl != "") {
+		$url = 'https://pan.baidu.com/s/1' . $surl;
+	} elseif ($uk != "" and  $shareid != "") {
+		$url = "https://pan.baidu.com/share/link?shareid=$shareid&uk=$uk"; // 旧版本分享链接兼容
+	}
+
 	$header = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
@@ -260,10 +265,14 @@ function dl_error(string $title, string $content, bool $jumptip = false)
 	<h5 class="alert-heading">' . $title . '</h5><hr /><p class="card-text">' . $content;
 	echo '</p></div></div></div>'; // 仅仅弹出提示框，并不结束进程
 }
-function get_BDCLND($surl, $Pwd)
+function get_BDCLND($surl, $Pwd, $uk = "", $shareid = "")
 {
 	$header = array('User-Agent: netdisk');
-	$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; // 使用新方法获取，减少花费的时间
+	if ($surl != "") {
+		$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; // 使用新方法获取，减少花费的时间
+	} elseif ($uk != "" and  $shareid != "") {
+		$url = "https://pan.baidu.com/share/wxlist?clienttype=25&uk=$uk&shareid=$shareid&pwd=$Pwd"; // 兼容老版本链接
+	}
 	$result = head($url, $header);
 	if (strstr($result, "BDCLND") == false) $bdclnd = false; // 修复：部分链接不存在bdclnd
 	else $bdclnd = GetSubstr($result, 'BDCLND=', ';');
@@ -281,9 +290,18 @@ function get_BDCLND($surl, $Pwd)
 			var_dump($result);
 			echo '</pre>';
 		}
-		echo '<script>Swal.fire("使用提示","检测到当前链接异常，保存到网盘重新分享后可获得更好的体验~","info");</script>';
+		if ($surl != "") {
+			echo '<script>Swal.fire("使用提示","检测到当前链接异常，保存到网盘重新分享后可获得更好的体验~","info");</script>';
+		} elseif ($uk != "" and  $shareid != "") {
+			echo '<script>Swal.fire("使用提示","当前获取的链接属于旧版本链接，正在尝试使用兼容模式获取。如果获取失败，请保存到网盘重新分享后再试。","info");</script>';
+		}
 		// 尝试使用老方法获取
-		$header = head("https://pan.baidu.com/s/" . $surl, []);
+		if ($surl != "") {
+			$header = head("https://pan.baidu.com/s/" . $surl, []);
+		} elseif ($uk != "" and  $shareid != "") {
+			$header = head("https://pan.baidu.com/share/link?shareid=$shareid&uk=$uk", []);
+		}
+
 		$bdclnd = preg_match('/BDCLND=(.+?);/', $header, $matches);
 		if ($bdclnd) {
 			if (DEBUG) {

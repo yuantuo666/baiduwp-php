@@ -9,11 +9,14 @@
  *
  */
 function validateForm() {
-	var link = document.forms["form1"]["surl"].value;
-	if (link == null || link === "") { document.forms["form1"]["surl"].focus(); Swal.fire("提示", "请填写分享链接", "info"); return false; }
+	var input = document.forms["form1"]["surl"];
+	var link = input.value;
+	if (link == null || link === "") { input.focus(); Swal.fire("提示", "请填写分享链接", "info"); return false; }
 	var uk = link.match(/uk=(\d+)/), shareid = link.match(/shareid=(\d+)/);
 	if (uk != null && shareid != null) {
-		document.forms["form1"]["surl"].value = "";
+		// input.focus(); Swal.fire("提示", "填入的分享是老版本分享链接，请保存到网盘重新分享后重试。", "info"); return false;
+		// 后端没有处理老版本链接
+		input.value = "";
 		$("form").append(`<input type="hidden" name="uk" value="${uk[1]}"/><input type="hidden" name="shareid" value="${shareid[1]}"/>`);
 		return true;
 	}
@@ -21,10 +24,10 @@ function validateForm() {
 	if (surl == null) {
 		surl = link.match(/1[A-Za-z0-9-_]+/);
 		if (surl == null) {
-			document.forms["form1"]["surl"].focus(); Swal.fire("提示", "分享链接填写有误，请检查", "info"); return false;
+			input.focus(); Swal.fire("提示", "分享链接填写有误，请检查", "info"); return false;
 		} else surl = surl[0];
 	} else surl = "1" + surl[1];
-	document.forms["form1"]["surl"].value = surl;
+	input.value = surl;
 	return true;
 }
 function dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
@@ -62,6 +65,7 @@ function getIconClass(filename) {
 	return "";
 }
 function OpenRoot(surl, pwd) {
+	if (surl == "") { Swal.fire("错误", "兼容模式下无法返回根目录，请返回首页重新解析。"); return false; }
 	var form = $('<form method="post"></form>');
 	form.append(`<input type="hidden" name="surl" value="${surl}"/><input type="hidden" name="pwd" value="${pwd}"/>`);
 	$(document.body).append(form); form.submit();

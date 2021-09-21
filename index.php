@@ -9,14 +9,14 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.1.9.1
+ * @version 2.2.0
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.1.9.1";
+$programVersion_Index = "2.2.0";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {
@@ -81,10 +81,10 @@ if (DEBUG) {
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
 	<title><?php echo Sitename; ?></title>
 	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" href="static/index.css" />
+	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
+	<link rel="stylesheet" id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
+	<link rel="stylesheet" id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
@@ -92,9 +92,9 @@ if (DEBUG) {
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx"></script>
-	<script src="static/color.js"></script>
-	<script src="static/functions.js"></script>
-	<script defer src="static/ready.js"></script>
+	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
+	<script src="static/functions.js?v=<?php echo programVersion; ?>"></script>
+	<script defer src="static/ready.js?v=<?php echo programVersion; ?>"></script>
 	<?php
 	if (isset($_POST["surl"])) {
 		echo '<script>';
@@ -254,12 +254,26 @@ Function
 					} else dl_error("解析错误", "解析子文件夹时，提取码错误或文件失效！");
 				} else {
 					// 根页面
-					if (isset($_POST["randsk"])) $randsk = $_POST["randsk"];
-					else $randsk = get_BDCLND($surl, $pwd);
-					$root = getSign($surl_1, $randsk);
+					if (!empty($_POST["uk"]) and !empty($_POST["shareid"])) {
+						// 使用老版本（估计是2012-2013年左右）分享链接
+						// example: https://pan.baidu.com/share/link?shareid=136181&uk=3373607811
+						//          https://pan.baidu.com/share/link?shareid=146328&uk=470983691
+						$randsk = get_BDCLND("", "", $_POST["uk"], $_POST["shareid"]);
+						$root = getSign("", $randsk, $_POST["uk"], $_POST["shareid"]);
+					} else {
+						// 新版本链接
+						$randsk = get_BDCLND($surl, $pwd);
+						$root = getSign($surl_1, $randsk);
+					}
 					$filejson = FileList($root);
 					if ($filejson !== 1) {
-						$url = "https://pan.baidu.com/share/tplconfig?surl=$surl&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+						$shareid = $root["shareid"];
+						$bdstoken = $root["bdstoken"];
+						$uk = $root["share_uk"];
+
+						// 为兼容旧版本，此处采用 shareid 和 uk 来获取
+						// $url = "https://pan.baidu.com/share/tplconfig?surl=$surl&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+						$url = "https://pan.baidu.com/share/tplconfig?shareid=$shareid&uk=$uk&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
 						$header = array(
 							"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 							"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
@@ -273,10 +287,7 @@ Function
 						}
 						$sign = $result["data"]["sign"];
 						$timestamp = $result["data"]["timestamp"];
-						$uk = $root["share_uk"];
 
-						$shareid = $root["shareid"];
-						$bdstoken = $root["bdstoken"];
 						if ($root["errno"] != 0) if ($root["errno"] == 117) dl_error("文件过期(117)", "啊哦，来晚了，该分享文件已过期"); // 文件过期
 						else dl_error("链接存在问题", "此链接存在问题，无法访问！", true); // 鬼知道发生了啥
 						else { // 终于正常了
@@ -465,9 +476,10 @@ SWITCHTIP;
 						}
 
 						// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
-						if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
-						<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p><p class="card-text">请检查你是否在 <code>config.php</code> 中配置 SVIP 账号的 BDUSS 和 STOKEN！</p>
-						<p class="card-text">未配置或配置了普通账号的均会导致失败！必须要 SVIP 账号！</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
+						if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">'
+							. '<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p>'
+							. '<p class="card-text">请检查你是否在 <code>config.php</code> 中配置 <b>普通账号</b> 的 BDUSS 和 STOKEN！</p>'
+							. '<p class="card-text">未配置 或 普通账号失效均会导致失败！（账号失效的原因包括但不限于 退出登录、修改密码）</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
 						else {
 
 							// 记录下使用者ip，下次进入时提示

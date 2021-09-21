@@ -94,7 +94,13 @@ if ($method == "ADMINAPI") {
 
 				$AllBduss = explode("\n", $BDUSS);
 				for ($i = 0; $i < count($AllBduss); $i++) {
-					$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `add_time`, `state`, `is_using`) VALUES ('$name-" . ($i + 1) . "','" . htmlspecialchars($AllBduss[$i], ENT_QUOTES) . "','$add_time',1,'');";
+					$EachBDUSS = explode("----", htmlspecialchars($AllBduss[$i], ENT_QUOTES));
+					$Num = count($EachBDUSS);
+					$BDUSS = ($Num >= 1) ? $EachBDUSS[0] : "";
+					$STOKEN = ($Num >= 2) ? $EachBDUSS[1] : "";
+					$EachName = ($Num >= 3) ? $EachBDUSS[2] : "";
+					$AccountName = ($EachName == "") ? $name . "-" . ($i + 1) : $EachName;
+					$sql = "INSERT INTO `" . $dbtable . "_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$AccountName','$BDUSS','$STOKEN','$add_time',1,'');";
 					$allsql .= $sql;
 				}
 

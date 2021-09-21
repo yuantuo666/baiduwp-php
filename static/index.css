@@ -1,88 +1,92 @@
 .logo-img {
-	width: 1.1em;
-	position: relative;
-	top: -3px;
+    width: 1.1em;
+    position: relative;
+    top: -3px;
 }
 
 .form-inline input {
-	width: 500px;
+    width: 500px;
 }
 
 .input-card {
-	position: relative;
-	top: 7.0em;
+    position: relative;
+    top: 7.0em;
 }
 
 .card-header {
-	height: 3.2em;
-	font-size: 20px;
-	line-height: 2.0em;
+    height: 3.2em;
+    font-size: 20px;
+    line-height: 2.0em;
 }
 
 .card-text {
-	word-wrap: break-word;
+    word-wrap: break-word;
 }
 
-form input, form button {
-	height: 3em;
+form input,
+form button {
+    height: 3em !important;
 }
 
 .alert {
-	position: relative;
-	top: 5em;
+    position: relative;
+    top: 5em;
 }
 
 .alert-heading {
-	height: 0.8em;
+    height: 0.8em;
 }
 
 .anchor {
-	vertical-align: top;
+    vertical-align: top;
 }
 
 .anchor+h4 {
-	display: inline-block;
-	margin-left: 0.4rem;
+    display: inline-block;
+    margin-left: 0.4rem;
 }
 
 .point {
-	display: inline-block;
-	width: 5px;
-	height: 5px;
-	border-radius: 500px;
-	margin: 0px 5px;
-	/*调整圆点的位置*/
-	background-color: #ddd;
-	vertical-align: baseline;
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 500px;
+    margin: 0px 5px;
+    /*调整圆点的位置*/
+    background-color: #ddd;
+    vertical-align: baseline;
 }
 
 .point-lg {
-	width: 12px;
-	height: 12px;
+    width: 12px;
+    height: 12px;
 }
 
 .point-success {
-	background-color: #28a745;
+    background-color: #28a745;
 }
 
 .point-danger {
-	background-color: #dc3545;
+    background-color: #dc3545;
 }
 
 .qrcode {
-	position: absolute;
-	transform: translate(2rem, -50%);
-	display: none;
-	opacity: 0;
-	transition: opacity .4s ease-in-out;
+    position: absolute;
+    transform: translate(2rem, -50%);
+    display: none;
+    opacity: 0;
+    transition: opacity .4s ease-in-out;
 }
 
-[data-qrcode-attr]:hover + .qrcode, [data-qrcode-text]:hover + .qrcode {
-	display: inline;
-	opacity: 1;
+@media screen and (min-width: 768px) {
+    [data-qrcode-attr]:hover+.qrcode,
+    [data-qrcode-text]:hover+.qrcode {
+        display: inline;
+        opacity: 1;
+    }
 }
 
 .qrcode img {
-	width: 150px;
-	height: 150px;
+    width: 150px;
+    height: 150px;
 }

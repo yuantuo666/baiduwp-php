@@ -275,6 +275,7 @@ $lang = [
 ];
 
 $lang['zh'] = $lang['zh-CN']; // 将 zh 的值设为和 zh-CN 相同
+$lang['zh-cn'] = $lang['zh-CN']; // 将 zh-cn 的值设为和 zh-CN 相同，支持苹果 Safari 浏览器
 
 define('BrowserLanguage', $_SERVER["HTTP_ACCEPT_LANGUAGE"]); // 浏览器传入的语言（Accept-Language）（一个字符串）
 
@@ -321,8 +322,17 @@ if (isset($_COOKIE['Language'])) { // 判断用户是否设置语言
 
 
 if (!defined('Lang')) { // 如果没有支持的语言
-	define('Lang', 'en'); // 设为英语
-	echo "<div>This project is not available in your language, the following is the English version. <a href=\"?usersettings\" target=\"_blank\">Click here to select language.</div>"; // 输出没有支持的语言提示
+	switch (DefaultLanguage) {
+		case "zh-CN":
+			define('Lang', "zh-CN"); // 设为英语
+			echo "<div id=\"Language\" style=\"margin: 0.3rem 1rem;\">本项目没有支持你的语言，目前显示的是 简体中文 版本。 <a href=\"?usersettings\" target=\"_blank\">点击此处选择语言</div>"; // 输出没有支持的语言提示
+			break;
+		case "en":
+		default:
+			define('Lang', "en"); // 设为英语
+			echo "<div id=\"Language\" style=\"margin: 0.3rem 1rem;\">This project is not available in your language, the following is the English version. <a href=\"?usersettings\" target=\"_blank\">Click here to select language.</div>"; // 输出没有支持的语言提示
+			break;
+	}
 }
 
 define("Language", $lang[Lang]); // 定义使用的语言

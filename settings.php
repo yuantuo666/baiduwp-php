@@ -70,7 +70,7 @@ if ($is_login) connectdb();
 	<meta name="version" content="<?php echo programVersion; ?>" />
 	<title><?php echo Sitename; ?> - Settings</title>
 	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" href="static/index.css" />
+	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://cdn.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
@@ -81,7 +81,7 @@ if ($is_login) connectdb();
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jquery-form@4.3.0/dist/jquery.form.min.js"></script>
-	<script src="static/color.js"></script>
+	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
 	<script>
 		async function getAPI(method) { // 获取 API 数据
 			try {
@@ -117,17 +117,23 @@ if ($is_login) connectdb();
 						const div = document.createElement('div');
 						div.id = 'CheckUpdate';
 						div.style.margin = '0.3rem 1rem';
+						div.style.display = 'none';
 						div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
-					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
 						document.body.insertAdjacentElement('beforeBegin', div);
+						if (localStorage.getItem('UpdateTip') != "false")
+							$('#CheckUpdate').show(1500);
 					}
 				} else if (data.code === 2) {
 					const div = document.createElement('div');
 					div.id = 'CheckUpdate';
 					div.style.margin = '0.3rem 1rem';
+					div.style.display = 'none';
 					div.innerHTML = `Baiduwp-PHP 项目版本异常！当前版本：${data.now_version}，项目最新版本为：${data.version}${data.isPreRelease ? '（预发行版本）' : ''}！
-				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
 					document.body.insertAdjacentElement('beforeBegin', div);
+					if (localStorage.getItem('UpdateTip') != "false")
+						$('#CheckUpdate').show(1500);
 				} else if (data.code === 1) {
 					console.log('服务器获取更新失败！详细信息：');
 					console.log(data);
@@ -140,6 +146,12 @@ if ($is_login) connectdb();
 				console.log(response);
 			}
 		});
+
+		function SetUpdateTip(value) {
+			localStorage.setItem('UpdateTip', `${value}`); // 不知为啥，只能用string类型
+			if (value) $('#CheckUpdate').show(2000);
+			else $('#CheckUpdate').hide(2000);
+		}
 	</script>
 </head>
 
@@ -377,8 +389,9 @@ if ($is_login) connectdb();
 										<input type="text" class="form-control form-control-sm" name="name">
 									</div>
 									<div class="form-group">
-										<label>MULTI BDUSS（每行一个）</label>
-										<textarea type="text" class="form-control form-control-sm" name="MULTI_BDUSS" style="height: 200px;"></textarea>
+										<label>MULTI BDUSS</label>
+										<textarea type="text" class="form-control form-control-sm" name="MULTI_BDUSS" style="height: 200px;" placeholder="liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号&#13;&#10;liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号"></textarea>
+										<small>每行设置一个账号，每行格式：BDUSS----STOKEN----账号名称<br />如账号名称为空，则将使用上方设置的统一账号名称</small>
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
 								</form>

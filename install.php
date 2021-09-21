@@ -67,7 +67,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
-	<script src="static/color.js"></script>
+	<script src="static/color.js?r=<?php echo random_int(1000, 9999); ?>"></script>
 	<script>
 		async function getAPI(method) { // 获取 API 数据
 			try {
@@ -103,17 +103,23 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						const div = document.createElement('div');
 						div.id = 'CheckUpdate';
 						div.style.margin = '0.3rem 1rem';
+						div.style.display = 'none';
 						div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
-					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
 						document.body.insertAdjacentElement('beforeBegin', div);
+						if (localStorage.getItem('UpdateTip') != "false")
+							$('#CheckUpdate').show(1500);
 					}
 				} else if (data.code === 2) {
 					const div = document.createElement('div');
 					div.id = 'CheckUpdate';
 					div.style.margin = '0.3rem 1rem';
+					div.style.display = 'none';
 					div.innerHTML = `Baiduwp-PHP 项目版本异常！当前版本：${data.now_version}，项目最新版本为：${data.version}${data.isPreRelease ? '（预发行版本）' : ''}！
-				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a>`;
+				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
 					document.body.insertAdjacentElement('beforeBegin', div);
+					if (localStorage.getItem('UpdateTip') != "false")
+						$('#CheckUpdate').show(1500);
 				} else if (data.code === 1) {
 					console.log('服务器获取更新失败！详细信息：');
 					console.log(data);
@@ -126,6 +132,12 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				console.log(response);
 			}
 		});
+
+		function SetUpdateTip(value) {
+			localStorage.setItem('UpdateTip', `${value}`); // 不知为啥，只能用string类型
+			if (value) $('#CheckUpdate').show(2000);
+			else $('#CheckUpdate').hide(2000);
+		}
 	</script>
 </head>
 
@@ -190,6 +202,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($SVIP_STOKEN, 'SVIP_STOKEN');
 			getConfig($SVIPSwitchMod, 'SVIPSwitchMod', '0'); // 有bug隐患 如果未开启数据库，必须为0
 
+			getConfig($DefaultLanguage, 'DefaultLanguage', 'en');
+
 			getConfig($USING_DB, 'USING_DB', true);
 			if (defined('DbConfig')) {
 				function getDbConfig(&$var, string $key)
@@ -210,6 +224,39 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$dbtable = "bdwp";
 			}
 		?>
+			<div class="alert alert-primary" role="alert">
+				<h4 class="alert-heading">安装提示</h4>
+				<hr>
+				<p>为减少一些不必要的错误，请仔细阅读此安装提示。</p>
+				<p>建议小白使用宝塔面板，保证 PHP 版本 ≥ 7.0.0 即可，其他保持默认设置即可完美使用本项目。</p>
+
+				<h5>初次安装时请检查：</h5>
+				<ol>
+					<li>请确认你的 PHP 版本 ≥ 7.0.0.</li>
+					<li>本项目不需要配置静态及其他设置，请保持默认。</li>
+					<li>请确认当前目录及目录下所有文件 PHP 有足够访问权限。</li>
+					<li>请确认已安装 curl 。</li>
+					<li>请确认当前页面正确加载了 JavaScript 文件。如点击按钮无反映说明为正常加载，检查文件是否完整 并 刷新浏览器 一般能解决此问题。</li>
+				</ol>
+				<h5>软件更新时请检查：</h5>
+				<ol>
+					<li>（若启用数据库）数据库已完成备份。</li>
+					<li>请确认当前页面正确加载了 JavaScript 文件。如点击按钮无反映说明为正常加载，检查文件是否完整 并 刷新浏览器 一般能解决此问题。</li>
+				</ol>
+				<h5>软件更新完成后请：</h5>
+				<ol>
+					<li>（如有 CDN 加速）清除 CDN 的缓存。</li>
+					<li>浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存。</li>
+				</ol>
+				<hr>
+				<h5>使用提示：</h5>
+				<ol>
+					<li>因使用的是分享接口，存在客户端未限速，本项目显示限速的情况。</li>
+					<li>获取账号的 BDUSS 和 STOKEN 之后不要退出登录，退出登录会使 BDUSS 和 STOKEN 失效。</li>
+					<li>（可选）你可以手动在安装项目目录下新建一个 notice.html 文件，当加载首页时会自动引用该文件。</li>
+				</ol>
+			</div>
+
 			<!-- 设置页面 -->
 			<div class="card">
 				<div class="card-header">
@@ -223,6 +270,24 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<div class="col-sm-10">
 								<input class="form-control" value="Pandownload 复刻版" name="Sitename" value="<?php echo $Sitename; ?>">
 								<small class="form-text">设置你的站点名称，将在首页标题处显示。</small>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label">站点默认语言</label>
+							<div class="col-sm-10">
+								<div class="form-check  form-check-inline">
+									<input class="form-check-input" type="radio" name="DefaultLanguage" id="DefaultLanguage1" value="zh-CN" <?php if ($DefaultLanguage == "zh-CN") echo "checked"; ?>>
+									<label class="form-check-label" for="DefaultLanguage1">
+										简体中文 (zh-CN)
+									</label>
+								</div>
+								<div class="form-check  form-check-inline">
+									<input class="form-check-input" type="radio" name="DefaultLanguage" id="DefaultLanguage2" value="en" <?php if ($DefaultLanguage == "en") echo "checked"; ?>>
+									<label class="form-check-label" for="DefaultLanguage2">
+										English (en)
+									</label>
+								</div>
+								<small class="form-text">本项目目前支持 简体中文 和 English 两种语言，系统将会通过访客浏览器传入的 header 信息进行判断。当无法判断访客使用的语言时，将会启用设置的默认语言。</small>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -418,9 +483,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						</div>
 						<!-- 已经读取了配置，没必要确认 -->
 						<a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
-						<small class="form-text">TIPS：1. 由于新版本可能更新了css和js文件，如果你的网站有缓存，请在清理后访问首页（一般CDN会提供此功能）；如果浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存，否则可能遇到无法使用的问题。</small>
-						<small class="form-text">2. 你可以手动在当前目录下新建一个 notice.html 文件，当加载首页时会自动引用该文件。</small>
-						<small class="form-text">3. 如果点击此页面任何按钮都没有反应，可能是相关的JavaScript文件加载失败，刷新页面即可。</small>
 						<br><br>
 
 
@@ -614,6 +676,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$ReserveDBData = (!empty($_POST["ReserveDBData"])) ? $_POST["ReserveDBData"] : "false"; // 是否保存以前数据库数据 未选中不会提交
 				$SVIPSwitchMod = (!empty($_POST["SVIPSwitchMod"])) ? $_POST["SVIPSwitchMod"] : "0";
 
+				$DefaultLanguage = (!empty($_POST["DefaultLanguage"])) ? $_POST["DefaultLanguage"] : "en";
+
 				if ($USING_DB == "true") { //注意判断要用string类型进行
 					// 连接数据库
 					$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
@@ -675,6 +739,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<dbname>', $dbname, $update_config);
 				$update_config = str_replace('<dbtable>', $dbtable, $update_config);
 				$update_config = str_replace('<SVIPSwitchMod>', $SVIPSwitchMod, $update_config);
+
+				$update_config = str_replace('<DefaultLanguage>', $DefaultLanguage, $update_config);
 
 				$len = file_put_contents('config.php', $update_config);
 
