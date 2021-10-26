@@ -22,7 +22,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 
 ## 🚧Blacklists
-- http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259）
+- http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259，[网站快照](https://web.archive.org/web/20210125182649/http://www.dupan.cc/)）
 
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
 <!-- - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码 -->
