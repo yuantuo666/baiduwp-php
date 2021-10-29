@@ -26,6 +26,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
 - http://wp.nanmu.cool/ 2.1.8版本 注：站长拒不修改
+- https://bd.fkxz.cn/ 赞助版
 <!-- - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码 -->
 <!-- - https://bd.pkqjsq.top/ 1.4.3版本 -->
 <!-- - http://pan.0ddt.com/ 1.0版本 -->
