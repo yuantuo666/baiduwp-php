@@ -1,4 +1,7 @@
 # Baiduwp-PHP
+
+### 本项目作者与协作者均学业繁忙，本项目暂停维护，预计将于2022年7月前后恢复！
+
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供大家学习参考，严禁商业用途
 
@@ -28,6 +31,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - http://wp.nanmu.cool/ 2.1.8版本 注：站长拒不修改
 - https://bd.fkxz.cn/ 赞助版
 - http://baidu.mfs-2020.com/ 2.2.0版本
+- http://pan.10zv.com/ 2.2.0版本
+<!-- - https://pan.vxians.tk/ 暂时无法访问 -->
 <!-- - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码 -->
 <!-- - https://bd.pkqjsq.top/ 1.4.3版本 -->
 <!-- - http://pan.0ddt.com/ 1.0版本 -->
