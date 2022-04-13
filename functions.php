@@ -327,10 +327,13 @@ function connectdb(bool $isAPI = false)
 	$DBPassword = DbConfig["DBPassword"];
 	$dbname = DbConfig["dbname"];
 	$GLOBALS['dbtable'] = DbConfig["dbtable"];
-	$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
-	$GLOBALS['conn'] = $conn;
+	$conn = mysqli_init();
+	mysqli_options($conn, MYSQLI_OPT_LOCAL_INFILE, false); // 感谢 unc1e 披露的漏洞
+	$m = mysqli_real_connect($conn, $servername, $username, $DBPassword, $dbname, 3306);
+	// $conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
+
 	// Check connection
-	if (!$conn) {
+	if (!$m) {
 		if ($isAPI) {
 			// api特殊处理
 			EchoInfo(-1, array("msg" => "数据库连接失败：" . mysqli_connect_error(), "sviptips" => "Error"));
@@ -340,6 +343,8 @@ function connectdb(bool $isAPI = false)
 			exit;
 		}
 	}
+	$GLOBALS['conn'] = $conn;
+
 	mysqli_query($conn, "set sql_mode = ''");
 	mysqli_query($conn, "set character set 'utf8'");
 	mysqli_query($conn, "set names 'utf8'");
