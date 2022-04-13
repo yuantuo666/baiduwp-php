@@ -329,7 +329,7 @@ Function
 						}
 						return $ip;
 					}
-					$ip = getip();
+					$ip = htmlspecialchars(getip(), ENT_QUOTES); // 防注入 #193
 					$isipwhite = FALSE; //初始化 防止报错
 					if (USING_DB) {
 						connectdb();
