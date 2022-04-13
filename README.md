@@ -1,4 +1,7 @@
 # Baiduwp-PHP
+
+### 本项目作者与协作者均学业繁忙，本项目暂停维护，预计将于2022年7月前后恢复！
+
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供大家学习参考，严禁商业用途
 
@@ -22,9 +25,14 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 
 ## 🚧Blacklists
-- http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259）
+- http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259，[网站快照](https://web.archive.org/web/20210125182649/http://www.dupan.cc/)）
 
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
+- http://wp.nanmu.cool/ 2.1.8版本 注：站长拒不修改
+- https://bd.fkxz.cn/ 赞助版
+- http://baidu.mfs-2020.com/ 2.2.0版本
+- http://pan.10zv.com/ 2.2.0版本
+<!-- - https://pan.vxians.tk/ 暂时无法访问 -->
 <!-- - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码 -->
 <!-- - https://bd.pkqjsq.top/ 1.4.3版本 -->
 <!-- - http://pan.0ddt.com/ 1.0版本 -->
@@ -61,17 +69,32 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 最后点击提交即可。<br />
 
 安装完成后可直接使用，站长可进入settings.php中进行相关设置。<br />
+获取 Cookie 可以通过浏览器直接获取（操作方法见视频），或者通过这个浏览器插件获取：[GetBaiduPanCookies](https://github.com/dylanbai8/GetBaiduPanCookies)。<br />
 在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**。<br />
 
 ## 📦New Changes
-- 当前版本: `2.1.9.1`
-- 更新日期：2021-07-22
+- 当前版本: `2.2.0`
+- 更新日期：2021-09-21
 - 修改内容：
-  - 安全性更新
-    - 修复 API SQL 注入问题 #148
-  - 问题修复
-    - 修复 `install` 和 `settings` 页面更新提示有误的问题
-    - 修复 `install` 写入 HTTP 响应正文后仍写入响应头的 bug（取消了自动跳转功能）
+  - 💥新增功能
+    - ✨支持老版本链接兼容加载
+    - ✨会员账号批量导入支持设置 STOKEN 以及独自用户名
+      - 格式：BDUSS----STOKEN----账号名称
+    - 增加默认语言选项
+    - 更新提示增加展开动画，且可以取消提示
+    - 语言切换支持苹果 Safari 浏览器 zh-cn 标识
+    - 增加安装提示
+  - ⚠错误修复
+    - 修复加载或切换页面白屏问题
+    - 修复深色模式下首页输入框高度错误
+    - settings.php 以及 install.php 页面更新提示与 ready.js 同步
+    - 修复二维码内容无法加载问题
+    - 安装页面设置站点默认语言 bug 修复
+  - ♻代码优化
+    - 请求静态文件时会带上版本号，减少更新时的因缓存导致的bug
+    - 小屏幕不展示二维码
+      - 手机端展示二维码时会挡住下载链接，导致无法复制
+    - 获取文件失败提示内容修改
 
 
 [查看更多](Update.md)
@@ -83,14 +106,18 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ## 💡Contact
 - 项目作者：Yuan_Tuo
-- 作者邮箱：yuantuo666@gmail.com
 - 作者首页：https://imwcr.cn/
+<!--
+- 作者邮箱：yuantuo666@gmail.com
 - Telegram：
   - [@yuantuo666](https://t.me/yuantuo666)
   - [Telegram频道](https://t.me/baiduwp_php)
+-->
 - 合作者：LC @lc6464
   - [个人网站](https://lcwebsite.cn/ "LC的网站")
   - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
+
+**自2021年10月30日起，赞助版可联系合作者 [LC](https://lcwebsite.cn/ "LC的网站") 获取。**
 
 **作者及合作者都是学生，因未来一段时间课余时间很少，对此项目维护将会减少。** #130<br />
 如果遇到问题请先 **仔细阅读此文档** 、查看[视频教程](https://www.bilibili.com/video/BV1N5411A77n)
