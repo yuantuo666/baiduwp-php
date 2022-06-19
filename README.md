@@ -1,7 +1,5 @@
 # Baiduwp-PHP
 
-### 本项目作者与协作者均学业繁忙，本项目暂停维护，预计将于2022年7月前后恢复！
-
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供大家学习参考，严禁商业用途
 
@@ -117,9 +115,6 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - [个人网站](https://lcwebsite.cn/ "LC的网站")
   - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
 
-**自2021年10月30日起，赞助版可联系合作者 [LC](https://lcwebsite.cn/ "LC的网站") 获取。**
-
-**作者及合作者都是学生，因未来一段时间课余时间很少，对此项目维护将会减少。** #130<br />
 如果遇到问题请先 **仔细阅读此文档** 、查看[视频教程](https://www.bilibili.com/video/BV1N5411A77n)
 以及查看[以前的议题](https://github.com/yuantuo666/baiduwp-php/issues)<br />
 
