@@ -54,9 +54,9 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - 更换后台 SVIP 账号
   - 更换服务器 IP
 - 使用了较新的 JavaScript 和 CSS 特性，旧版浏览器对此的支持性很差，使用新版的现代浏览器才能正常使用！建议使用的浏览器：
-  - `Microsoft Edge 91+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
-  - `Google Chrome 91+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
-  - `Firefox 90+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
+  - `Microsoft Edge 103+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
+  - `Google Chrome 103+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
+  - `Firefox 102+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
 # 🔧Install & Setting
 [**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)
