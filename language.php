@@ -12,7 +12,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-
+require("./common/invalidCheck.php");
 $lang = [
 	"zh-CN" => [
 		"LanguageName" => "Chinese",
@@ -31,7 +31,7 @@ $lang = [
 		"DownloadLinkError" => "获取下载链接失败",
 		"DatabaseError" => "数据库错误",
 		"DownloadLinkSuccess" => "获取下载链接成功",
-		"Rreview" => "在线预览：",
+		"Preview" => "在线预览：",
 		"NotSupportWithUA" => "暂不支持当前文件。",
 		"NotSupportWithoutUA" => "目前只支持 <b>50MB以下文件</b> 或 <b>设置UA</b> 后使用在线预览功能。",
 		"DownloadLink" => "下载链接",
@@ -160,7 +160,7 @@ $lang = [
 		"DownloadLinkError" => "An error happened when try to get download link",
 		"DatabaseError" => "An error happened when try to connect to database",
 		"DownloadLinkSuccess" => "Succeed",
-		"Rreview" => "Preview:",
+		"Preview" => "Preview:",
 		"NotSupportWithUA" => "The type is not support",
 		"NotSupportWithoutUA" => "The type is not support",
 		"DownloadLink" => "Download Link",

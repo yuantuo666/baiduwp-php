@@ -7,12 +7,10 @@
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
- * @version 2.2.0.2
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
  * @link https://imwcr.cn/
  * @link https://space.bilibili.com/88197958
  *
  */
 
-$programVersion_Updater = "2.2.0.2";
+$programVersion_Updater = "2.2.1";

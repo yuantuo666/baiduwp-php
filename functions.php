@@ -12,22 +12,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-if (!defined('init')) { // 直接访问处理程序
-	header('Content-Type: text/plain; charset=utf-8');
-	if (!file_exists('config.php')) {
-		http_response_code(503);
-		header('Content-Type: text/plain; charset=utf-8');
-		header('Refresh: 5;url=install.php');
-		die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
-	} else {
-		require('config.php');
-	}
-	http_response_code(403);
-	header('Refresh: 3;url=./');
-	define('init', true);
-	require('config.php');
-	die("HTTP 403 禁止访问！\r\n此文件是 PanDownload 网页复刻版 PHP 语言版项目的有关文件！\r\n禁止直接访问！");
-}
+require("./common/invalidCheck.php");
 
 // main
 function setCurl(&$ch, array $header)
@@ -213,14 +198,10 @@ function FileInfo(string $filename, float $size, string $md5, int $server_ctime)
 	return '<p class="card-text"  id="filename" >文件名：<b>' . $filename . '</b></p><p class="card-text">文件大小：<b>' . formatSize($size) . '</b></p><p class="card-text">文件MD5：<b>' . $md5
 		. '</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
 }
-function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, string $bdstoken, bool $isnoualink, int $app_id = 250528)
+function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, int $app_id = 250528)
 { // 获取下载链接
 
-	if ($isnoualink) {
-		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=0&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1&bdstoken=' . $bdstoken; // 获取直链 50MB以内
-	} else {
-		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
-	}
+	$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
 
 	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . urldecode($randsk) . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
 	$header = array(
@@ -269,7 +250,7 @@ function get_BDCLND($surl, $Pwd, $uk = "", $shareid = "")
 {
 	$header = array('User-Agent: netdisk');
 	if ($surl != "") {
-		$url = 'https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=' . $surl . '&pwd=' . $Pwd; // 使用新方法获取，减少花费的时间
+		$url = "https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=$surl&pwd=$Pwd"; // 使用新方法获取，减少花费的时间
 	} elseif ($uk != "" and  $shareid != "") {
 		$url = "https://pan.baidu.com/share/wxlist?clienttype=25&uk=$uk&shareid=$shareid&pwd=$Pwd"; // 兼容老版本链接
 	}
@@ -316,7 +297,7 @@ function get_BDCLND($surl, $Pwd, $uk = "", $shareid = "")
 				var_dump($header);
 				echo '</pre>';
 			}
-			return '';
+			return false;
 		}
 	}
 }
@@ -659,8 +640,9 @@ function AccountStatus(string $BDUSS, string $STOKEN)
  * @author Shelley Shyan
  * @copyright http://phparch.cn (Professional PHP Architecture)
  */
-function time2Units(int $time)
+function time2Units($time)
 {
+	$time = (int)$time;
 	$year   = floor($time / 60 / 60 / 24 / 365);
 	$time  -= $year * 60 * 60 * 24 * 365;
 	$month  = floor($time / 60 / 60 / 24 / 30);
@@ -862,5 +844,42 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 			array_splice($info, array_search('Use-Cache', $info), 1);
 			return CheckUpdate(true, true, $info);
 		}
+	}
+}
+function getip()
+{
+	if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) {
+		$ip = getenv("HTTP_CLIENT_IP");
+	} else if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown")) {
+		$ip = getenv("HTTP_X_FORWARDED_FOR");
+	} else if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown")) {
+		$ip = $_SERVER['REMOTE_ADDR'];
+	} else {
+		$ip = "unknown";
+	}
+	return htmlspecialchars($ip, ENT_QUOTES); // 防注入 #193
+}
+function sanitizeContent($content, $type = "mixed")
+{
+	switch ($type) {
+		case 'number':
+			$pattern = "([0-9])";
+			preg_match_all($pattern, $content, $matches);
+			$content =  join("", $matches[0]);
+			return $content;
+		case 'mixed':
+		default:
+			$chars = [
+				"\\",
+				"'",
+				"\"",
+				",",
+				" ",
+				"<script>"
+			];
+			foreach ($chars as $char) {
+				$content = str_replace($char, "", $content);
+			}
+			return $content;
 	}
 }

@@ -30,16 +30,16 @@ function validateForm() {
 	input.value = surl;
 	return true;
 }
-function dl(fs_id, timestamp, sign, randsk, share_id, uk, bdstoken, filesize) {
+function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
 	var form = $('<form method="post" action="?download" target="_blank"></form>');
 	form.append(`<input type="hidden" name="fs_id" value="${fs_id}"/><input type="hidden" name="time" value="${timestamp}"/><input type="hidden" name="sign" value="${sign}"/>
-		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="bdstoken" value="${bdstoken}"/><input type="hidden" name="filesize" value="${filesize}"/>`);
+		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
 	$(document.body).append(form); form.submit();
 }
-function OpenDir(path, pwd, share_id, uk, surl, randsk, sign, timestamp, bdstoken) {
+function OpenDir(path, pwd, share_id, uk, surl, randsk, sign, timestamp) {
 	var form = $('<form method="post"></form>');
 	form.append(`<input type="hidden" name="dir" value="${path}"/><input type="hidden" name="pwd" value="${pwd}"/><input type="hidden" name="surl" value="${surl}"/>
-	<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="sign" value="${sign}"/><input type="hidden" name="timestamp" value="${timestamp}"/><input type="hidden" name="bdstoken" value="${bdstoken}"/>`);
+	<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="sign" value="${sign}"/><input type="hidden" name="timestamp" value="${timestamp}"/>`);
 	$(document.body).append(form); form.submit();
 }
 function getIconClass(filename) {
