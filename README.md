@@ -13,24 +13,19 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
 本质就是用会员账号获取下载地址并发送给访客。
 
-📢在使用时请保留导航栏的 Made by Yuan_Tuo ，感谢！
-
-📢欢迎各位转发本项目到各大论坛，但请一定要标注原地址！
-
 ![speed.gif](https://i.loli.net/2021/04/04/pRD1hA8rKLeEbn9.gif)
 
 ## 💻Demo
 [暂不开放](http://imwcr.cn/api/bdwp/)<br />
-因站长学习紧张加上精力有限，演示站没有时间维护，故暂时关闭。
 
 ## 🚧Blacklists
 - http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259，[网站快照](https://web.archive.org/web/20210125182649/http://www.dupan.cc/)）
 
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
-- http://wp.nanmu.cool/ 2.1.8版本 注：站长拒不修改
 - https://bd.fkxz.cn/ 赞助版
-- http://baidu.mfs-2020.com/ 2.2.0版本
 - http://pan.10zv.com/ 2.2.0版本
+<!-- - http://wp.nanmu.cool/ 2.1.8版本 注：站长拒不修改 -->
+<!-- - http://baidu.mfs-2020.com/ 2.2.0版本 -->
 <!-- - https://pan.vxians.tk/ 暂时无法访问 -->
 <!-- - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码 -->
 <!-- - https://bd.pkqjsq.top/ 1.4.3版本 -->
@@ -40,8 +35,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 <!-- - https://www.bdwp.cf/ 1.4.3版本 -->
 
 以上网站使用本项目源码，未与作者联系而删除作者信息。<br />
-版权信息可添加**Github项目地址**或**我个人主页地址**，内容可自定，但访客**必须可见**。<br />
-**那些把文字颜色和背景改成一样的站长，有意思吗？**
+版权信息可添加 **Github项目地址** 或 **我个人主页地址**，内容可自定，但访客 **必须可见** 。<br />
 
 ## 📌Tips
 - 使用了 `Curl`，使用前请确认安装了Curl及其PHP插件
@@ -69,6 +63,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 安装完成后可直接使用，站长可进入settings.php中进行相关设置。<br />
 获取 Cookie 可以通过浏览器直接获取（操作方法见视频），或者通过这个浏览器插件获取：[GetBaiduPanCookies](https://github.com/dylanbai8/GetBaiduPanCookies)。<br />
+**获取完成后，请不要退出登录，这会使获取的 Cookies 失效**<br />
 在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**。<br />
 
 ## 📦New Changes
@@ -82,20 +77,13 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 [查看更多](Update.md)
 
-## 💴Donate
-<img src="https://imwcr.cn/resources/img/donate.jpg" width="400"/>
-
-[捐赠作者](https://imwcr.cn/?donate)
-
 ## 💡Contact
 - 项目作者：Yuan_Tuo
 - 作者首页：https://imwcr.cn/
-<!--
 - 作者邮箱：yuantuo666@gmail.com
 - Telegram：
   - [@yuantuo666](https://t.me/yuantuo666)
   - [Telegram频道](https://t.me/baiduwp_php)
--->
 - 合作者：LC @lc6464
   - [个人网站](https://lcwebsite.cn/ "LC的网站")
   - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
