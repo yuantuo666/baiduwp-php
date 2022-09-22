@@ -81,9 +81,9 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 - 项目作者：Yuan_Tuo
 - 作者首页：https://imwcr.cn/
 - 作者邮箱：yuantuo666@gmail.com
-- Telegram：
+<!--- Telegram：
   - [@yuantuo666](https://t.me/yuantuo666)
-  - [Telegram频道](https://t.me/baiduwp_php)
+  - [Telegram频道](https://t.me/baiduwp_php)-->
 - 合作者：LC @lc6464
   - [个人网站](https://lcwebsite.cn/ "LC的网站")
   - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
