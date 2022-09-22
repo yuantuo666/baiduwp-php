@@ -18,8 +18,10 @@ if ((isset($_POST["fs_id"]) &&
     isset($_POST["sign"]) &&
     isset($_POST["randsk"]) &&
     isset($_POST["share_id"]) &&
-    isset($_POST["uk"])) !== true)
+    isset($_POST["uk"])) !== true) {
     dl_error("参数有误", "POST 传参出现问题！请不要自行构建表单提交！"); // 参数不齐
+    exit;
+}
 
 $ip = sanitizeContent(getip());
 $isipwhite = FALSE; //初始化 防止报错
@@ -199,9 +201,10 @@ if ($json4["errno"] == 0) {
                     }
                     echo '<hr />';
                     $DownloadLinkAvailableTime = (is_int(DownloadLinkAvailableTime)) ? DownloadLinkAvailableTime : 8;
+                    $Language_DownloadLink = Language["DownloadLink"];
                     if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
                     echo "<p class=\"card-text\"><a id=\"http\" href=\"http://$realLink\" style=\"display: none;\">下载链接</a>"
-                        . "<a id=\"https\" data-qrcode-attr=\"href\" data-qrcode-level=\"L\" href=\"https://$realLink\" target=\"_blank\" rel=\"nofollow noopener noreferrer\">${Language["DownloadLink"]}（"
+                        . "<a id=\"https\" data-qrcode-attr=\"href\" data-qrcode-level=\"L\" href=\"https://$realLink\" target=\"_blank\" rel=\"nofollow noopener noreferrer\">$Language_DownloadLink （"
                         . (((int)$size < 52428800) ? '无需' : '需要') . "设置 UA，$DownloadLinkAvailableTime 小时内有效）</a></p>";
                     ?>
                     <p class="card-text">

@@ -13,4 +13,4 @@
  *
  */
 
-$programVersion_Updater = "2.2.1";
+$programVersion_Updater = "2.2.2";

@@ -172,6 +172,23 @@ function getSign(string $surl, $randsk, $uk = "", $shareid = "")
 		return 1;
 	}
 }
+function GetSignCore(string $surl)
+{
+	$url = "https://pan.baidu.com/share/tplconfig?surl=${surl}&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+	$header = [
+		"User-Agent: netdisk",
+		"X-Download-From: baiduyun",
+	];
+	$result = get($url, $header);
+	$result = json_decode($result, true, 512, JSON_BIGINT_AS_STRING);
+	if (($result["errno"] ?? 1) == 0) {
+		$sign = $result["data"]["sign"];
+		$timestamp = $result["data"]["timestamp"];
+		return [0, $sign, $timestamp];
+	} else {
+		return [-1, $result["show_msg"] ?? ""];
+	}
+}
 function FileList($sign)
 {
 	if ($sign === 1) return 1;
@@ -203,7 +220,8 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 
 	$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
 
-	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . urldecode($randsk) . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
+	if (strstr($randsk, "%") != false) $randsk = urldecode($randsk);
+	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . $randsk . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
 	$header = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
 		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";",
@@ -337,7 +355,7 @@ function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password)
 	$Root = ($IsRoot) ? "1" : "0";
 	$Dir = urlencode($Dir);
 	$Data = "shorturl=$Shorturl&dir=$Dir&root=$Root&pwd=$Password&page=1&num=1000&order=time";
-	$header = array("User-Agent: netdisk", "Referer: https://pan.baidu.com/disk/home");
+	$header = ["User-Agent: netdisk", "Cookie: BDUSS=" . BDUSS, "Referer: https://pan.baidu.com/disk/home"];
 	$result = json_decode(post($Url, $Data, $header), true);
 	if (DEBUG) {
 		echo '<pre>GetList():';
@@ -882,4 +900,11 @@ function sanitizeContent($content, $type = "mixed")
 			}
 			return $content;
 	}
+}
+function decodeSceKey($seckey)
+{
+	$seckey = str_replace("-", "+", $seckey);
+	$seckey = str_replace("~", "=", $seckey);
+	$seckey = str_replace("_", "/", $seckey);
+	return $seckey;
 }

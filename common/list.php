@@ -21,9 +21,21 @@ $surl = (!empty($dir)) ? "1" . sanitizeContent($_POST["surl"]) : sanitizeContent
 $surl_1 = substr($surl, 1); //不含1
 
 if (WECHAT_MOD) {
+	$dir = base64_decode($_POST["dir"] ?? "");
 	$Filejson = GetList($surl, $dir, $IsRoot, $pwd); // 解析子目录时，需添加1
 	if ($Filejson["errno"] == 0) { // 一种新的解析方法，暂未完工
 		// 解析正常
+
+		$sign = sanitizeContent($_POST["sign"] ?? "");
+		$timestamp = sanitizeContent($_POST["timestamp"] ?? "");
+		if ($sign == "" || $timestamp == "") {
+			// 计算 sign 和 timestamp
+			[$status, $sign, $timestamp] = GetSignCore($surl);
+			if ($status != 0) {
+				dl_error("链接错误", "无法正常获取文件夹有关信息。\r\n$sign");
+				exit;
+			}
+		}
 		if (!$IsRoot) {
 			//文件夹页面
 			$filecontent = "<nav aria-label=\"breadcrumb\"><ol class=\"breadcrumb my-4\">"
@@ -32,10 +44,12 @@ if (WECHAT_MOD) {
 			for ($i = 1; $i <= count($dir_list) - 2; $i++) {
 				if ($i == 1 and strstr($dir_list[$i], "sharelink")) continue;
 				$fullsrc = strstr($dir, $dir_list[$i], true) . $dir_list[$i];
+				$fullsrc = base64_encode($fullsrc);
 				$filecontent .= "<li class=\"breadcrumb-item\"><a href=\"javascript:OpenDir('$fullsrc','$pwd','','','$surl_1','','','','');\">{$dir_list[$i]}</a></li>";
 			}
 			$filecontent .= "<li class=\"breadcrumb-item active\">{$dir_list[$i]}</li>";
 		} else {
+			// 根目录页面
 			$filecontent = "<nav aria-label=\"breadcrumb\"><ol class=\"breadcrumb my-4\"><li class=\"breadcrumb-item\">${Language["AllFiles"]}</li>";
 		}
 		$filecontent .= "<li class=\"ml-auto\">[微信API] 已全部加载，共" . count($Filejson["data"]["list"]) . "个</li></ol></nav>";
@@ -48,19 +62,30 @@ if (WECHAT_MOD) {
 			$char_size = formatSize((float)$file["size"]);
 			$filename = htmlspecialchars($file["server_filename"], ENT_QUOTES);
 			$path = base64_encode($file["path"]);
-			if ($file["isdir"] == 0)
-				$filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-file mr-2\></i>"
-					. "<a href=\"{$file["dlink"]}\" target=\"_blank\">$filename</a>"
-					. "<span class=\"float-right\">$char_size</span></li>";
-			else $filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-folder mr-2\"></i>"
-				. "<a href=\"javascript:OpenDir('$path','$pwd ','','','$surl_1','','','','');\">$filename</a><span class=\"float-right\"></span></li>";
+			$randsk = urlencode(decodeSceKey($Filejson["data"]["seckey"]));
+			$shareid = sanitizeContent($Filejson["data"]["shareid"], "number");
+			$uk = sanitizeContent($Filejson["data"]["uk"], "number");
+
+			// (path, pwd, share_id, uk, surl, randsk, sign, timestamp)
+			if ($file["isdir"] == 0) {
+				$dlink = addslashes($file["dlink"]);
+				if ($size <= 3000000)
+					$filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-file mr-2\"></i>"
+						. "<a href=\"$dlink\" target=\"_blank\">$filename</a>"
+						. "<span class=\"float-right\">$char_size</span></li>";
+				else
+					$filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-file mr-2\"></i>"
+						. "<a href=\"javascript:confirmdl('$fs_id','$timestamp','$sign','$randsk','$shareid','$uk');\">$filename</a>"
+						. "<span class=\"float-right\">$char_size</span></li>";
+			} else $filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-folder mr-2\"></i>"
+				. "<a href=\"javascript:OpenDir('$path','$pwd','$shareid','$uk','$surl_1','$randsk','$sign','$timestamp');\">$filename</a><span class=\"float-right\"></span></li>";
 		}
 		echo $filecontent . "</ul></div>";
 
 		// exit;
 	} else {
 		// 解析异常
-		$ErrorCode = $Filejson["errtype"];
+		$ErrorCode = $Filejson["errtype"] ?? 999;
 		$ErrorMessage = [
 			"mis_105" => "你所解析的文件不存在~",
 			"mispw_9" => "验证码错误",
@@ -118,7 +143,7 @@ if (WECHAT_MOD) {
 			$path = base64_encode($file["path"]);
 
 			if ($file["isdir"] === 0) $filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-file mr-2\"></i>"
-				. "<a href=\"javascript:confirmdl('$fs_id','$timestamp','$sign','$encode_randsk','$shareid','$uk','$size');\">$filename</a>"
+				. "<a href=\"javascript:confirmdl('$fs_id','$timestamp','$sign','$encode_randsk','$shareid','$uk');\">$filename</a>"
 				. "<span class=\"float-right\">$char_size</span></li>";
 			else $filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-folder mr-2\"></i>"
 				. "<a href=\"javascript:OpenDir('$path','$pwd','$shareid','$uk','$surl_1','$encode_randsk','$sign','$timestamp');\">$filename</a><span class=\"float-right\"></span></li>";
@@ -184,7 +209,7 @@ if (WECHAT_MOD) {
 					$path = base64_encode($file["path"]);
 
 					if ($file["isdir"] === 0) $filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-file mr-2\"></i>"
-						. "<a href=\"javascript:confirmdl('$fs_id','$timestamp','$sign','$encode_randsk','$shareid','$uk','$size');\">$filename</a>"
+						. "<a href=\"javascript:confirmdl('$fs_id','$timestamp','$sign','$encode_randsk','$shareid','$uk');\">$filename</a>"
 						. "<span class=\"float-right\">$char_size</span></li>";
 					else $filecontent .= "<li class=\"list-group-item border-muted text-muted py-2\"><i class=\"far fa-folder mr-2\"></i>"
 						. "<a href=\"javascript:OpenDir('$path','$pwd','$shareid','$uk','$surl_1','$encode_randsk','$sign','$timestamp');\">$filename</a><span class=\"float-right\"></span></li>";

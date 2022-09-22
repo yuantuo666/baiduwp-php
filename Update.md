@@ -1,4 +1,13 @@
 # Update
+### `2.2.1` 版本：
+- 更新日期：2022-09-17
+- 修改内容：
+  - ⚠错误修复
+    - 修复 [#191 Possible SQLI and XSS vulnerabilities](https://github.com/yuantuo666/baiduwp-php/issues/191)
+    - 修复 [#160 【BUG 反馈】文件名中的 ' 没有转义](https://github.com/yuantuo666/baiduwp-php/issues/160)
+  - ♻代码优化
+    - 代码结构调整
+
 ### `2.2.0` 版本：
 - 更新日期：2021-09-21
 - 修改内容：
