@@ -72,9 +72,9 @@ function OpenRoot(surl, pwd) {
 }
 function Getpw() {
 	var link = document.forms["form1"]["surl"].value;
-	var pw = link.match(/提取码.? *(\w{4})/);
+	var pw = link.match(/((?<=pwd=).{4})/);
 	if (pw != null) {
-		document.forms["form1"]["pwd"].value = pw[1];
+		document.forms["form1"]["pwd"].value = pw; //typeof(pw)=="object" ? pw[1] : pw; //check if pw is array
 	}
 }
 
