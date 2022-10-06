@@ -83,6 +83,7 @@ if (DEBUG) {
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/@keeex/qrcodejs-kx"></script>
+	<script src="http://filecxx.com/script/create_filec_address.js"></script>
 	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
 	<script src="static/functions.js?v=<?php echo programVersion; ?>"></script>
 	<script defer src="static/ready.js?v=<?php echo programVersion; ?>"></script>

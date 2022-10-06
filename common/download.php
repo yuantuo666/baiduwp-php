@@ -209,7 +209,21 @@ if ($json4["errno"] == 0) {
                     ?>
                     <p class="card-text">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
+                        <a href="" id="filecxx" style="display: none;"><?php echo Language["SendToFilecxx"]; ?></a>
                     </p>
+                    <script>
+                        try {
+                            let filec_address = create_fileu_address({
+                                uri: "https://<?php echo $realLink; ?>",
+                                user_agent: "LogStatistic",
+                                file_name: "<?php echo $filename; ?>"
+                            });
+                            $("#filecxx").attr("href", filec_address);
+                            $("#filecxx").show();
+                        } catch (e) {
+                            $("#filecxx").hide();
+                        }
+                    </script>
                     <p class="card-text"><a href="?help" target="_blank"><?php echo Language["DownloadLink"] . Language["HelpButton"]; ?>（必读）</a></p>
                     <p class="card-text"><?php echo Language["DownloadTip"]; ?></p>
 
