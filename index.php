@@ -14,7 +14,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.2.2";
+$programVersion_Index = "2.2.3";
 session_start();
 define('init', true);
 if (version_compare(PHP_VERSION, '7.0.0', '<')) {

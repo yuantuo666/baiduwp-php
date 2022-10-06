@@ -14,8 +14,6 @@ function validateForm() {
 	if (link == null || link === "") { input.focus(); Swal.fire("提示", "请填写分享链接", "info"); return false; }
 	var uk = link.match(/uk=(\d+)/), shareid = link.match(/shareid=(\d+)/);
 	if (uk != null && shareid != null) {
-		// input.focus(); Swal.fire("提示", "填入的分享是老版本分享链接，请保存到网盘重新分享后重试。", "info"); return false;
-		// 后端没有处理老版本链接
 		input.value = "";
 		$("form").append(`<input type="hidden" name="uk" value="${uk[1]}"/><input type="hidden" name="shareid" value="${shareid[1]}"/>`);
 		return true;
@@ -73,8 +71,11 @@ function OpenRoot(surl, pwd) {
 function Getpw() {
 	var link = document.forms["form1"]["surl"].value;
 	var pw = link.match(/提取码.? *(\w{4})/);
+	var pw2 = link.match(/pwd=(\w{4})/); // support new version of share link; thanks to #216
 	if (pw != null) {
 		document.forms["form1"]["pwd"].value = pw[1];
+	} else if (pw2 != null) {
+		document.forms["form1"]["pwd"].value = pw2[1];
 	}
 }
 

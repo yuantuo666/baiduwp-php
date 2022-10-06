@@ -177,7 +177,7 @@ function GetSignCore(string $surl)
 	$url = "https://pan.baidu.com/share/tplconfig?surl=${surl}&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
 	$header = [
 		"User-Agent: netdisk",
-		"X-Download-From: baiduyun",
+		"Cookie: BDUSS=" . SVIP_BDUSS . "; STOKEN=" . SVIP_STOKEN,
 	];
 	$result = get($url, $header);
 	$result = json_decode($result, true, 512, JSON_BIGINT_AS_STRING);
