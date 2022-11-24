@@ -196,6 +196,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($IsConfirmDownload, 'IsConfirmDownload', true);
 			getConfig($Footer, 'Footer');
 
+			getConfig($Cookie, 'Cookie');
 			getConfig($BDUSS, 'BDUSS');
 			getConfig($STOKEN, 'STOKEN');
 			getConfig($SVIP_BDUSS, 'SVIP_BDUSS');
@@ -228,6 +229,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				<h4 class="alert-heading">安装提示</h4>
 				<hr>
 				<p>为减少一些不必要的错误，请仔细阅读此安装提示。</p>
+				<p style="color: red;">因百度对 API 进行修改，更新版本后需要设置完整的 Cookie 参数，可通过 抓包 获取。</p>
 				<p>建议小白使用宝塔面板，保证 PHP 版本 ≥ 7.0.0 即可，其他保持默认设置即可完美使用本项目。</p>
 
 				<h5>初次安装时请检查：</h5>
@@ -363,6 +365,15 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<hr />
 						<h5 class="card-title">解析账号设置</h5>
 						<p>需要在此设置账号的 cookie ，获取 cookie 方法见 <a href="https://pandownload.com/faq/cookie.html">PD官网</a></p>
+						<div class="form-group row">
+							<label class="col-sm-2 col-form-label" style="color: red;">普通账号完整 Cookie</label>
+							<div class="col-sm-10">
+								<input class="form-control" name="Cookie" placeholder="例：PANWEB=1; newlogin=1; BIDUPSID=326C4AD1E1521*********7151;……" value="<?php echo $Cookie; ?>">
+								<small class="form-text">因百度对 API 进行修改，更新版本后需要设置完整的 Cookie 参数，可通过 网页版抓包 获取。</small>
+								<small class="form-text">获取方法：使用 Edge 浏览器打开百度网盘网页版，按下 F12 打开开发者工具，选择 网络 选项卡，刷新页面，找到一个 请求 URL 为 pan.baidu.com 开头的请求，在请求的详细信息页面往下滑找到 Cookie 参数，右键复制值后粘贴到此处即可。</small>
+								<small><a href="https://blog.imwcr.cn/2022/11/24/%e5%a6%82%e4%bd%95%e6%8a%93%e5%8c%85%e8%8e%b7%e5%8f%96%e7%99%be%e5%ba%a6%e7%bd%91%e7%9b%98%e7%bd%91%e9%a1%b5%e7%89%88%e5%ae%8c%e6%95%b4-cookie/">图文教程</a></small>
+							</div>
+						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">普通账号BDUSS</label>
 							<div class="col-sm-10">
@@ -616,7 +627,12 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								Swal.showLoading();
 								USING_DB = $("input[name='USING_DB']:checked").val();
 								ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
+								Cookie = $("input[name='Cookie']").val().length;
 
+								if (Cookie < 6) {
+									Swal.fire("普通账号完整 Cookie 设置错误", "因百度对 API 进行修改，更新版本后需要设置完整的 Cookie 参数，可通过 网页版抓包 获取。", "warning");
+									return 0;
+								}
 								if (ADMIN_PASSWORDLength < 6) {
 									// 密码过短
 									Swal.fire("密码过短", "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。", "warning");
@@ -662,6 +678,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$IsConfirmDownload = (!empty($_POST["IsConfirmDownload"])) ? $_POST["IsConfirmDownload"] : "true";
 				$Footer = (!empty($_POST["Footer"])) ? $_POST["Footer"] : "";
 
+				$Cookie = (!empty($_POST["Cookie"])) ? $_POST["Cookie"] : "";
 				$BDUSS = (!empty($_POST["BDUSS"])) ? $_POST["BDUSS"] : "";
 				$STOKEN = (!empty($_POST["STOKEN"])) ? $_POST["STOKEN"] : "";
 				$SVIP_BDUSS = (!empty($_POST["SVIP_BDUSS"])) ? $_POST["SVIP_BDUSS"] : "";
@@ -727,6 +744,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<IsConfirmDownload>', $IsConfirmDownload, $update_config);
 				$update_config = str_replace('<Footer>', $Footer, $update_config);
 
+				$update_config = str_replace('<Cookie>', $Cookie, $update_config);
 				$update_config = str_replace('<BDUSS>', $BDUSS, $update_config);
 				$update_config = str_replace('<STOKEN>', $STOKEN, $update_config);
 				$update_config = str_replace('<SVIP_BDUSS>', $SVIP_BDUSS, $update_config);

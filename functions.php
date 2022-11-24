@@ -224,7 +224,7 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . $randsk . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
 	$header = array(
 		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-		"Cookie: BDUSS=" . BDUSS . ";BDCLND=" . $randsk . ";",
+		"Cookie: " . Cookie,
 		"Referer: https://pan.baidu.com/disk/home"
 	);
 	$result = json_decode(post($url, $data, $header), true);
