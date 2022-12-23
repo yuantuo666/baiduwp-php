@@ -75,7 +75,7 @@ require("./common/invalidCheck.php");
 	<?php } ?>
 	<script>
 		// check if this site is in black list
-		let blacklist = ["www.pojiewo.com", "bd.fkxz.cn", "pan.10zv.com"];
+		let blacklist = ["www.pojiewo.com", "bd.fkxz.cn"];
 		if (blacklist.includes(document.domain)) {
 			alert("当前网站在 baiduwp-php 项目的黑名单中，即将跳转到项目 Github 仓库");
 			window.location.href = "https://github.com/yuantuo666/baiduwp-php";

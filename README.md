@@ -23,7 +23,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 - http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
 - https://bd.fkxz.cn/ 赞助版
-- http://pan.10zv.com/ 2.2.0版本
+<!-- - http://pan.10zv.com/ 2.2.0版本 -->
 <!-- - http://wp.nanmu.cool/ 2.1.8版本 注：站长拒不修改 -->
 <!-- - http://baidu.mfs-2020.com/ 2.2.0版本 -->
 <!-- - https://pan.vxians.tk/ 暂时无法访问 -->
