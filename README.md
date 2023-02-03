@@ -3,8 +3,6 @@
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供大家学习参考，严禁商业用途
 
-由于百度网盘修改分享页面JavaScript代码，导致 `2.1.3` 及以前版本失效。详细信息参见[#93](https://github.com/yuantuo666/baiduwp-php/issues/93)
-
 由于百度网盘修改分享下载接口，导致所有旧版本失效，请更新至 `2.2.5` 或更新版本体验本项目。<br/>
 
 <div align="center"><a href="https://www.bilibili.com/video/BV1N5411A77n"><img src="https://i.loli.net/2021/04/04/9NJ2lC4T78o1XmZ.png" width="500"><br /><b>点此查看本项目安装、配置、使用视频教程</b></a></div>
@@ -13,10 +11,13 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
 本质就是用会员账号获取下载地址并发送给访客。
 
-![speed.gif](https://i.loli.net/2021/04/04/pRD1hA8rKLeEbn9.gif)
-
 ## 💻Demo
-[暂不开放](http://imwcr.cn/api/bdwp/)<br />
+[点此前往](https://imwcr.cn/api/bdwp/)<br />
+
+![浅色及英文模式](https://s2.loli.net/2023/02/04/cs1EtFXpHDPS2AB.png)
+![首页](https://s2.loli.net/2023/02/04/fJlru3yj6b4MVE1.png)
+![文件列表](https://s2.loli.net/2023/02/04/hL2pDEyHQFb6BKR.png)
+![解析详情](https://s2.loli.net/2023/02/04/GZBsmz6xgShjuA2.png)
 
 ## 🚧Blacklists
 - http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259，[网站快照](https://web.archive.org/web/20210125182649/http://www.dupan.cc/)）
@@ -38,7 +39,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 版权信息可添加 **Github项目地址** 或 **我个人主页地址**，内容可自定，但访客 **必须可见** 。<br />
 
 ## 📌Tips
-- 使用了 `Curl`，使用前请确认安装了Curl及其PHP插件
+- 使用了 `Curl`，使用前请确认安装了Curl及其PHP插件（导致问题的主要原因）
 - 使用了 `SESSION`，注意 **PHP 访问系统文件（夹）权限** 问题
 - 仅支持 **PHP 7 和 7+**！
 - 一般情况下网页版不会出现问题，第一次使用就失败一般是**设置的问题**。
@@ -91,6 +92,12 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 如果是**设置账号的 Cookies（BDUSS 和 STOKEN）**及**配置环境**等方面的问题，请尽可能自行解决！[Google](https://www.google.com/ "谷歌") [Bing](https://cn.bing.com/ "必应")<br />
 
+## 💰Donate
+- 前往 [Demo](https://imwcr.cn/api/bdwp/) 可查看 2023.01.26 及以前捐赠记录。
+
+- 前往 [爱发电](https://afdian.net/a/yuantuo666) 可为此项目捐赠。
+
+<a href="https://afdian.net/a/yuantuo666"><img src="https://imwcr.cn/api/bdwp/thanks.png" width="350"><br /></a>
 
 ## 🔔Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "baiduwp 项目")
