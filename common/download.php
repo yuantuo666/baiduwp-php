@@ -10,7 +10,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-require("./common/invalidCheck.php");
+require_once("./common/invalidCheck.php");
 if (!CheckPassword(true)) dl_error(Language["PasswordError"], "密码错误或超时，请返回首页重新验证密码。"); // 密码错误
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') dl_error("方法错误", "请不要直接访问此页面或使用 GET 方式访问！"); // 方法错误
 if ((isset($_POST["fs_id"]) &&

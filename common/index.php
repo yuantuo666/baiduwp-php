@@ -10,7 +10,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-require("./common/invalidCheck.php");
+require_once("./common/invalidCheck.php");
 ?>
 
 <div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">

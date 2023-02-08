@@ -10,7 +10,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-require("./common/invalidCheck.php");
+require_once("./common/invalidCheck.php");
 echo '<script>setTimeout(() => Swal.fire("' . Language["TipTitle"] . '","' . Language["TimeoutTip"] . '","info"), 300000);</script>';
 CheckPassword();
 // $surl = $_POST["surl"]; // 含有1

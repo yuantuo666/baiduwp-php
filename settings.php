@@ -12,28 +12,9 @@
  */
 session_start();
 define('init', true);
-if (version_compare(PHP_VERSION, '7.0.0', '<')) {
-	http_response_code(503);
-	header('Content-Type: text/plain; charset=utf-8');
-	header('Refresh: 5;url=https://www.php.net/downloads.php');
-	die("HTTP 503 服务不可用！\r\nPHP 版本过低！无法正常运行程序！\r\n请安装 7.0.0 或以上版本的 PHP！\r\n将在五秒内跳转到 PHP 官方下载页面！");
-}
-if (!file_exists('functions.php')) {
-	http_response_code(503);
-	header('Content-Type: text/plain; charset=utf-8');
-	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
-	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
-}
-// 导入配置和函数
-if (!file_exists('config.php')) {
-	http_response_code(503);
-	header('Content-Type: text/plain; charset=utf-8');
-	header('Refresh: 5;url=install.php');
-	die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
-} else {
-	require('config.php');
-}
-require('functions.php');
+require('./common/invalidCheck.php');
+require('config.php');
+require('./common/functions.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');

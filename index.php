@@ -17,18 +17,13 @@
 $programVersion_Index = "2.2.5";
 session_start();
 define('init', true);
-if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+if (!file_exists('./common/invalidCheck.php')) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
-	header('Refresh: 5;url=https://www.php.net/downloads.php');
-	die("HTTP 503 服务不可用！\r\nPHP 版本过低！无法正常运行程序！\r\n请安装 7.0.0 或以上版本的 PHP！\r\n将在五秒内跳转到 PHP 官方下载页面！");
+	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
+	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并进入此页面安装！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
-if (!file_exists('config.php')) {
-	http_response_code(503);
-	header('Content-Type: text/plain; charset=utf-8');
-	header('Refresh: 5;url=install.php');
-	die("HTTP 503 服务不可用！\r\n暂未安装此程序！\r\n将在五秒内跳转到安装程序！");
-}
+require('./common/invalidCheck.php');
 require('config.php');
 if ($programVersion_Index !== programVersion) {
 	http_response_code(503);
@@ -47,8 +42,8 @@ if (USING_DB == false and SVIPSwitchMod != 0) {
 $system_start_time = microtime(true);
 // 导入配置和函数
 
-require('language.php');
-require('functions.php');
+require('./common/language.php');
+require('./common/functions.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
@@ -87,35 +82,30 @@ if (DEBUG) {
 	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
 	<script src="static/functions.js?v=<?php echo programVersion; ?>"></script>
 	<script defer src="static/ready.js?v=<?php echo programVersion; ?>"></script>
-	<?php
-	if (isset($_POST["surl"])) {
-		echo '<script>';
-		if (USING_DB and IsConfirmDownload) {
-			$Language = Language;
-			$JSCode['echo'](
-				<<<Function
-function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk) {
-	Swal.fire({
-		title: "{$Language["ConfirmTitle"]}",
-		html: "{$Language["ConfirmText"]}",
-		icon: "warning",
-		showCancelButton: true,
-		confirmButtonText: "{$Language["ConfirmmButtonText"]}",
-		reverseButtons: true
-	}).then(function(e) {
-		if (e.isConfirmed) {
-			dl(fs_id, timestamp, sign, randsk, share_id, uk);
+	<script>
+		var USING_DB = <?php echo USING_DB ? true : false; ?>;
+		var IsConfirmDownload = <?php echo IsConfirmDownload ? true : false; ?>;
+
+		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk) {
+			if (!USING_DB || !IsConfirmDownload) {
+				dl(fs_id, timestamp, sign, randsk, share_id, uk)
+				return
+			}
+
+			Swal.fire({
+				title: "<?php echo $Language["ConfirmTitle"] ?>",
+				html: "<?php echo $Language["ConfirmText"] ?>",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "<?php echo $Language["ConfirmmButtonText"] ?>",
+				reverseButtons: true
+			}).then(function(e) {
+				if (e.isConfirmed) {
+					dl(fs_id, timestamp, sign, randsk, share_id, uk);
+				}
+			});
 		}
-	});
-}
-Function
-			);
-		} else {
-			echo 'let confirmdl = dl;';
-		}
-		echo '</script>';
-	}
-	?>
+	</script>
 </head>
 
 <body>
