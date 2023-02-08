@@ -14,14 +14,14 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.2.5";
+$programVersion_Index = "2.2.6";
 session_start();
 define('init', true);
 if (!file_exists('./common/invalidCheck.php')) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
-	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并进入此页面安装！\r\n将在五秒内跳转到 GitHub 储存库！");
+	die("HTTP 503 服务不可用！\r\n缺少相关文件！无法正常运行程序！\r\n请重新 Clone 项目并进入此页面安装！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
 require('./common/invalidCheck.php');
 require('config.php');
