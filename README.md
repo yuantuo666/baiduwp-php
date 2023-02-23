@@ -3,12 +3,12 @@
 PanDownload 网页复刻版，PHP 语言版<br/>
 本项目仅供学习参考，严禁商业用途<br/>
 
-
-由于百度网盘修改分享下载接口，导致所有旧版本失效，请更新至 `2.2.5` 或更新版本体验本项目。<br/>
-
 <div align="center"><a href="https://www.bilibili.com/video/BV1N5411A77n"><img src="https://i.loli.net/2021/04/04/9NJ2lC4T78o1XmZ.png" width="500"><br /><b>点此查看本项目安装、配置、使用视频教程</b></a></div>
 
-## 重要声明：项目中所涉及的接口均来自[百度官方](https://pan.baidu.com/union)，不涉及任何违法行为；但请不要将此项目用于商业用途，否则可能带来严重的后果。[中国裁判文书网《林蔚群提供侵入、非法控制计算机信息系统程序、工具罪一审刑事判决书》](https://wenshu.court.gov.cn/website/wenshu/181107ANFZ0BXSK4/index.html?docId=sdm5Qb3+eptZXYli7K6pxkuzRe++Lpf+6D1wFO17rcvApzo8iSsEbZ/dgBYosE2gsXAo9gkraFrIyNZhEOZTLb1tEqCCr7c0irDVWK+bNT809l9SFgw08n34cvDcjiHs)
+<h1> 重要声明：项目中所涉及的接口均来自<a href="https://pan.baidu.com/union">百度官方</a>，不涉及任何违法行为，本工具需要使用自己的百度网盘的SVIP账号才能获取下载链接，代码全部开源，仅供学习参考；请不要将此项目用于商业用途，否则可能带来严重的后果。<br />
+ 1. <a href="https://wenshu.court.gov.cn/website/wenshu/181107ANFZ0BXSK4/index.html?docId=sdm5Qb3+eptZXYli7K6pxkuzRe++Lpf+6D1wFO17rcvApzo8iSsEbZ/dgBYosE2gsXAo9gkraFrIyNZhEOZTLcchR1OkgXb06zm4EqFo5gfXvKzSXfjCg7s3jTcG+ypG">中国裁判文书网《林蔚群提供侵入、非法控制计算机信息系统程序、工具罪一审刑事判决书》</a><br />
+ 2. <a href="https://wenshu.court.gov.cn/website/wenshu/181107ANFZ0BXSK4/index.html?docId=YBxnFgDqvuAqHdQyp/Sg8Q8PO/kX2Ej8TmtEOh9d2AdVpX9Qxi5YzJ/dgBYosE2gsXAo9gkraFrIyNZhEOZTLb1tEqCCr7c0irDVWK+bNT9AqupYNfRiqH1vVaFmakha">中国裁判文书网《北京度友科技有限公司等与罗庆等不正当竞争纠纷一审民事判决书》</a>
+</h1>
 
 ## 🔎实现原理
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
@@ -96,6 +96,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 如果是**设置账号的 Cookies（BDUSS 和 STOKEN）**及**配置环境**等方面的问题，请尽可能自行解决！[Google](https://www.google.com/ "谷歌") [Bing](https://cn.bing.com/ "必应")<br />
 
 ## 💰Donate
+### 捐赠均为自愿，且捐赠后并不能获得任何额外服务，仅表示对作者的支持
+
 - 前往 [Demo](https://imwcr.cn/api/bdwp/) 可查看 2023.01.26 及以前捐赠记录。
 
 - 前往 [爱发电](https://afdian.net/a/yuantuo666) 可为此项目捐赠。
