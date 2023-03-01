@@ -5,41 +5,19 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 <div align="center"><a href="https://www.bilibili.com/video/BV1N5411A77n"><img src="https://i.loli.net/2021/04/04/9NJ2lC4T78o1XmZ.png" width="500"><br /><b>点此查看本项目安装、配置、使用视频教程</b></a></div>
 
-<h1> 重要声明：项目中所涉及的接口均来自<a href="https://pan.baidu.com/union">百度官方</a>，不涉及任何违法行为，本工具需要使用自己的百度网盘的SVIP账号才能获取下载链接，代码全部开源，仅供学习参考；请不要将此项目用于商业用途，否则可能带来严重的后果。<br />
- 1. <a href="https://wenshu.court.gov.cn/website/wenshu/181107ANFZ0BXSK4/index.html?docId=sdm5Qb3+eptZXYli7K6pxkuzRe++Lpf+6D1wFO17rcvApzo8iSsEbZ/dgBYosE2gsXAo9gkraFrIyNZhEOZTLcchR1OkgXb06zm4EqFo5gfXvKzSXfjCg7s3jTcG+ypG">中国裁判文书网《林蔚群提供侵入、非法控制计算机信息系统程序、工具罪一审刑事判决书》</a><br />
- 2. <a href="https://wenshu.court.gov.cn/website/wenshu/181107ANFZ0BXSK4/index.html?docId=YBxnFgDqvuAqHdQyp/Sg8Q8PO/kX2Ej8TmtEOh9d2AdVpX9Qxi5YzJ/dgBYosE2gsXAo9gkraFrIyNZhEOZTLb1tEqCCr7c0irDVWK+bNT9AqupYNfRiqH1vVaFmakha">中国裁判文书网《北京度友科技有限公司等与罗庆等不正当竞争纠纷一审民事判决书》</a>
-</h1>
-
 ## 🔎实现原理
 通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
 本质就是用会员账号获取下载地址并发送给访客。
 
-## 💻Demo
-[暂时关闭](https://imwcr.cn/api/bdwp/)<br />
+<h2> 重要声明：本项目是 <a href="https://github.com/TkzcM/baiduwp">baiduwp</a> 的 PHP 语言实现；项目中所涉及的接口均来自<a href="https://pan.baidu.com/union">百度官方</a>，不涉及任何违法行为，本工具需要使用自己的百度网盘SVIP账号才能获取下载链接，代码全部开源，仅供学习参考；请不要将此项目用于商业用途，否则可能带来严重的后果。<br />
+ 1. <a href="https://wenshu.court.gov.cn/website/wenshu/181107ANFZ0BXSK4/index.html?docId=sdm5Qb3+eptZXYli7K6pxkuzRe++Lpf+6D1wFO17rcvApzo8iSsEbZ/dgBYosE2gsXAo9gkraFrIyNZhEOZTLcchR1OkgXb06zm4EqFo5gfXvKzSXfjCg7s3jTcG+ypG">中国裁判文书网《林蔚群提供侵入、非法控制计算机信息系统程序、工具罪一审刑事判决书》</a><br />
+ 2. <a href="https://wenshu.court.gov.cn/website/wenshu/181107ANFZ0BXSK4/index.html?docId=YBxnFgDqvuAqHdQyp/Sg8Q8PO/kX2Ej8TmtEOh9d2AdVpX9Qxi5YzJ/dgBYosE2gsXAo9gkraFrIyNZhEOZTLb1tEqCCr7c0irDVWK+bNT9AqupYNfRiqH1vVaFmakha">中国裁判文书网《北京度友科技有限公司等与罗庆等不正当竞争纠纷一审民事判决书》</a>
+</h2>
 
 ![浅色及英文模式](https://s2.loli.net/2023/02/04/cs1EtFXpHDPS2AB.png)
 ![首页](https://s2.loli.net/2023/02/04/fJlru3yj6b4MVE1.png)
 ![文件列表](https://s2.loli.net/2023/02/04/hL2pDEyHQFb6BKR.png)
 ![解析详情](https://s2.loli.net/2023/02/04/GZBsmz6xgShjuA2.png)
-
-## 🚧Blacklists
-- http://www.dupan.cc/ （恶意篡改后台并加密，站长QQ33703259，[网站快照](https://web.archive.org/web/20210125182649/http://www.dupan.cc/)）
-
-- http://www.pojiewo.com/baidujx 1.4.2版本  注：此网站 **盗用** 其他网站的接口获取下载地址
-- https://bd.fkxz.cn/ 赞助版
-<!-- - http://pan.10zv.com/ 2.2.0版本 -->
-<!-- - http://wp.nanmu.cool/ 2.1.8版本 注：站长拒不修改 -->
-<!-- - http://baidu.mfs-2020.com/ 2.2.0版本 -->
-<!-- - https://pan.vxians.tk/ 暂时无法访问 -->
-<!-- - https://pan.xiaoshuyun.cn/ 1.4.3版本 无密码 -->
-<!-- - https://bd.pkqjsq.top/ 1.4.3版本 -->
-<!-- - http://pan.0ddt.com/ 1.0版本 -->
-<!-- - https://129.146.174.245/ 1.4.5版本 -->
-<!-- - https://pan.lie01.com/ 1.4.3版本 -->
-<!-- - https://www.bdwp.cf/ 1.4.3版本 -->
-
-以上网站使用本项目源码，未与作者联系而删除作者信息。<br />
-版权信息可添加 **Github项目地址** 或 **我个人主页地址**，内容可自定，但访客 **必须可见** 。<br />
 
 ## 📌Tips
 - 使用了 `Curl`，使用前请确认安装了Curl及其PHP插件（导致问题的主要原因）
@@ -52,40 +30,22 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - 耐心等待账号解封
   - 更换后台 SVIP 账号
   - 更换服务器 IP
-- 使用了较新的 JavaScript 和 CSS 特性，旧版浏览器对此的支持性很差，使用新版的现代浏览器才能正常使用！建议使用的浏览器：
-  - `Microsoft Edge 103+` [点此访问 Edge 官网](https://www.microsoft.com/zh-cn/edge)
-  - `Google Chrome 103+` [点此访问 Chrome 官网](https://www.google.cn/chrome/)
-  - `Firefox 102+` [点此访问 Firefox 官网](https://www.firefox.com.cn/)
 
 # 🔧Install & Setting
 [**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)
 
-首先Clone项目或进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件。<br />
-然后访问 `install.php` 文件并填写相关信息进行安装。<br />
-如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确。<br />
-最后点击提交即可。<br />
-
-安装完成后可直接使用，站长可进入settings.php中进行相关设置。<br />
-获取 Cookie 可以通过浏览器直接获取（操作方法见视频），或者通过这个浏览器插件获取：[GetBaiduPanCookies](https://github.com/dylanbai8/GetBaiduPanCookies)。<br />
-**获取完成后，请不要退出登录，这会使获取的 Cookies 失效**<br />
-在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**。<br />
-
-## 📦New Changes
-- 当前版本: `2.2.5`
-- 更新日期：2022-11-24
-- 修改内容：
-  - ⚠错误修复
-    - 修复 下载报错 9019 问题 #225 #227
-
-[查看更多](Update.md)
+1. 进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件
+2. 访问 `install.php` 文件并填写相关信息进行安装
+3. 如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确
+4. 最后点击提交
+5. 安装完成后可直接使用，可进入 `settings.php` 中进行相关设置
+6. 获取 Cookie 可以通过浏览器直接获取（操作方法见视频） **获取完成后，请不要退出登录，这会使获取的 Cookies 失效**
+7. 在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**
 
 ## 💡Contact
 - 项目作者：Yuan_Tuo
 - 作者首页：https://imwcr.cn/
-- 作者邮箱：yuantuo666@gmail.com
-<!--- Telegram：
-  - [@yuantuo666](https://t.me/yuantuo666)
-  - [Telegram频道](https://t.me/baiduwp_php)-->
+- 作者邮箱：yuantuo666@gmail.com (不答复百度网盘相关问题)
 - 合作者：LC @lc6464
   - [个人网站](https://lcwebsite.cn/ "LC的网站")
   - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
@@ -93,16 +53,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 如果遇到问题请先 **仔细阅读此文档** 、查看[视频教程](https://www.bilibili.com/video/BV1N5411A77n)
 以及查看[以前的议题](https://github.com/yuantuo666/baiduwp-php/issues)<br />
 
-如果是**设置账号的 Cookies（BDUSS 和 STOKEN）**及**配置环境**等方面的问题，请尽可能自行解决！[Google](https://www.google.com/ "谷歌") [Bing](https://cn.bing.com/ "必应")<br />
-
-## 💰Donate
-### 捐赠均为自愿，且捐赠后并不能获得任何额外服务，仅表示对作者的支持
-
-- 前往 [Demo](https://imwcr.cn/api/bdwp/) 可查看 2023.01.26 及以前捐赠记录。
-
-- 前往 [爱发电](https://afdian.net/a/yuantuo666) 可为此项目捐赠。
-
-<a href="https://afdian.net/a/yuantuo666"><img src="https://imwcr.cn/api/bdwp/thanks.png" width="350"><br /></a>
+如果是**设置账号的 Cookies（BDUSS 和 STOKEN）**及**配置环境**等方面的问题，请自行解决。
 
 ## 🔔Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "baiduwp 项目")
