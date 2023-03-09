@@ -54,6 +54,13 @@ $randsk = sanitizeContent($_POST["randsk"]); // character + number + '%'
 $share_id = sanitizeContent($_POST["share_id"], 'number'); // only number
 $uk = sanitizeContent($_POST["uk"], 'number'); // only number
 
+// check if the timestamp is valid
+if (time() - $timestamp > 300) {
+    // try to get the timestamp and sign
+    [$_status, $sign, $timestamp] = getSign("", $share_id, $uk);
+    if ($_status !== 0) echo "<script>console.log('超时，自动获取sign和timestamp失败, $sign');</script>";
+    else echo "<script>console.log('超时，自动获取sign和timestamp成功: $sign, $timestamp');</script>";
+}
 $json4 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk, APP_ID);
 if ($json4["errno"] !== 0) {
     $error = [
@@ -108,8 +115,12 @@ if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
     // 开始获取真实链接
     $headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . $SVIP_BDUSS . ';'); // 仅此处用到SVIPBDUSS
 
-    $getRealLink = head($dlink, $headerArray); // 禁止重定向
-    $getRealLink = strstr($getRealLink, "Location");
+    $header = head($dlink, $headerArray); // 禁止重定向
+    if (DEBUG) {
+        $body = get($dlink, $headerArray);
+        echo '<script>console.log("GET Real Link",' . json_encode(["header" => $header, "body" => $body]) . ')</script>';
+    }
+    $getRealLink = strstr($header, "Location");
     $getRealLink = substr($getRealLink, 10);
     $realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
     $usingcache = false;
@@ -161,122 +172,123 @@ if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
 }
 
 // 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
-if ($realLink == "") echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">'
-    . '<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p>'
-    . '<p class="card-text">请检查你是否在 <code>config.php</code> 中配置 <b>普通账号</b> 的 BDUSS 和 STOKEN！</p>'
-    . '<p class="card-text">未配置 或 普通账号失效均会导致失败！（账号失效的原因包括但不限于 退出登录、修改密码）</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
-else {
+if (!$realLink) {
+    echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">'
+        . '<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p>'
+        . '<p class="card-text">请检查在 <code>config.php</code> 中配置 <b>普通账号</b> 和 <b>SVIP账号</b> 的 BDUSS 和 STOKEN！</p>'
+        . '<p class="card-text">未配置 或 账号失效均会导致失败！（账号失效的原因包括但不限于 退出登录、修改密码）</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
+    die();
+}
 
-    // 记录下使用者ip，下次进入时提示
-    if (USING_DB and !$usingcache) {
-        $ptime = date("Y-m-d H:i:s");
-        $Sqlfilename = htmlspecialchars($filename, ENT_QUOTES); // 防止出现一些刁钻的文件名无法处理
-        $Sqlpath = htmlspecialchars($path, ENT_QUOTES);
-        $sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink','$ptime','$id')";
-        $mysql_query = mysqli_query($conn, $sql);
-        if ($mysql_query == false) {
-            // 保存错误
-            dl_error(Language["DatabaseError"], "数据库错误，请联系站长修复。");
-            exit;
-        }
+// 记录下使用者ip，下次进入时提示
+if (USING_DB and !$usingcache) {
+    $ptime = date("Y-m-d H:i:s");
+    $Sqlfilename = htmlspecialchars($filename, ENT_QUOTES); // 防止出现一些刁钻的文件名无法处理
+    $Sqlpath = htmlspecialchars($path, ENT_QUOTES);
+    $sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink','$ptime','$id')";
+    $mysql_query = mysqli_query($conn, $sql);
+    if ($mysql_query == false) {
+        // 保存错误
+        dl_error(Language["DatabaseError"], "数据库错误，请联系站长修复。");
+        exit;
     }
+}
 
 ?>
-    <div class="row justify-content-center">
-        <div class="col-md-7 col-sm-8 col-11">
-            <div class="alert alert-primary" role="alert">
-                <h5 class="alert-heading"><?php echo Language["DownloadLinkSuccess"]; ?></h5>
-                <hr />
-                <?php
-                if (USING_DB) {
-                    if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费解析次数。</p>";
-                    else echo "<p class=\"card-text\">服务器将保存下载地址" . DownloadLinkAvailableTime . "小时，时限内再次解析不消耗免费次数。</p>";
-                }
-                echo FileInfo($filename, $size, $md5, $server_ctime);
+<div class="row justify-content-center">
+    <div class="col-md-7 col-sm-8 col-11">
+        <div class="alert alert-primary" role="alert">
+            <h5 class="alert-heading"><?php echo Language["DownloadLinkSuccess"]; ?></h5>
+            <hr />
+            <?php
+            if (USING_DB) {
+                if ($usingcache) echo "<p class=\"card-text\">下载链接从数据库中提取，不消耗免费解析次数。</p>";
+                else echo "<p class=\"card-text\">服务器将保存下载地址" . DownloadLinkAvailableTime . "小时，时限内再次解析不消耗免费次数。</p>";
+            }
+            echo FileInfo($filename, $size, $md5, $server_ctime);
 
-                echo '<hr><p class="card-text">' . Language["Preview"] . '</p>';
-                if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic") {
+            echo '<hr><p class="card-text">' . Language["Preview"] . '</p>';
+            if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic") {
 
-                    $type = substr($filename, -4);
-                    if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
-                        echo '<img src="https://' . $realLink . '" class="img-fluid rounded" style="width: 100%;">';
-                    } elseif ($type == ".mp4") {
-                        echo '<video src="https://' . $realLink . '" controls="controls" style="width: 100%;">您的浏览器不支持播放此视频！</video>';
-                    } elseif ($type == ".mp3" || $type == ".wav") {
-                        echo '<audio src="https://' . $realLink . '" controls="controls" style="width: 100%;">您的浏览器不支持播放此音频！</audio>';
-                    } else {
-                        echo '<p class="card-text">' . Language["NotSupportWithUA"] . '</p>';
-                    }
+                $type = substr($filename, -4);
+                if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
+                    echo '<img src="https://' . $realLink . '" class="img-fluid rounded" style="width: 100%;">';
+                } elseif ($type == ".mp4") {
+                    echo '<video src="https://' . $realLink . '" controls="controls" style="width: 100%;">您的浏览器不支持播放此视频！</video>';
+                } elseif ($type == ".mp3" || $type == ".wav") {
+                    echo '<audio src="https://' . $realLink . '" controls="controls" style="width: 100%;">您的浏览器不支持播放此音频！</audio>';
                 } else {
-                    echo '<p class="card-text">' . Language["NotSupportWithoutUA"] . '</p>';
+                    echo '<p class="card-text">' . Language["NotSupportWithUA"] . '</p>';
                 }
-                echo '<hr />';
-                $DownloadLinkAvailableTime = (is_int(DownloadLinkAvailableTime)) ? DownloadLinkAvailableTime : 8;
-                $Language_DownloadLink = Language["DownloadLink"];
-                if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
-                echo "<p class=\"card-text\"><a id=\"http\" href=\"http://$realLink\" style=\"display: none;\">下载链接</a>"
-                    . "<a id=\"https\" data-qrcode-attr=\"href\" data-qrcode-level=\"L\" href=\"https://$realLink\" target=\"_blank\" rel=\"nofollow noopener noreferrer\">$Language_DownloadLink （"
-                    . (((int)$size < 52428800) ? '无需' : '需要') . "设置 UA，$DownloadLinkAvailableTime 小时内有效）</a></p>";
-                ?>
-                <p class="card-text">
-                    <a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
-                    <a href="" id="filecxx" style="display: none;"><?php echo Language["SendToFilecxx"]; ?></a>
-                </p>
-                <script>
-                    try {
-                        let filec_address = create_fileu_address({
-                            uri: "https://<?php echo $realLink; ?>",
-                            user_agent: "LogStatistic",
-                            file_name: "<?php echo $filename; ?>"
-                        });
-                        $("#filecxx").attr("href", filec_address);
-                        $("#filecxx").show();
-                    } catch (e) {
-                        $("#filecxx").hide();
-                    }
-                </script>
-                <p class="card-text"><a href="?help" target="_blank"><?php echo Language["DownloadLink"] . Language["HelpButton"]; ?>（必读）</a></p>
-                <p class="card-text"><?php echo Language["DownloadTip"]; ?></p>
+            } else {
+                echo '<p class="card-text">' . Language["NotSupportWithoutUA"] . '</p>';
+            }
+            echo '<hr />';
+            $DownloadLinkAvailableTime = (is_int(DownloadLinkAvailableTime)) ? DownloadLinkAvailableTime : 8;
+            $Language_DownloadLink = Language["DownloadLink"];
+            if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
+            echo "<p class=\"card-text\"><a id=\"http\" href=\"http://$realLink\" style=\"display: none;\">下载链接</a>"
+                . "<a id=\"https\" href=\"https://$realLink\" target=\"_blank\" rel=\"nofollow noopener noreferrer\">$Language_DownloadLink （"
+                . (((int)$size < 52428800) ? '无需' : '需要') . "设置 UA，$DownloadLinkAvailableTime 小时内有效）</a></p>";
+            ?>
+            <p class="card-text">
+                <a href="javascript:void(0)" data-toggle="modal" data-target="#SendToAria2"><?php echo Language["SendToAria2"]; ?>(Motrix)</a>
+                <a href="" id="filecxx" style="display: none;"><?php echo Language["SendToFilecxx"]; ?></a>
+            </p>
+            <script>
+                try {
+                    let filec_address = create_fileu_address({
+                        uri: "https://<?php echo $realLink; ?>",
+                        user_agent: "LogStatistic",
+                        file_name: "<?php echo $filename; ?>"
+                    });
+                    $("#filecxx").attr("href", filec_address);
+                    $("#filecxx").show();
+                } catch (e) {
+                    $("#filecxx").hide();
+                }
+            </script>
+            <p class="card-text"><a href="?help" target="_blank"><?php echo Language["DownloadLink"] . Language["HelpButton"]; ?>（必读）</a></p>
+            <p class="card-text"><?php echo Language["DownloadTip"]; ?></p>
 
-                <div class="modal fade" id="SendToAria2" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title"><?php echo Language["SendToAria2"]; ?> Json-RPC</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+            <div class="modal fade" id="SendToAria2" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><?php echo Language["SendToAria2"]; ?> Json-RPC</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <p><label class="control-label">RPC地址</label>
+                                    <input id="wsurl" class="form-control" value="ws://localhost:6800/jsonrpc">
+                                </p>
+                                <small>推送aria2默认配置:<b>ws://localhost:6800/jsonrpc</b><br />推送Motrix默认配置:<b>ws://localhost:16800/jsonrpc</b></small>
                             </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <p><label class="control-label">RPC地址</label>
-                                        <input id="wsurl" class="form-control" value="ws://localhost:6800/jsonrpc">
-                                    </p>
-                                    <small>推送aria2默认配置:<b>ws://localhost:6800/jsonrpc</b><br />推送Motrix默认配置:<b>ws://localhost:16800/jsonrpc</b></small>
-                                </div>
-                                <div class="form-group">
-                                    <p><label class="control-label">Token</label>
-                                        <input id="token" class="form-control" placeholder="没有请留空">
-                                    </p>
-                                </div>
-                                <small>填写的信息在推送成功后将会被自动保存。</small>
+                            <div class="form-group">
+                                <p><label class="control-label">Token</label>
+                                    <input id="token" class="form-control" placeholder="没有请留空">
+                                </p>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal"><?php echo Language["Send"]; ?></button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo Language["Close"]; ?></button>
-                            </div>
+                            <small>填写的信息在推送成功后将会被自动保存。</small>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="addUri()" data-dismiss="modal"><?php echo Language["Send"]; ?></button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo Language["Close"]; ?></button>
                         </div>
                     </div>
-                    <script>
-                        $(function() {
-                            if (localStorage.getItem('aria2wsurl') !== null)
-                                $('#wsurl').attr('value', localStorage.getItem('aria2wsurl'));
-                            if (localStorage.getItem('aria2token') !== null)
-                                $('#token').attr('value', localStorage.getItem('aria2token'));
-                        });
-                    </script>
                 </div>
+                <script>
+                    $(function() {
+                        if (localStorage.getItem('aria2wsurl') !== null)
+                            $('#wsurl').attr('value', localStorage.getItem('aria2wsurl'));
+                        if (localStorage.getItem('aria2token') !== null)
+                            $('#token').attr('value', localStorage.getItem('aria2token'));
+                    });
+                </script>
             </div>
         </div>
     </div>
-<?php }
+</div>

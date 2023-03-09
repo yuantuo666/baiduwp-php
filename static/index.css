@@ -9,8 +9,7 @@
 }
 
 .input-card {
-    position: relative;
-    top: 7.0em;
+    margin-top: 7.0em;
 }
 
 .card-header {
@@ -29,8 +28,7 @@ form button {
 }
 
 .alert {
-    position: relative;
-    top: 5em;
+    margin-top: 5em;
 }
 
 .alert-heading {
@@ -89,4 +87,8 @@ form button {
 .qrcode img {
     width: 150px;
     height: 150px;
+}
+
+.container.main {
+    margin-bottom: 5em;
 }

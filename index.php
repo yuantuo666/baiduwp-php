@@ -5,7 +5,7 @@
  *
  * 功能描述：使用百度 SVIP 账号获取真实下载地址，与 Pandownload 原版无关。
  *
- * 希望在使用时能够保留导航栏的 Made by Yuan_Tuo 感谢！
+ * 希望在使用时能够保留导航栏的 Github 感谢！
  *
  * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
  *
@@ -84,7 +84,7 @@ if (DEBUG) {
 	<script defer src="static/ready.js?v=<?php echo programVersion; ?>"></script>
 	<script>
 		var USING_DB = <?php echo USING_DB ? true : false; ?>;
-		var IsConfirmDownload = <?php echo IsConfirmDownload ? true : false; ?>;
+		var IsConfirmDownload = <?php echo IsConfirmDownload ? "true" : "false"; ?>;
 
 		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk) {
 			if (!USING_DB || !IsConfirmDownload) {
@@ -93,11 +93,11 @@ if (DEBUG) {
 			}
 
 			Swal.fire({
-				title: "<?php echo $Language["ConfirmTitle"] ?>",
-				html: "<?php echo $Language["ConfirmText"] ?>",
+				title: "<?php echo Language["ConfirmTitle"] ?>",
+				html: "<?php echo Language["ConfirmText"] ?>",
 				icon: "warning",
 				showCancelButton: true,
-				confirmButtonText: "<?php echo $Language["ConfirmmButtonText"] ?>",
+				confirmButtonText: "<?php echo Language["ConfirmmButtonText"] ?>",
 				reverseButtons: true
 			}).then(function(e) {
 				if (e.isConfirmed) {
@@ -123,14 +123,11 @@ if (DEBUG) {
 			</div>
 		</div>
 	</nav>
-	<div class="container">
+	<div class="container main">
 		<?php
 		if (DEBUG) {
-			echo '<pre>$_GET:';
-			var_dump($_GET);
-			echo '$_POST:';
-			var_dump($_POST);
-			echo '</pre>';
+			echo '<script>console.log("$_GET",' . json_encode($_GET) . ')</script>';
+			echo '<script>console.log("$_POST",' . json_encode($_POST) . ')</script>';
 		}
 		if (isset($_GET["help"])) echo Language["HelpPage"]; // 帮助页
 		elseif (isset($_GET["usersettings"])) require("./common/usersettings.php"); // 用户设置页面
@@ -144,7 +141,7 @@ if (DEBUG) {
 	<?php
 	$system_end_time = microtime(true);
 	$system_runningtime = $system_end_time - $system_start_time;
-	echo '<script>console.log("后端计算时间：' . $system_runningtime . '秒");</script>';
+	echo "<script>console.log('后端计算时间 $system_runningtime 秒');</script>";
 	?>
 </body>
 

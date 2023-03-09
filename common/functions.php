@@ -100,84 +100,38 @@ function formatSize(float $size, int $times = 0)
 	}
 }
 function CheckPassword(bool $IsReturnBool = false)
-{ // 校验密码
-	if (IsCheckPassword) { // 若校验密码
-		$return = false;
-		if (!isset($_POST["Password"])) { // 若未传入 Password
-			if (isset($_SESSION["Password"]) && $_SESSION["Password"] === Password) { // 若 SESSION 中密码正确
-				$return = true;
-			}
-		} else if ($_POST["Password"] === Password) { // 若传入密码正确
-			$_SESSION['Password'] = $_POST["Password"]; // 设置 SESSION
-			$return = true;
-		}
-		if ($IsReturnBool) { // 若 $IsReturnBool 为 true 则只返回 true/false，不执行 dl_error
-			return $return;
-		}
-		if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
-			global $system_start_time;
-			dl_error("密码错误", "请检查你输入的密码！");
-			echo Footer;
-			die('</div><script>console.log("后端计算时间：' . (microtime(true) - $system_start_time) . 's");</script></body></html>');
-		}
-	} else { // 若不校验密码则永远 true
+{
+	if (!IsCheckPassword) {
 		return true;
 	}
-}
-// 解析分享链接
-// 改用微信接口，不需要使用verifyPwd获取randsk
-function getSign(string $surl, $randsk, $uk = "", $shareid = "")
-{
-	if ($randsk === 1) return 1;
-	if ($surl != "") {
-		$url = 'https://pan.baidu.com/s/1' . $surl;
-	} elseif ($uk != "" and  $shareid != "") {
-		$url = "https://pan.baidu.com/share/link?shareid=$shareid&uk=$uk"; // 旧版本分享链接兼容
+	$return = false;
+	if (!isset($_POST["Password"])) { // 若未传入 Password
+		if (isset($_SESSION["Password"]) && $_SESSION["Password"] === Password) { // 若 SESSION 中密码正确
+			$return = true;
+		}
+	} else if ($_POST["Password"] === Password) { // 若传入密码正确
+		$_SESSION['Password'] = $_POST["Password"]; // 设置 SESSION
+		$return = true;
 	}
-
-	$header = array(
-		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";"
-	);
-	// 如果不修改这里,则要修改配置文件ini
-	$result = get($url, $header);
-
-	//有可能是账号被百度拉黑，导致获取到的页面不同 #83 #86
-	//百度全面拉黑 2021-03-18 19:40
-	//pd修复版及网页版失效
-	// if (DEBUG) {
-	// 	echo '<pre>getSign():no match</pre>';
-	// 	var_dump(htmlspecialchars($result));
-	// }
-	if (preg_match('/locals.mset\((\{.*?\})\);/', $result, $matches)) {
-		$result_decode = json_decode($matches[1], true, 512, JSON_BIGINT_AS_STRING);
-		if (DEBUG) {
-			echo '<pre>【限制版】getSign():';
-			var_dump($result_decode);
-			echo '</pre>';
-		}
-		return $result_decode;
-	} else {
-		if (DEBUG) {
-			echo '<pre>【限制版】getSign():no match</pre>';
-			var_dump(htmlspecialchars($result));
-		}
-		if (strstr($result, "Redirecting to") != false) {
-			// 账号BDUSS或STOKEN失效
-			dl_error("普通账号失效", "可能由于配置问题或者是修改账号密码导致的普通账号失效，请重新获取BDUSS和STOKEN并设置到config.php中。");
-			exit;
-		} else {
-			dl_error("根目录yunData获取失败", "页面未正常加载，或者百度已经升级页面，无法正常获取根目录yunData数据。");
-		}
-		return 1;
+	if ($IsReturnBool) { // 若 $IsReturnBool 为 true 则只返回 true/false，不执行 dl_error
+		return $return;
+	}
+	if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
+		dl_error("密码错误", "请检查你输入的密码！");
+		die();
 	}
 }
-function GetSignCore(string $surl)
+function GetSign(string $surl = "", string $share_id = "", string $uk = "")
 {
-	$url = "https://pan.baidu.com/share/tplconfig?surl=${surl}&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+	// construct url
+	$parmas = "";
+	if ($surl) $parmas .= "&surl=$surl";
+	if ($share_id) $parmas .= "&shareid=$share_id";
+	if ($uk) $parmas .= "&uk=$uk";
+	$url = "https://pan.baidu.com/share/tplconfig?$parmas&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
 	$header = [
-		"User-Agent: netdisk",
-		"Cookie: BDUSS=" . SVIP_BDUSS . "; STOKEN=" . SVIP_STOKEN,
+		"User-Agent: netdisk;pan.baidu.com",
+		"Cookie: " . Cookie,
 	];
 	$result = get($url, $header);
 	$result = json_decode($result, true, 512, JSON_BIGINT_AS_STRING);
@@ -189,35 +143,15 @@ function GetSignCore(string $surl)
 		return [-1, $result["show_msg"] ?? ""];
 	}
 }
-function FileList($sign)
-{
-	if ($sign === 1) return 1;
-	return $sign['file_list'] === null ? 1 : $sign['file_list'];
-}
-function GetDirRemote(string $dir, string $randsk, string $shareid, string $uk)
-{
-	$url = 'https://pan.baidu.com/share/list?shareid=' . $shareid . '&uk=' . $uk . '&dir=' . urlencode($dir);
-	$header = array(
-		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-		"Cookie: BDUSS=" . BDUSS . ";STOKEN=" . STOKEN . ";BDCLND=" . $randsk . ";",
-		"Referer: https://pan.baidu.com/disk/home"
-	);
-	$result = json_decode(get($url, $header), true);
-	if (DEBUG) {
-		echo '<pre>GetDir():';
-		var_dump($result);
-		echo '</pre>';
-	}
-	return $result;
-}
 function FileInfo(string $filename, float $size, string $md5, int $server_ctime)
 { // 输出 HTML 字符串
-	return '<p class="card-text"  id="filename" >文件名：<b>' . $filename . '</b></p><p class="card-text">文件大小：<b>' . formatSize($size) . '</b></p><p class="card-text">文件MD5：<b>' . $md5
-		. '</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
+	return '<p class="card-text" id="filename" >文件名：<b>' . $filename .
+		'</b></p><p class="card-text">文件大小：<b>' . formatSize($size) .
+		'</b></p><p class="card-text">文件MD5：<b>' . $md5 .
+		'</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
 }
 function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, int $app_id = 250528)
 { // 获取下载链接
-
 	$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
 
 	if (strstr($randsk, "%") != false) $randsk = urldecode($randsk);
@@ -229,95 +163,23 @@ function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk
 	);
 	$result = json_decode(post($url, $data, $header), true);
 	if (DEBUG) {
-		echo '<pre>getDlink():';
-		var_dump($result);
-		echo '</pre>';
+		echo '<script>console.log("getDlink():", ' . json_encode($result) . ');</script>';
 	}
 	return $result;
-
-	// 没有 referer 就 112 ，然后没有 sekey 参数就 118    -20出现验证码
-	// 		参数				类型		描述
-	// list					json array	文件信息列表
-	// names				json		如果查询共享目录，该字段为共享目录文件上传者的uk和账户名称
-	// list[0]["category"]	int			文件类型
-	// list[0]["dlink"]		string		文件下载地址
-	// list[0]["file_name"]	string		文件名
-	// list[0]["isdir"]		int			是否是目录
-	// list[0]["server_ctime"]	int		文件的服务器创建时间
-	// list[0]["server_mtime"]	int		文件的服务修改时间
-	// list[0]["size"]		int			文件大小
-	// list[0]["thumbs"]				缩略图地址
-	// list[0]["height"]	int			图片高度
-	// list[0]["width"]		int			图片宽度
-	// list[0]["date_taken"]	int		图片拍摄时间
+	// 没有 referer 就 112, 没有 sekey 参数就 118, -20出现验证码
 }
 function dl_error(string $title, string $content, bool $jumptip = false)
 {
 	if ($jumptip) {
-		$content .= '<br>请打开调试模式，并将错误信息以议题的形式提交到<a href="https://github.com/yuantuo666/baiduwp-php/issues">GitHub项目</a>。';
+		$content .= '<br>1. 请打开调试模式：将 config.php 文件中 DEBUG 的 false 修改为 true。<br>2. 刷新该页面并将错误信息以议题的形式提交到<a href="https://github.com/yuantuo666/baiduwp-php/issues">GitHub项目</a>。';
 	}
 	if (Language["LanguageName"] != "Chinese") {
-		$content = "To know more about it, you can translate the information following.<br />Raw Title:$title<br />Raw Message:$content<br /><br />If you still have question, please copy the information and sent to the email(yuantuo666@gmail.com) for help.";
+		$content = "To know more about it, you can translate the information following.<br />Raw Title:$title<br />Raw Message:$content";
 		$title = "An error happened.";
 	}
 	echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">
 	<h5 class="alert-heading">' . $title . '</h5><hr /><p class="card-text">' . $content;
 	echo '</p></div></div></div>'; // 仅仅弹出提示框，并不结束进程
-}
-function get_BDCLND($surl, $Pwd, $uk = "", $shareid = "")
-{
-	$header = array('User-Agent: netdisk');
-	if ($surl != "") {
-		$url = "https://pan.baidu.com/share/wxlist?clienttype=25&shorturl=$surl&pwd=$Pwd"; // 使用新方法获取，减少花费的时间
-	} elseif ($uk != "" and  $shareid != "") {
-		$url = "https://pan.baidu.com/share/wxlist?clienttype=25&uk=$uk&shareid=$shareid&pwd=$Pwd"; // 兼容老版本链接
-	}
-	$result = head($url, $header);
-	if (strstr($result, "BDCLND") == false) $bdclnd = false; // 修复：部分链接不存在bdclnd
-	else $bdclnd = GetSubstr($result, 'BDCLND=', ';');
-
-	if ($bdclnd) {
-		if (DEBUG) {
-			echo '<pre>get_BDCLND():';
-			var_dump($bdclnd);
-			echo '</pre>';
-		}
-		return $bdclnd;
-	} else {
-		if (DEBUG) {
-			echo '<pre>【获取bdclnd失败，可能是不需要此参数】get_BDCLND():';
-			var_dump($result);
-			echo '</pre>';
-		}
-		if ($surl != "") {
-			echo '<script>Swal.fire("使用提示","检测到当前链接异常，保存到网盘重新分享后可获得更好的体验~","info");</script>';
-		} elseif ($uk != "" and  $shareid != "") {
-			echo '<script>Swal.fire("使用提示","当前获取的链接属于旧版本链接，正在尝试使用兼容模式获取。如果获取失败，请保存到网盘重新分享后再试。","info");</script>';
-		}
-		// 尝试使用老方法获取
-		if ($surl != "") {
-			$header = head("https://pan.baidu.com/s/" . $surl, []);
-		} elseif ($uk != "" and  $shareid != "") {
-			$header = head("https://pan.baidu.com/share/link?shareid=$shareid&uk=$uk", []);
-		}
-
-		$bdclnd = preg_match('/BDCLND=(.+?);/', $header, $matches);
-		if ($bdclnd) {
-			if (DEBUG) {
-				echo '<pre>【老版本方法】get_BDCLND():';
-				var_dump($matches[1]);
-				echo '</pre>';
-			}
-			return $matches[1];
-		} else {
-			if (DEBUG) {
-				echo '<pre>【老版本方法】get_BDCLND():';
-				var_dump($header);
-				echo '</pre>';
-			}
-			return false;
-		}
-	}
 }
 function connectdb(bool $isAPI = false)
 {
@@ -358,35 +220,13 @@ function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password, 
 	$header = ["User-Agent: netdisk", "Cookie: BDUSS=" . BDUSS, "Referer: https://pan.baidu.com/disk/home"];
 	$result = json_decode(post($Url, $Data, $header), true);
 	if (DEBUG) {
-		echo '<pre>GetList():';
-		var_dump($result);
-		echo '</pre>';
+		echo '<script>console.log("GetList():");console.log(' . json_encode($result) . ');</script>';
 	}
 	return $result;
 }
 $getConstant = function (string $name) {
 	return constant($name);
 };
-/*
- * 优化 JavaScript 代码体积
- * beta 版本
- */
-$JSCode = array("get" => function (string $value) {
-	$value = preg_replace('# *//.*#', '', $value);
-	$value = preg_replace('#/\*.*?\*/#s', '', $value);
-	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
-	$value = preg_replace('#([,;{])[ \t]*?\r?\n[ \t]*([^ \t])#', '$1 $2', $value);
-	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
-	$value = preg_replace('#([^ \t])[ \t]*?\r?\n[ \t]*?\}#', '$1 }', $value);
-	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
-	$value = preg_replace('#([,;{])\t+#', '$1 ', $value);
-	$value = preg_replace('#\t+\}#', ' }', $value);
-	$value = preg_replace('#(\r?\n|\t| ){2,}#', '$1', $value);
-	return $value;
-}, "echo" => function (string $value) {
-	global $JSCode;
-	echo $JSCode['get']($value);
-});
 /*
  * 将settings.php里面的代码移到functions.php里面来
  * 方便api调用
@@ -410,18 +250,19 @@ function GetAnalyseTablePage(string $page)
 	$mysql_query = mysqli_query($conn, $sql);
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
 		// 存在数据
-		$EachRow = "<tr>
-		<th>" . $Result["id"] . "</th>
-		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
-			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('AnalyseTable'," . $Result["id"] . ");\">删除</a>
-		</div></td>
-		<td>" . $Result["userip"] . "</td>
-		<td style=\"width:80px;\">" . $Result["filename"] . "</td>
-		<td>" . formatSize((float)$Result["size"]) . "</td>
-		<td style=\"width:50px;\">" . $Result["path"] . "</td>
-		<td><a href=\"https://" . $Result["realLink"] . "\">" . substr($Result["realLink"], 0, 35) . "……</a></td>
-		<td>" . $Result["ptime"] . "</td><td>" . $Result["paccount"] . "</td>
-		</tr>";
+		$EachRow = "<tr>" .
+			"<th>{$Result["id"]}</th>" .
+			"<td><div class=\"btn-group btn-group-sm\" role=\"group\">" .
+			"<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('AnalyseTable',{$Result["id"]});\">删除</a>" .
+			"</div></td>" .
+			"<td>{$Result["userip"]}</td>" .
+			"<td style=\"width:80px;\">{$Result["filename"]}</td>" .
+			"<td>" . formatSize((float)$Result["size"]) . "</td>" .
+			"<td style=\"width:50px;\">{$Result["path"]}</td>" .
+			"<td><a href=\"https://{$Result["realLink"]}\">" . substr($Result["realLink"], 0, 35) . "……</a></td>" .
+			"<td>{$Result["ptime"]}</td><td>{$Result["paccount"]}</td>" .
+			"</tr>";
+
 		$AllRow .= $EachRow;
 	}
 	return $AllRow;
@@ -440,20 +281,20 @@ function GetSvipTablePage(string $page)
 		// 存在数据
 		$is_using = ($Result["is_using"] != "0000-00-00 00:00:00") ? $Result["is_using"] : "";
 		$state = ($Result["state"] == -1) ? "限速" : "正常";
-		$EachRow = "<tr>
-		<th>" . $Result["id"] . "</th>
-		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
-			<a class=\"btn btn-secondary\" href=\"javascript:SettingFirstAccount(" . $Result["id"] . ");\">使用此账号</a>
-			<a class=\"btn btn-secondary\" href=\"javascript:SettingNormalAccount(" . $Result["id"] . ");\">重置状态</a>
-			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('SvipTable'," . $Result["id"] . ");\">删除</a>
-		</div></td>
-		<td>" .  $is_using . "</td>
-		<td>" . $Result["name"] . "</td>
-		<td>" . $state . "</td>
-		<td>" . $Result["add_time"] . "</td>
-		<td><a href=\"javascript:Swal.fire('" . $Result["svip_bduss"] . "')\">" . substr($Result["svip_bduss"], 0, 20) . "……</a></td>
-		<td><a href=\"javascript:Swal.fire('" . $Result["svip_stoken"] . "')\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>
-		</tr>";
+		$EachRow = "<tr>" .
+			"<th>{$Result["id"]}</th>" .
+			"<td><div class=\"btn-group btn-group-sm\" role=\"group\">" .
+			"<a class=\"btn btn-secondary\" href=\"javascript:SettingFirstAccount({$Result["id"]});\">使用此账号</a>" .
+			"<a class=\"btn btn-secondary\" href=\"javascript:SettingNormalAccount({$Result["id"]});\">重置状态</a>" .
+			"<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('SvipTable',{$Result["id"]});\">删除</a>" .
+			"</div></td>" .
+			"<td>{$is_using}</td>" .
+			"<td>{$Result["name"]}</td>" .
+			"<td>{$state}</td>" .
+			"<td>{$Result["add_time"]}</td>" .
+			"<td><a href=\"javascript:Swal.fire('{$Result["svip_bduss"]}');\">" . substr($Result["svip_bduss"], 0, 20) . "……</a></td>" .
+			"<td><a href=\"javascript:Swal.fire('{$Result["svip_stoken"]}');\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>" .
+			"</tr>";
 		$AllRow .= $EachRow;
 	}
 	return $AllRow;
@@ -471,16 +312,16 @@ function GetIPTablePage(string $page)
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
 		// 存在数据
 		$type = ($Result["type"] == -1) ? "黑名单" : "白名单";
-		$EachRow = "<tr>
-		<th>" . $Result["id"] . "</th>
-		<td><div class=\"btn-group btn-group-sm\" role=\"group\">
-			<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable'," . $Result["id"] . ");\">删除</a>
-		</div></td>
-		<td>" . $Result["ip"] . "</td>
-		<td>" . $type . "</td>
-		<td>" . $Result["remark"] . "</td>
-		<td>" . $Result["add_time"] . "</td>
-		</tr>";
+		$EachRow = "<tr>" .
+			"<th>{$Result["id"]}</th>" .
+			"<td><div class=\"btn-group btn-group-sm\" role=\"group\">" .
+			"<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable',{$Result["id"]});\">删除</a>" .
+			"</div></td>" .
+			"<td>{$Result["ip"]}</td>" .
+			"<td>{$type}</td>" .
+			"<td>{$Result["remark"]}</td>" .
+			"<td>{$Result["add_time"]}</td>" .
+			"</tr>";
 		$AllRow .= $EachRow;
 	}
 	return $AllRow;
@@ -607,9 +448,7 @@ function AccountStatus(string $BDUSS, string $STOKEN)
 	$Result = post($Url, $Data, $Header);
 	$Result = json_decode($Result, true);
 	if (DEBUG) {
-		echo '<pre>账号状态:';
-		var_dump($Result);
-		echo '</pre>';
+		echo '<script>console.log("账号状态:");console.log(' . json_encode($Result) . ');</script>';
 	}
 	if ($Result["errno"] == 0) {
 		// 正常
@@ -633,9 +472,7 @@ function AccountStatus(string $BDUSS, string $STOKEN)
 		$Result = post($Url, $Data, $Header);
 		$Result = json_decode($Result, true);
 		if (DEBUG) {
-			echo '<pre>会员状态:';
-			var_dump($Result);
-			echo '</pre>';
+			echo '<script>console.log("会员状态:");console.log(' . json_encode($Result) . ');</script>';
 		}
 		if (isset($Result["reminder"]["svip"])) {
 			//存在会员信息

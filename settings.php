@@ -87,62 +87,14 @@ if ($is_login) connectdb();
 				};
 			}
 		}
-
-		getAPI('CheckUpdate').then(function(response) {
-			if (response.success) {
-				console.log('检查更新信息：');
-				console.log(response);
-				const data = response.data;
-				if (data.code === 0) {
-					if (data.have_update) {
-						const div = document.createElement('div');
-						div.id = 'CheckUpdate';
-						div.style.margin = '0.3rem 1rem';
-						div.style.display = 'none';
-						div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
-					&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
-						document.body.insertAdjacentElement('beforeBegin', div);
-						if (localStorage.getItem('UpdateTip') != "false")
-							$('#CheckUpdate').show(1500);
-					}
-				} else if (data.code === 2) {
-					const div = document.createElement('div');
-					div.id = 'CheckUpdate';
-					div.style.margin = '0.3rem 1rem';
-					div.style.display = 'none';
-					div.innerHTML = `Baiduwp-PHP 项目版本异常！当前版本：${data.now_version}，项目最新版本为：${data.version}${data.isPreRelease ? '（预发行版本）' : ''}！
-				&nbsp; <a href="${data.page_url}" target="_blank">发行版页面</a> &nbsp; <a href="${data.file_url}" target="_blank">下载程序文件</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
-					document.body.insertAdjacentElement('beforeBegin', div);
-					if (localStorage.getItem('UpdateTip') != "false")
-						$('#CheckUpdate').show(1500);
-				} else if (data.code === 1) {
-					console.log('服务器获取更新失败！详细信息：');
-					console.log(data);
-				} else {
-					console.log('服务器获取更新失败，且错误码不在支持列表中！详细信息：');
-					console.log(data);
-				}
-			} else {
-				console.log('检查更新失败！详细信息：');
-				console.log(response);
-			}
-		});
-
-		function SetUpdateTip(value) {
-			localStorage.setItem('UpdateTip', `${value}`); // 不知为啥，只能用string类型
-			if (value) $('#CheckUpdate').show(2000);
-			else $('#CheckUpdate').hide(2000);
-		}
 	</script>
+	<script src="static/ready.js?v=<?php echo programVersion; ?>"></script>
 </head>
 
 <body>
 	<div class="container">
 		<div class="row justify-content-center">
-			<?php
-
-
-			if (!$is_login) { ?>
+			<?php if (!$is_login) { ?>
 				<!-- 登录 -->
 				<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
 					<div class="card">
@@ -691,7 +643,6 @@ if ($is_login) connectdb();
 									</div>
 								</div>
 								<div class="row">
-
 									<div class="col-md-6 col-sm-12">
 										<h5 class="card-title">黑/白名单</h5>
 										<p class="card-text">
@@ -759,21 +710,12 @@ if ($is_login) connectdb();
 										<br><br>
 									</div>
 								</div>
-
 							</div>
-
-
-
 						</div>
 				</div>
 			<?php } ?>
-
-
-
 		</div>
-
-	<?php
-			} ?>
+	<?php } ?>
 	</div>
 	<script>
 		function DeleteById(Type, Id) {

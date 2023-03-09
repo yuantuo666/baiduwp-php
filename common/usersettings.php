@@ -65,6 +65,16 @@ require_once("./common/invalidCheck.php");
 				<option value="en">English</option>
 			</select>
 		</div>
+		<div class="card-item">
+			<h3><?php echo Language["UpdateTip"]; ?></h3>
+			<div id="UpdateTips">
+				<?php echo Language["UpdateTips"]; ?>
+			</div>
+			<select id="UpdateTips-Select" class="form-control">
+				<option value="true"><?php echo Language["Enable"]; ?></option>
+				<option value="false"><?php echo Language["Disable"]; ?></option>
+			</select>
+		</div>
 	</div>
 </div>
 
@@ -79,7 +89,7 @@ require_once("./common/invalidCheck.php");
 		$('#Setting-ColorMode').text('<?php echo Language["LightMode"]; ?>');
 		$('#ColorMode-Select option[value=light]')[0].selected = true;
 	}
-	const LanguageSetting = '<?php echo $_COOKIE['Language']; ?>';
+	const LanguageSetting = '<?php echo $_COOKIE['Language'] ?? ''; ?>';
 	if (LanguageSetting === '') { // 判断用户设置的语言
 		$('#Language-Select option[value=auto]').text('<?php echo Language["CurrentSetting"]; ?>' + $('#Language-Select option[value=auto]').text());
 		$('#Language-Select option[value=auto]')[0].selected = true;
@@ -118,5 +128,23 @@ require_once("./common/invalidCheck.php");
 	$('#Language-Select').on('change', function() {
 		const expires = (this.value === 'auto') ? 'Thu, 01 Jan 1970 00:00:00 GMT' : new Date(Date.now() + 31536000000);
 		document.cookie = `Language=${this.value}; expires=${expires}`;
+		location.reload();
+	});
+
+	// check if the user set the update tip
+	let UpdateTip = localStorage.getItem('UpdateTip') || 'true';
+	if (UpdateTip === 'true') {
+		$('#UpdateTips-Select option[value=true]')[0].selected = true;
+	} else {
+		$('#UpdateTips-Select option[value=false]')[0].selected = true;
+	}
+
+	$('#UpdateTips-Select').on('change', function() {
+		if (this.value === 'true') {
+			localStorage.removeItem('UpdateTip');
+		} else {
+			localStorage.setItem('UpdateTip', 'false');
+		}
+		location.reload();
 	});
 </script>

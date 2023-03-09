@@ -57,6 +57,10 @@ $lang = [
 		"SaveForever" => '将会永久保存。',
 		"Save365" => '将会保存 365 天，每次访问此项目会自动续期。',
 		"CurrentDisplayed" => "当前显示：",
+		"UpdateTip" => "自动检查更新",
+		"UpdateTips" => "自动检查更新，有新版本时会在首页显示更新提示。",
+		"Enable" => "启用",
+		"Disable" => "禁用",
 		"HelpPage" => '
 	<div class="row justify-content-center">
 		<div class="col-md-7 col-sm-8 col-11">
@@ -129,9 +133,9 @@ $lang = [
 								<li>本项目与PanDownload无关。</li>
 								<li>本项目仅以学习为目的，不得用于其他用途。</li>
 								<li>当前项目版本：' . programVersion . '</li>
-								<li><a data-qrcode-attr="href" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-								<li>项目作者：<a data-qrcode-attr="href" href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
-								<li>项目协作者：<a data-qrcode-attr="href" href="https://lcwebsite.cn/" target="_blank">LC</a></li>
+								<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
+								<li>项目作者：<a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+								<li>项目协作者：<a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 							</ol>
 						</section>
 						<script>
@@ -187,6 +191,10 @@ $lang = [
 		"SaveForever" => 'Will be saved forever.',
 		"Save365" => 'It will be saved for 365 days and will be automatically renewed every time you visit this item.',
 		"CurrentDisplayed" => "Current displayed: ",
+		"UpdateTip" => "Check update",
+		"UpdateTips" => "Automatically check for updates, and prompt when there is a new version.",
+		"Enable" => "Enable",
+		"Disable" => "Disable",
 		"HelpPage" => '
 	<div class="row justify-content-center">
 		<div class="col-md-7 col-sm-8 col-11">
@@ -230,39 +238,38 @@ $lang = [
 								<li><b>Copy the download link.</b> -> Add URL (in IDM) -> Paste the link -> OK </li>
 							</ol>
 							<div id="Chrome"><a class="anchor" href="#Chrome"></a>
-								<h4>Chrome 浏览器</h4>
+								<h4>Chrome Browser</h4>
 							</div>
 							<ol>
-								<li>安装浏览器扩展程序 <a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg" target="_blank">User-Agent Switcher for Chrome</a></li>
-								<li>右键点击扩展图标 -> 选项</li>
-								<li>New User-Agent name 填入 百度网盘分享下载</li>
-								<li>New User-Agent String 填入 <b>LogStatistic</b></li>
-								<li>Group 填入 百度网盘</li>
-								<li>Append? 选择 Replace</li>
-								<li>Indicator Flag 填入 Log，点击 Add 保存</li>
-								<li>保存后点击扩展图标，出现“百度网盘”，进入并选择“百度网盘分享下载”。</li>
+								<li>Install the browser extension <a href="https://chrome.google.com/webstore/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg" target="_blank">User-Agent Switcher for Chrome</a></li>
+								<li>Right click on the extension icon -> Options</li>
+								<li>New User-Agent name fill in Baidu Netdisk Share Download</li>
+								<li>New User-Agent String fill in <b>LogStatistic</b></li>
+								<li>Group fill in Baidu Netdisk</li>
+								<li>Append? Select Replace</li>
+								<li>Indicator Flag fill in Log, click Add to save</li>
+								<li>After saving, click the extension icon, and "Baidu Netdisk" will appear. Enter and select "Baidu Netdisk Share Download".</li>
 							</ol>
 							<blockquote>
-								<p>Chrome 应用商店打不开或者其他 Chromium 内核的浏览器，<a href="resource/UserAgentSwitcher.crx" target="_blank">请点此下载</a></p>
-								<p><a href="https://appcenter.browser.qq.com/search/detail?key=User-Agent%20Switcher%20for%20Chrome&amp;id=djflhoibgkdhkhhcedjiklpkjnoahfmg%20&amp;title=User-Agent%20Switcher%20for%20Chrome" target="_blank">QQ浏览器插件下载</a></p>
+								<p>If you can\'t open the Chrome Web Store or other Chromium-based browsers, <a href="resource/UserAgentSwitcher.crx" target="_blank">please click here to download</a></p>
+								<p><a href="https://appcenter.browser.qq.com/search/detail?key=User-Agent%20Switcher%20for%20Chrome&amp;id=djflhoibgkdhkhhcedjiklpkjnoahfmg%20&amp;title=User-Agent%20Switcher%20for%20Chrome" target="_blank">QQ browser plug-in download</a></p>
 							</blockquote>
 							<div id="Alook"><a class="anchor" href="#Alook"></a>
-								<h4>Alook 浏览器（IOS）</h4>
+								<h4>Alook Browser (IOS)</h4>
 							</div>
 							<ol>
-								<li>设置 -> 通用设置 -> 浏览器标识 -> 移动版浏览器标识 -> 自定义 -><br />填入 <b>LogStatistic</b></li>
+								<li>Settings -> General Settings -> Browser Identification -> Mobile Browser Identification -> Custom -><br />Fill in <b>LogStatistic</b></li>
 							</ol>
 							<div id="Copyright"><a class="anchor" href="#Copyright"></a>
-								<h4>关于此项目</h4>
+								<h4>About this project</h4>
 							</div>
 							<ol>
-								<li>本项目与PanDownload无关。</li>
-								<li>本项目仅以学习为目的，不得用于其他用途。</li>
-								<li>当前项目版本：' . programVersion . '</li>
-								<li><a data-qrcode-attr="href" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github仓库</a></li>
-								<li>项目作者：<a data-qrcode-attr="href" href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
-								<li>项目协作者：<a data-qrcode-attr="href" href="https://lcwebsite.cn/" target="_blank">LC</a></li>
-							</ol>
+								<li>This project is not related to PanDownload.</li>
+								<li>This project is only for learning purposes and must not be used for other purposes.</li>
+								<li>Current project version: ' . programVersion . '</li>
+								<li><a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github repository</a></li>
+								<li>Project author: <a href="https://imwcr.cn/" target="_blank">Yuan_Tuo</a></li>
+								<li>Project collaborator: <a href="https://lcwebsite.cn/" target="_blank">LC</a></li>
 						</section>
 						<script>
 							$(".anchor").attr("target", "_self").prepend(`<svg viewBox="0 0 16 16" version="1.1" width="16" height="16"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5
