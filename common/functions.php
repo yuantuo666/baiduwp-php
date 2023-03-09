@@ -12,7 +12,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-require_once("./common/invalidCheck.php");
+if (!init) require_once("./common/invalidCheck.php");
 
 // main
 function setCurl(&$ch, array $header)
@@ -140,7 +140,7 @@ function GetSign(string $surl = "", string $share_id = "", string $uk = "")
 		$timestamp = $result["data"]["timestamp"];
 		return [0, $sign, $timestamp];
 	} else {
-		return [-1, $result["show_msg"] ?? ""];
+		return [-1, $result["show_msg"] ?? "", ""];
 	}
 }
 function FileInfo(string $filename, float $size, string $md5, int $server_ctime)

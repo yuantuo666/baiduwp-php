@@ -12,6 +12,54 @@
  */
 session_start();
 define('init', true);
+require('./common/functions.php');
+$method = (!empty($_GET["m"])) ? $_GET["m"] : "";
+if ($method === "CheckMySQLConnect") {
+	if (file_exists('config.php')) {
+		// 如果已经安装过一次，必须管理员登录
+		$is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
+		if (!$is_login) { // 未登录
+			EchoInfo(-3, array("msg" => "请刷新页面后重新登录"));
+		}
+	}
+	error_reporting(0);
+	// 检查数据库连接是否正常
+	$servername = htmlspecialchars((!empty($_POST["servername"])) ? $_POST["servername"] : "", ENT_QUOTES);
+	$username = htmlspecialchars((!empty($_POST["username"])) ? $_POST["username"] : "", ENT_QUOTES);
+	$DBPassword = htmlspecialchars((!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "", ENT_QUOTES);
+	$dbname = htmlspecialchars((!empty($_POST["dbname"])) ? $_POST["dbname"] : "", ENT_QUOTES);
+	$dbtable = htmlspecialchars((!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "", ENT_QUOTES);
+	if (!function_exists('mysqli_connect')) {
+		EchoInfo(-2, array("msg" => "<br/>您未安装或未启用 mysqli 扩展，<br/>不能使用数据库功能。<br/>请自行关闭数据库功能。"));
+	}
+	$conn = mysqli_connect($servername, $username, $DBPassword);
+	$GLOBALS['conn'] = $conn;
+	// Check connection
+	if (!$conn) {
+		EchoInfo(-1, array("msg" => mysqli_connect_error()));
+	} else {
+		// 连接成功，检查数据库是否存在
+		$sql = "SELECT * FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '$dbname';"; // 查询是否有此数据库
+		$mysql_query = mysqli_query($conn, $sql);
+		if (mysqli_fetch_assoc($mysql_query)) {
+			// 存在数据库
+			EchoInfo(0, array("msg" => "数据库连接成功，存在 $dbname 数据库"));
+		} else {
+			// 不存在数据库，需创建
+			$sql = "CREATE DATABASE `$dbname` character set utf8;"; // 查询是否有此数据库
+			$mysql_query = mysqli_query($conn, $sql);
+			if ($mysql_query) {
+				// 创建成功
+				EchoInfo(0, array("msg" => "成功连接并创建数据库 $dbname 。"));
+			} else {
+				// 创建失败
+				EchoInfo(-1, array("msg" => "数据库连接成功，但创建数据库失败。<br />请手动创建 $dbname 数据库后再次检查连接。<br />"));
+			}
+		}
+	}
+	die();
+}
+
 if (!file_exists('./common/invalidCheck.php')) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
@@ -19,17 +67,13 @@ if (!file_exists('./common/invalidCheck.php')) {
 	die("HTTP 503 服务不可用！\r\n缺少相关配置和定义文件！无法正常运行程序！\r\n请重新 Clone 项目并进入此页面安装！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
 require('./common/invalidCheck.php');
-$method = (!empty($_GET["m"])) ? $_GET["m"] : ""; // 下一步判断是否引用config.php需用到
 // 导入配置和函数
-if ($method != "CheckMySQLConnect") { // 如果是使用检查连接，还没有配置好文件，不能引用
-	require('config.php');
-}
-require('./common/functions.php');
+require('./config.php');
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
 // 隐藏错误代码，保护信息安全
-if ($method != "CheckMySQLConnect" and DEBUG) {
+if (DEBUG) {
 	error_reporting(E_ALL);
 } else {
 	error_reporting(0); // 关闭错误报告
@@ -284,42 +328,6 @@ if ($method == "ADMINAPI") {
 			} else {
 				// 未开启数据库
 				EchoInfo(-1, array("msg" => "未开启数据库功能"));
-			}
-			break;
-		case "CheckMySQLConnect":
-			// 检查数据库连接是否正常
-			$servername = htmlspecialchars((!empty($_POST["servername"])) ? $_POST["servername"] : "", ENT_QUOTES);
-			$username = htmlspecialchars((!empty($_POST["username"])) ? $_POST["username"] : "", ENT_QUOTES);
-			$DBPassword = htmlspecialchars((!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "", ENT_QUOTES);
-			$dbname = htmlspecialchars((!empty($_POST["dbname"])) ? $_POST["dbname"] : "", ENT_QUOTES);
-			$dbtable = htmlspecialchars((!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "", ENT_QUOTES);
-			if (!function_exists('mysqli_connect')) {
-				EchoInfo(-2, array("msg" => "<br/>您未安装或未启用 mysqli 扩展，<br/>不能使用数据库功能。<br/>请自行关闭数据库功能。"));
-			}
-			$conn = mysqli_connect($servername, $username, $DBPassword);
-			$GLOBALS['conn'] = $conn;
-			// Check connection
-			if (!$conn) {
-				EchoInfo(-1, array("msg" => mysqli_connect_error()));
-			} else {
-				// 连接成功，检查数据库是否存在
-				$sql = "SELECT * FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '$dbname';"; // 查询是否有此数据库
-				$mysql_query = mysqli_query($conn, $sql);
-				if (mysqli_fetch_assoc($mysql_query)) {
-					// 存在数据库
-					EchoInfo(0, array("msg" => "数据库连接成功，存在 $dbname 数据库"));
-				} else {
-					// 不存在数据库，需创建
-					$sql = "CREATE DATABASE `$dbname` character set utf8;"; // 查询是否有此数据库
-					$mysql_query = mysqli_query($conn, $sql);
-					if ($mysql_query) {
-						// 创建成功
-						EchoInfo(0, array("msg" => "成功连接并创建数据库 $dbname 。"));
-					} else {
-						// 创建失败
-						EchoInfo(-1, array("msg" => "数据库连接成功，但创建数据库失败。<br />请手动创建 $dbname 数据库后再次检查连接。<br />"));
-					}
-				}
 			}
 			break;
 		case "CheckUpdate":
