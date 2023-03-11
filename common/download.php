@@ -72,6 +72,7 @@ if ($json4["errno"] !== 0) {
     ];
     if (isset($error[$json4["errno"]])) dl_error($error[$json4["errno"]][0], $error[$json4["errno"]][1]);
     else dl_error("获取下载链接失败", "未知错误！<br />错误号：" . $json4["errno"], true); // 未知错误
+    exit();
 }
 
 $dlink = $json4["list"][0]["dlink"];
