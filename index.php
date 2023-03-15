@@ -14,7 +14,7 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-$programVersion_Index = "2.2.6";
+$programVersion_Index = "2.2.7";
 session_start();
 define('init', true);
 if (!file_exists('./common/invalidCheck.php')) {

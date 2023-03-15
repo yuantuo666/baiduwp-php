@@ -9,12 +9,10 @@
  */
 require_once "./common/invalidCheck.php";
 
-const programVersion = '2.2.6';
+const programVersion = '2.2.7';
 const Sitename = '<Sitename>';
 
 const Cookie = '<Cookie>';
-const BDUSS = '<BDUSS>';
-const STOKEN = '<STOKEN>';
 const SVIP_BDUSS = '<SVIP_BDUSS>';
 const SVIP_STOKEN = '<SVIP_STOKEN>';
 

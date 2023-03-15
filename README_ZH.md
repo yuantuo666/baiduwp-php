@@ -39,8 +39,10 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ## Docker 安装
 ### 不使用MySQL数据库
+1. 安装 docker
+2. 执行下面的命令
 ```
-docker pull baiduwp-php
+docker pull yuantuo666/baiduwp-php
 docker run -p 8080:80 baiduwp-php
 ```
 ```
@@ -50,15 +52,20 @@ docker run -p 8080:80 baiduwp-php
 
 == 安装时配置 ==
 请关闭数据库功能
+
+== 设置页面（需启用数据库功能） ==
+http://服务器IP:8080/settings.php
 ```
 
 ### 使用MySQL数据库
+1. 安装 docker
+2. 执行下面的命令
 ```
 docker pull mysql
 docker network create --subnet 172.28.0.0/16 mysql-network
 docker run -e MYSQL_ROOT_PASSWORD="root" --network mysql-network --ip 172.28.0.2 mysql
 
-docker pull baiduwp-php
+docker pull yuantuo666/baiduwp-php
 docker run --network mysql-network --ip 172.28.0.3 -p 8080:80 baiduwp-php
 ```
 ```
@@ -71,16 +78,15 @@ docker run --network mysql-network --ip 172.28.0.3 -p 8080:80 baiduwp-php
 数据库用户名 root
 数据库密码 root
 数据库名 bdwp
+
+== 设置页面（需启用数据库功能） ==
+http://服务器IP:8080/settings.php
 ```
 
 ## 宝塔面板 / 虚拟主机安装
-1. 进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件
-2. 访问 `install.php` 文件并填写相关信息进行安装
-3. 如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确
-4. 最后点击提交
-5. 安装完成后可直接使用，可进入 `settings.php` 中进行相关设置
-6. 获取 Cookie 可以通过浏览器直接获取（操作方法见视频） **获取完成后，请不要退出登录，这会使获取的 Cookies 失效**
-7. 在**SVIP账号**中可设置**SVIP账号**的**BDUSS**和**STOKEN**，添加账号后记得进入**会员账号切换模式**将模式改成**顺序模式**或**轮换模式**
+1. 进入 [Releases](https://github.com/yuantuo666/baiduwp-php/releases) 下载项目文件 解压到对应目录
+2. 访问 `/install.php` 文件并填写相关信息进行安装
+3. 最后点击提交即可，需进行设置可网页访问 `/settings.php` （需启用数据库功能）
 
 ## 💡Contact
 - 项目作者：Yuan_Tuo

@@ -140,8 +140,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($Footer, 'Footer');
 
 			getConfig($Cookie, 'Cookie');
-			getConfig($BDUSS, 'BDUSS');
-			getConfig($STOKEN, 'STOKEN');
 			getConfig($SVIP_BDUSS, 'SVIP_BDUSS');
 			getConfig($SVIP_STOKEN, 'SVIP_STOKEN');
 			getConfig($SVIPSwitchMod, 'SVIPSwitchMod', '0'); // 有bug隐患 如果未开启数据库，必须为0
@@ -307,30 +305,19 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						</div>
 						<hr />
 						<h5 class="card-title">解析账号设置</h5>
-						<p>需要在此设置账号的 cookie ，获取 cookie 方法见 <a href="https://pandownload.com/faq/cookie.html">PD官网</a></p>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label" style="color: red;">普通账号完整 Cookie</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="Cookie" placeholder="例：PANWEB=1; newlogin=1; BIDUPSID=326C4AD1E1521*********7151;……" value="<?php echo $Cookie; ?>">
-								<small class="form-text">因百度对 API 进行修改，更新版本后需要设置完整的 Cookie 参数，可通过 网页版抓包 获取。</small>
-								<small class="form-text">获取方法：使用 Edge 浏览器打开百度网盘网页版，按下 F12 打开开发者工具，选择 网络 选项卡，刷新页面，找到一个 请求 URL 为 pan.baidu.com 开头的请求，在请求的详细信息页面往下滑找到 Cookie 参数，右键复制值后粘贴到此处即可。</small>
+								<small class="form-text">该参数也可以使用 SVIP 账号 Cookie</small>
+								<small class="form-text">获取方法：使用 Edge/Chorme 浏览器 的 <b>无痕模式</b> 打开百度网盘网页版，按下 F12 打开开发者工具，选择 网络 选项卡，刷新页面，找到一个 请求 URL 为 pan.baidu.com 开头的请求，在请求的详细信息页面往下滑找到 Cookie 参数，右键复制值后粘贴到此处即可。</small>
 								<small><a href="https://blog.imwcr.cn/2022/11/24/%e5%a6%82%e4%bd%95%e6%8a%93%e5%8c%85%e8%8e%b7%e5%8f%96%e7%99%be%e5%ba%a6%e7%bd%91%e7%9b%98%e7%bd%91%e9%a1%b5%e7%89%88%e5%ae%8c%e6%95%b4-cookie/">图文教程</a></small>
+								<small class="form-text">获取 Cookie 后请勿退出登录，否则 Cookie 会失效。</small>
 							</div>
 						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label">普通账号BDUSS</label>
-							<div class="col-sm-10">
-								<input class="form-control" name="BDUSS" placeholder="例：liMlp3bFN1NWpVM**********PYjItRlJhNFNTSn5rNW5vQ0FrVzRYRTkyWHBiQVFBQUFBJCQAAAAAAAAAAA……" value="<?php echo $BDUSS; ?>">
-								<small class="form-text">用来获取文件列表及信息，不需要SVIP也可。</small>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label">普通账号STOKEN</label>
-							<div class="col-sm-10">
-								<input class="form-control" name="STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613" value="<?php echo $STOKEN; ?>">
-								<small class="form-text">此信息必须与上一信息使用同一账号数据。用来获取文件列表及信息，不需要SVIP也可。</small>
-							</div>
-						</div>
+						<p>为防止概念混乱，自2.2.7版本起，删除普通账号 BDUSS 和 STOKEN 配置；普通账号设置上方完整 Cookie；将 SVIP 账号的 BDUSS 和 STOKEN 设置到下方即可。</p>
+						<p>获取会员账号的 BDUSS 和 STOKEN 方法见 <a href="https://pandownload.net/faq/cookie.html">伪PD</a>（无需拼接，将对应的两个参数填入下方即可）</p>
+						<!-- PD官网图炸了，换成伪PD的 -->
 						<br />
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">超级会员账号BDUSS</label>
@@ -493,7 +480,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									// 提示
 									Swal.fire({
 										title: "同意保留版权",
-										html: "保留版权对站长没有坏处，只是给那些想要学习 PHP 语言的人一个机会。<br/>保留原作者版权是MIT协议所规定的，这是对作者的一种尊重，让作者有继续开发的动力，而不是每天都在发邮件处理版权问题。<hr/>此项目在 GitHub 上开放源代码，所有历史版本及当前版本源代码均公开可查。",
+										html: "保留原作者版权是本项目 MIT 协议所规定的，这是对作者的一种尊重，让作者有继续开发的动力。<hr/>此项目在 GitHub 上开放源代码，所有历史版本及当前版本源代码均公开可查。",
 										icon: "warning",
 										showCancelButton: true,
 										confirmButtonText: "我同意",
@@ -561,6 +548,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 											Swal.fire("数据库连接错误", "请检查你的数据库设置，并重新提交。<br />详细信息：" + data.msg, "error");
 										}
 									}
+								}).catch(function(reason) {
+									Swal.fire("连接数据库过程中出现异常", "请检查你的数据库状态及设置<br />详细信息：" + reason.message, "error");
 								});
 
 							}
@@ -608,6 +597,32 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								}
 								$("#SettingForm").submit(); // 提交表格
 							}
+
+							// 检查是否为 docker 环境
+							body = `servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
+							postAPI('CheckMySQLConnect', body).then(function(response) {
+								if (response.success) {
+									const data = response.data;
+									if (data.error == 0) {
+										// 连接成功
+										Swal.fire("检测到 Docker 环境", "已自动配置数据库并连接，请完成其他信息填写并提交。<br />详细信息：" + data.msg, "success");
+										$("input[name='DbConfig_servername']").val("172.28.0.2");
+										$("input[name='DbConfig_username']").val("root");
+										$("input[name='DbConfig_DBPassword']").val("root");
+										$("input[name='DbConfig_dbname']").val("bdwp");
+										$("input[name='DbConfig_servername']").attr("readonly", true); // 禁用修改，防止提交后出错
+										$("input[name='DbConfig_username']").attr("readonly", true);
+										$("input[name='DbConfig_DBPassword']").attr("readonly", true);
+										$("input[name='DbConfig_dbname']").attr("readonly", true);
+										SQLConnect = true;
+									} else {
+										// 连接失败
+										console.log("检查 Docker 环境失败", data);
+									}
+								}
+							}).catch(function(reason) {
+								console.log("检查 Docker 环境出错", reason);
+							});
 						</script>
 				</div>
 			</div>
@@ -635,8 +650,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$Footer = (!empty($_POST["Footer"])) ? $_POST["Footer"] : "";
 
 				$Cookie = (!empty($_POST["Cookie"])) ? $_POST["Cookie"] : "";
-				$BDUSS = (!empty($_POST["BDUSS"])) ? $_POST["BDUSS"] : "";
-				$STOKEN = (!empty($_POST["STOKEN"])) ? $_POST["STOKEN"] : "";
 				$SVIP_BDUSS = (!empty($_POST["SVIP_BDUSS"])) ? $_POST["SVIP_BDUSS"] : "";
 				$SVIP_STOKEN = (!empty($_POST["SVIP_STOKEN"])) ? $_POST["SVIP_STOKEN"] : "";
 
@@ -701,8 +714,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<Footer>', $Footer, $update_config);
 
 				$update_config = str_replace('<Cookie>', $Cookie, $update_config);
-				$update_config = str_replace('<BDUSS>', $BDUSS, $update_config);
-				$update_config = str_replace('<STOKEN>', $STOKEN, $update_config);
 				$update_config = str_replace('<SVIP_BDUSS>', $SVIP_BDUSS, $update_config);
 				$update_config = str_replace('<SVIP_STOKEN>', $SVIP_STOKEN, $update_config);
 
@@ -723,7 +734,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				} else {
 					die("写入 config.php 文件失败，请检查 config.php 文件状态及当前用户权限。");
 				}
-				echo "恭喜你！安装成功了~<br /><a href='./'>点此链接</a>前往主页查看。";
+				echo "恭喜你！安装成功了~<br /><a href='./'>点此链接</a>前往主页查看。<br /><a href='./settings.php'>点此链接</a>进入后台设置。";
 			}
 				?>
 				</div>
