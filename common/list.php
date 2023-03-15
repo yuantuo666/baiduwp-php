@@ -33,9 +33,9 @@ $Page = 1;
 // 获取所有文件 fix #86
 while (true) {
 	$Filejson = GetList($surl, $dir, $IsRoot, $pwd, $Page);
-	if ($Filejson["errno"] !== 0) {
+	if ($Filejson["errno"] ?? 999 !== 0) {
 		// 解析异常
-		$ErrorCode = $Filejson["errtype"] ?? 999;
+		$ErrorCode = $Filejson["errtype"] ?? ($Filejson["errno"] ?? 999);
 		$ErrorMessage = [
 			"mis_105" => "你所解析的文件不存在~",
 			"mispw_9" => "提取码错误",
@@ -45,11 +45,13 @@ while (true) {
 			3 => "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！",
 			0 => "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。",
 			10 => "啊哦，来晚了，该分享文件已过期",
+			8001 => "普通账号被限制，请检查普通账号状态",
+			9013 => "普通账号 Cookie 状态异常，请检查：Cookie 是否设置完整正确；账号是否被限制；Cookie 是否过期",
+			9019 => "普通账号 Cookie 状态异常，请检查：Cookie 是否设置完整正确；账号是否被限制；Cookie 是否过期",
 			999 => "错误 -> " . json_encode($Filejson)
 		];
-		if (isset($ErrorMessage[$ErrorCode])) dl_error("[微信API] 解析错误", $ErrorMessage[$ErrorCode]);
-		else dl_error("[微信API] 解析错误", "未知错误代码:" . $ErrorCode, true);
-		exit;
+		if (isset($ErrorMessage[$ErrorCode])) dl_error("[微信API] 解析错误 ($ErrorCode)", $ErrorMessage[$ErrorCode]);
+		else dl_error("[微信API] 解析错误 ($ErrorCode)", "未知错误代码:" . json_decode($Filejson), true);
 	}
 
 	foreach ($Filejson['data']['list'] as $v) {

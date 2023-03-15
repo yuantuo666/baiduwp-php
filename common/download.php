@@ -20,7 +20,6 @@ if ((isset($_POST["fs_id"]) &&
     isset($_POST["share_id"]) &&
     isset($_POST["uk"])) !== true) {
     dl_error("参数有误", "POST 传参出现问题！请不要自行构建表单提交！"); // 参数不齐
-    exit;
 }
 
 $ip = sanitizeContent(getip());
@@ -37,7 +36,6 @@ if (USING_DB) {
             // 黑名单
             $isipwhite = FALSE;
             dl_error(Language["AccountError"], "当前ip已被加入黑名单，请联系站长解封");
-            exit;
         } elseif ($result["type"] == 0) {
             // 白名单
             echo "<script>console.log('当前IP为白名单~');</script>";
@@ -62,26 +60,28 @@ if (time() - $timestamp > 300) {
     else echo "<script>console.log('超时，自动获取sign和timestamp成功: $sign, $timestamp');</script>";
 }
 $json4 = getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk, APP_ID);
-if ($json4["errno"] !== 0) {
+$errno = $json4["errno"] ?? 999;
+if ($errno !== 0) {
     $error = [
+        999 => ["请求错误", "请求百度网服务器出错，请检查网络连接或重试"],
         -9 => ["文件不存在(-9)", "请返回首页重新解析。"],
         112 => ["链接超时(112)", "获取链接超时，每次解析列表后只有5min有效时间，请返回首页重新解析。"],
         113 => ["传参错误(113)", "获取失败，请检查参数是否正确。"],
         118 => ["服务器错误(118)", "服务器错误，请求百度服务器时，未传入sekey参数或参数错误。"],
         110 => ["服务器错误(110)", "服务器错误，可能服务器IP被百度封禁，请切换 IP 或更换服务器重试。"],
     ];
-    if (isset($error[$json4["errno"]])) dl_error($error[$json4["errno"]][0], $error[$json4["errno"]][1]);
-    else dl_error("获取下载链接失败", "未知错误！<br />错误号：" . $json4["errno"], true); // 未知错误
-    exit();
+    if (isset($error[$errno])) dl_error($error[$errno][0], $error[$errno][1]);
+    else dl_error("获取下载链接失败 ($errno)", "未知错误！<br />错误：" . json_encode($json4), true); // 未知错误
 }
 
-$dlink = $json4["list"][0]["dlink"];
+$dlink = $json4["list"][0]["dlink"] ?? "";
 // 获取文件相关信息
-$md5 = sanitizeContent($json4["list"][0]["md5"]);
-$filename = $json4["list"][0]["server_filename"];
-$size = sanitizeContent($json4["list"][0]["size"], "number");
-$path = $json4["list"][0]["path"];
-$server_ctime = (int)$json4["list"][0]["server_ctime"] + 28800; // 服务器创建时间 +8:00
+$md5 = sanitizeContent($json4["list"][0]["md5"] ?? "");
+$md5 = decryptMd5($md5);
+$filename = $json4["list"][0]["server_filename"] ?? "";
+$size = sanitizeContent($json4["list"][0]["size"] ?? "0", "number");
+$path = $json4["list"][0]["path"] ?? "";
+$server_ctime = (int)$json4["list"][0]["server_ctime"] ?? 0 + 28800; // 服务器创建时间 +8:00
 
 if (USING_DB) {
     connectdb();
@@ -97,15 +97,14 @@ if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
 } else {
 
     // 判断今天内是否获取过文件
-    if (USING_DB and !$isipwhite) { // 白名单和小文件跳过
+    if (USING_DB and !$isipwhite) { // 白名单跳过
         // 获取解析次数
-        $sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND `size`>=52428800 AND date(`ptime`)=date(now());";
+        $sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND date(`ptime`)=date(now());";
         $mysql_query = mysqli_query($conn, $sql);
         $result = mysqli_fetch_assoc($mysql_query);
         if ($result["Num"] >= DownloadTimes) {
             // 提示无权继续
             dl_error(Language["NoChance"], "<p class='card-text'>数据库中无此文件解析记录。</p><p class='card-text'>剩余解析次数为零，请明天再试。</p><hr />" . FileInfo($filename, $size, $md5, $server_ctime));
-            exit;
         }
     }
 
@@ -114,16 +113,19 @@ if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
     $id = $DBSVIP[1];
 
     // 开始获取真实链接
-    $headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . $SVIP_BDUSS . ';'); // 仅此处用到SVIPBDUSS
+    $headerArray = array('User-Agent: LogStatistic', 'Cookie: BDUSS=' . $SVIP_BDUSS . ';');
 
     $header = head($dlink, $headerArray); // 禁止重定向
-    if (DEBUG) {
-        $body = get($dlink, $headerArray);
-        echo '<script>console.log("GET Real Link",' . json_encode(["header" => $header, "body" => $body]) . ')</script>';
+    if (DEBUG) echo '<script>console.log("GET Real Link",' . json_encode(["header" => $header]) . ')</script>';
+    if (!strstr($header, "Location")) {
+        // fail
+        dl_error("获取下载链接失败", "获取下载链接失败，可能是百度服务器返回了错误的数据 $header", true);
     }
     $getRealLink = strstr($header, "Location");
     $getRealLink = substr($getRealLink, 10);
-    $realLink = getSubstr($getRealLink, "http://", "\r\n"); // 删除 http://
+    $realLink = str_replace("https://", "http://", $getRealLink);
+    $realLink = getSubstr($getRealLink, "http://", "\n"); // delete http://
+    $realLink = trim($realLink); // delete space
     $usingcache = false;
 
     switch (SVIPSwitchMod) {
@@ -131,9 +133,9 @@ if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
             //模式1：用到废为止
         case 2:
             //模式2：轮番上
-            if ($id != "-1" and (strstr('https://' . $realLink, "//qdall") or $realLink == "")) {
+            if ($id != "-1" and (substr($realLink, 0, 5) === "qdall" or $realLink == "")) {
                 //限速进行标记 并刷新页面重新解析
-                $sql = "UPDATE `" . $dbtable . "_svip` SET `state`= -1 WHERE `id`=$id";
+                $sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
                 $mysql_query = mysqli_query($conn, $sql);
                 if ($mysql_query != false) {
                     // SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
@@ -156,8 +158,7 @@ if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
                     exit;
                 } else {
                     // SVIP账号自动切换失败
-                    dl_error("SVIP账号切换失败", "数据库出现问题，无法切换SVIP账号，请联系站长修复", true);
-                    exit;
+                    dl_error("SVIP账号切换失败", "数据库出现问题，无法切换SVIP账号");
                 }
             }
             break;
@@ -173,12 +174,22 @@ if (USING_DB and $result = mysqli_fetch_assoc($mysql_query)) {
 }
 
 // 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
-if (!$realLink) {
-    echo '<div class="row justify-content-center"><div class="col-md-7 col-sm-8 col-11"><div class="alert alert-danger" role="alert">'
-        . '<h5 class="alert-heading">' . Language["DownloadLinkError"] . '</h5><hr /><p class="card-text">已获取到文件，但未能获取到下载链接！</p>'
-        . '<p class="card-text">请检查在 <code>config.php</code> 中配置 <b>普通账号</b> 和 <b>SVIP账号</b> 的 BDUSS 和 STOKEN！</p>'
-        . '<p class="card-text">未配置 或 账号失效均会导致失败！（账号失效的原因包括但不限于 退出登录、修改密码）</p>' . FileInfo($filename, $size, $md5, $server_ctime) . '</div></div></div>'; // 未配置 SVIP 账号
-    die();
+if (!$realLink || strlen($realLink) < 20) {
+    $body = get($dlink, $headerArray);
+    $body_decode = json_decode($body, true);
+
+    $ErrorCode = $body_decode["errno"] ?? 999;
+    $ErrorMessage = [
+        8001 => "SVIP 账号状态异常，请检查 BDUSS 和 STOKEN 是否设置正确且有效",
+        9013 => "SVIP 账号状态异常，请检查 BDUSS 和 STOKEN 是否设置正确且有效",
+        9019 => "SVIP 账号状态异常，请检查 BDUSS 和 STOKEN 是否设置正确且有效",
+        999 => "错误 -> " . json_encode($body_decode)
+    ];
+
+    if (DEBUG) echo '<script>console.log("GET Real Link",' . json_encode(["body" => $body_decode]) . ')</script>';
+
+    if (isset($ErrorMessage[$ErrorCode])) dl_error("[获取直链] 解析错误 ($ErrorCode)", $ErrorMessage[$ErrorCode]);
+    else dl_error("[获取直链] 解析错误 ($ErrorCode)", json_encode($body_decode), true);
 }
 
 // 记录下使用者ip，下次进入时提示
@@ -190,8 +201,7 @@ if (USING_DB and !$usingcache) {
     $mysql_query = mysqli_query($conn, $sql);
     if ($mysql_query == false) {
         // 保存错误
-        dl_error(Language["DatabaseError"], "数据库错误，请联系站长修复。");
-        exit;
+        dl_error(Language["DatabaseError"], "数据库错误，保存下载数据至数据库时出错");
     }
 }
 
@@ -209,8 +219,7 @@ if (USING_DB and !$usingcache) {
             echo FileInfo($filename, $size, $md5, $server_ctime);
 
             echo '<hr><p class="card-text">' . Language["Preview"] . '</p>';
-            if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic") {
-
+            if ($_SERVER['HTTP_USER_AGENT'] == "LogStatistic" || $size < 1024 * 1024 * 2) { // 2MB
                 $type = substr($filename, -4);
                 if ($type == ".jpg" || $type == ".png" || $type == "jpeg" || $type == ".bmp" || $type == ".gif") {
                     echo '<img src="https://' . $realLink . '" class="img-fluid rounded" style="width: 100%;">';
@@ -227,7 +236,7 @@ if (USING_DB and !$usingcache) {
             echo '<hr />';
             $DownloadLinkAvailableTime = (is_int(DownloadLinkAvailableTime)) ? DownloadLinkAvailableTime : 8;
             $Language_DownloadLink = Language["DownloadLink"];
-            if (strstr('https://' . $realLink, "//qdall")) echo '<h5 class="text-danger">当前SVIP账号已被限速，请联系站长更换账号。</h5>';
+            if (substr($realLink, 0, 5) === "qdall") echo '<h5 class="text-danger">当前 SVIP 账号已被限速，请更换账号。</h5>';
             echo "<p class=\"card-text\"><a id=\"http\" href=\"http://$realLink\" style=\"display: none;\">下载链接</a>"
                 . "<a id=\"https\" href=\"https://$realLink\" target=\"_blank\" rel=\"nofollow noopener noreferrer\">$Language_DownloadLink （"
                 . (((int)$size < 52428800) ? '无需' : '需要') . "设置 UA，$DownloadLinkAvailableTime 小时内有效）</a></p>";

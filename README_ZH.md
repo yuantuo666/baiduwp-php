@@ -33,9 +33,47 @@ PanDownload 网页复刻版，PHP 语言版<br/>
   - 更换后台 SVIP 账号
   - 更换服务器 IP
 
+
 # 🔧Install & Setting
 [**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)
 
+## Docker 安装
+### 不使用MySQL数据库
+```
+docker pull baiduwp-php
+docker run -p 8080:80 baiduwp-php
+```
+```
+== 相关信息 ==
+启动后服务将在 http://服务器IP:8080/ 运行
+如需修改端口，可修改上方命令
+
+== 安装时配置 ==
+请关闭数据库功能
+```
+
+### 使用MySQL数据库
+```
+docker pull mysql
+docker network create --subnet 172.28.0.0/16 mysql-network
+docker run -e MYSQL_ROOT_PASSWORD="root" --network mysql-network --ip 172.28.0.2 mysql
+
+docker pull baiduwp-php
+docker run --network mysql-network --ip 172.28.0.3 -p 8080:80 baiduwp-php
+```
+```
+== 相关信息 ==
+启动后服务将在 http://服务器IP:8080/ 运行
+如需修改端口，可修改上方命令
+
+== 安装时配置 ==
+数据库地址 172.28.0.2
+数据库用户名 root
+数据库密码 root
+数据库名 bdwp
+```
+
+## 宝塔面板 / 虚拟主机安装
 1. 进入[Releases](https://github.com/yuantuo666/baiduwp-php/releases)下载项目文件
 2. 访问 `install.php` 文件并填写相关信息进行安装
 3. 如果使用数据库，则需要先点击 `检查数据库连接` 连接数据库，保证账号密码正确

@@ -518,7 +518,9 @@ if ($is_login) connectdb();
 										<h5>普通账号状态</h5>
 										<p class="card-text">
 											<?php
-											$Status = AccountStatus(BDUSS, STOKEN);
+											$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
+											$STOKEN = getSubstr(Cookie, 'STOKEN=', ';');
+											$Status = AccountStatus($BDUSS, $STOKEN);
 											if ($Status[0] == 0) {
 												//正常
 												$AccountName = $Status[2];

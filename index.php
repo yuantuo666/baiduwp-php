@@ -41,9 +41,21 @@ if (USING_DB == false and SVIPSwitchMod != 0) {
 // 保存启动时间
 $system_start_time = microtime(true);
 // 导入配置和函数
-
 require('./common/language.php');
 require('./common/functions.php');
+
+// 确认账号 Cookie 设置正确
+$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
+$STOKEN = getSubstr(Cookie, 'STOKEN=', ';');
+$csrfToken = getSubstr(Cookie, 'csrfToken=', ';');
+$BAIDUID = getSubstr(Cookie, 'BAIDUID=', ';');
+if (!$BDUSS or !$STOKEN or !$csrfToken or !$BAIDUID) {
+	http_response_code(503);
+	header('Content-Type: text/plain; charset=utf-8');
+	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
+	die("HTTP 503 服务不可用！\r\n配置错误，使用本项目必须配置**完整**的普通账号 Cookie！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
+}
+
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
@@ -83,7 +95,7 @@ if (DEBUG) {
 	<script src="static/functions.js?v=<?php echo programVersion; ?>"></script>
 	<script defer src="static/ready.js?v=<?php echo programVersion; ?>"></script>
 	<script>
-		var USING_DB = <?php echo USING_DB ? true : false; ?>;
+		var USING_DB = <?php echo USING_DB ? "true" : "false"; ?>;
 		var IsConfirmDownload = <?php echo IsConfirmDownload ? "true" : "false"; ?>;
 
 		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk) {
