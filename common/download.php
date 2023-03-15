@@ -69,6 +69,9 @@ if ($errno !== 0) {
         113 => ["传参错误(113)", "获取失败，请检查参数是否正确。"],
         118 => ["服务器错误(118)", "服务器错误，请求百度服务器时，未传入sekey参数或参数错误。"],
         110 => ["服务器错误(110)", "服务器错误，可能服务器IP被百度封禁，请切换 IP 或更换服务器重试。"],
+        8001 => "普通账号被限制，请检查普通账号状态",
+        9013 => "普通账号 Cookie 状态异常，请检查：Cookie 是否设置完整正确；账号是否被限制；Cookie 是否过期",
+        9019 => "普通账号 Cookie 状态异常，请检查：Cookie 是否设置完整正确；账号是否被限制；Cookie 是否过期",
     ];
     if (isset($error[$errno])) dl_error($error[$errno][0], $error[$errno][1]);
     else dl_error("获取下载链接失败 ($errno)", "未知错误！<br />错误：" . json_encode($json4), true); // 未知错误
@@ -180,9 +183,9 @@ if (!$realLink || strlen($realLink) < 20) {
 
     $ErrorCode = $body_decode["errno"] ?? 999;
     $ErrorMessage = [
-        8001 => "SVIP 账号状态异常，请检查 BDUSS 和 STOKEN 是否设置正确且有效",
-        9013 => "SVIP 账号状态异常，请检查 BDUSS 和 STOKEN 是否设置正确且有效",
-        9019 => "SVIP 账号状态异常，请检查 BDUSS 和 STOKEN 是否设置正确且有效",
+        8001 => "SVIP 账号状态异常，请检查 SVIP 的 BDUSS 和 STOKEN 是否设置正确且有效",
+        9013 => "SVIP 账号状态异常，请检查 SVIP 的 BDUSS 和 STOKEN 是否设置正确且有效",
+        9019 => "SVIP 账号状态异常，请检查 SVIP 的 BDUSS 和 STOKEN 是否设置正确且有效",
         999 => "错误 -> " . json_encode($body_decode)
     ];
 
