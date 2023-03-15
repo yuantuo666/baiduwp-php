@@ -43,7 +43,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 2. 执行下面的命令
 ```
 docker pull yuantuo666/baiduwp-php
-docker run -p 8080:80 baiduwp-php
+docker run -p 8080:80 yuantuo666/baiduwp-php
 ```
 ```
 == 相关信息 ==
@@ -66,7 +66,7 @@ docker network create --subnet 172.28.0.0/16 mysql-network
 docker run -e MYSQL_ROOT_PASSWORD="root" --network mysql-network --ip 172.28.0.2 mysql
 
 docker pull yuantuo666/baiduwp-php
-docker run --network mysql-network --ip 172.28.0.3 -p 8080:80 baiduwp-php
+docker run --network mysql-network --ip 172.28.0.3 -p 8080:80 yuantuo666/baiduwp-php
 ```
 ```
 == 相关信息 ==
