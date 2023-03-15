@@ -52,8 +52,8 @@ $BAIDUID = getSubstr(Cookie, 'BAIDUID=', ';');
 if (!$BDUSS or !$STOKEN or !$csrfToken or !$BAIDUID) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
-	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
-	die("HTTP 503 服务不可用！\r\n配置错误，使用本项目必须配置**完整**的普通账号 Cookie！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
+	header('Refresh: 5;url=./install.php');
+	die("HTTP 503 服务不可用！\r\n配置错误，使用本项目必须配置**完整**的普通账号 Cookie！\r\n请重安装此项目！\r\n将在五秒内跳转到安装界面！");
 }
 
 // 通用响应头
