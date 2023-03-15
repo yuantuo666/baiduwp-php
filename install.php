@@ -560,18 +560,12 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								USING_DB = $("input[name='USING_DB']:checked").val();
 								ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
 								Cookie = $("input[name='Cookie']").val();
-								BDUSS = $("input[name='BDUSS']").val();
-								STOKEN = $("input[name='STOKEN']").val();
 								SVIP_BDUSS = $("input[name='SVIP_BDUSS']").val();
 								SVIP_STOKEN = $("input[name='SVIP_STOKEN']").val();
 
 
 								if (Cookie.length < 6) {
 									Swal.fire("普通账号完整 Cookie 设置错误", "因百度对 API 进行修改，更新版本后需要设置完整的 Cookie 参数，可通过 网页版抓包 获取。", "warning");
-									return 0;
-								}
-								if (BDUSS.length < 6 || STOKEN.length < 6) {
-									Swal.fire("普通账号 BDUSS 或 STOKEN 设置错误", "请设置普通账号的 BDUSS 和 STOKEN 参数，可通过 网页版抓包 获取。", "warning");
 									return 0;
 								}
 								if (SVIP_BDUSS.length < 6 || SVIP_STOKEN.length < 6) {
