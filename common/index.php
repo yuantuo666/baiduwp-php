@@ -13,7 +13,7 @@
 require_once("./common/invalidCheck.php");
 ?>
 
-<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
+<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card" id="index">
 	<div class="card">
 		<div class="card-header bg-dark text-light">
 			<?php if (USING_DB) { ?>
@@ -22,22 +22,20 @@ require_once("./common/invalidCheck.php");
 			<?php } else echo Language["IndexTitle"]; ?>
 		</div>
 		<div class="card-body">
-			<form name="form1" method="post" onsubmit="return validateForm()">
-				<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="<?php echo Language["ShareLink"]; ?>" oninput="Getpw()"></div>
-				<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="<?php echo Language["SharePassword"]; ?>"></div>
-				<?php
-				if (IsCheckPassword) {
-					$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="' . Language["PassWord"] . '"></div>';
-					if (isset($_SESSION["Password"])) {
-						if ($_SESSION["Password"] === Password) {
-							$return = '<div>' . Language["PassWordVerified"] . '</div>';
-						}
+			<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="<?php echo Language["ShareLink"]; ?>" oninput="Getpw()"></div>
+			<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="<?php echo Language["SharePassword"]; ?>"></div>
+			<?php
+			if (IsCheckPassword) {
+				$return = '<div class="form-group my-4"><input type="text" class="form-control" name="Password" placeholder="' . Language["PassWord"] . '"></div>';
+				if (isset($_SESSION["Password"])) {
+					if ($_SESSION["Password"] === Password) {
+						$return = '<div>' . Language["PassWordVerified"] . '</div>';
 					}
-					echo $return;
-				} // 密码
-				?>
-				<button type="submit" class="mt-4 mb-3 btn btn-success btn-block"><?php echo Language["Submit"]; ?></button>
-			</form>
+				}
+				echo $return;
+			} // 密码
+			?>
+			<button onclick="SubmitLink()" class="form-group mt-4 mb-3 btn btn-success btn-block"><?php echo Language["Submit"]; ?></button>
 			<?php if (file_exists("notice.html")) echo file_get_contents("notice.html"); ?>
 		</div>
 	</div>
@@ -73,4 +71,16 @@ require_once("./common/invalidCheck.php");
 			});
 		</script>
 	<?php } ?>
+</div>
+
+<div id="list" style="display: none;">
+	<nav>
+		<ol class="breadcrumb my-4" id="dir-list">
+			正在连接服务器......
+		</ol>
+	</nav>
+	<div>
+		<ul class="list-group" id="files-list">
+		</ul>
+	</div>
 </div>

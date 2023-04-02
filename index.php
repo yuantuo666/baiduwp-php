@@ -143,7 +143,6 @@ if (DEBUG) {
 		}
 		if (isset($_GET["help"])) echo Language["HelpPage"]; // 帮助页
 		elseif (isset($_GET["usersettings"])) require("./common/usersettings.php"); // 用户设置页面
-		elseif (isset($_POST["surl"])) require("./common/list.php"); // 解析链接页面
 		elseif (isset($_GET["download"])) require("./common/download.php");  // 解析下载地址页面
 		else require("./common/index.php"); // 首页
 

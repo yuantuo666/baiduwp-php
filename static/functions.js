@@ -34,12 +34,6 @@ function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
 		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
 	$(document.body).append(form); form.submit();
 }
-function OpenDir(path, pwd, share_id, uk, surl, randsk, sign, timestamp) {
-	var form = $('<form method="post"></form>');
-	form.append(`<input type="hidden" name="dir" value="${path}"/><input type="hidden" name="pwd" value="${pwd}"/><input type="hidden" name="surl" value="${surl}"/>
-	<input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/><input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="sign" value="${sign}"/><input type="hidden" name="timestamp" value="${timestamp}"/>`);
-	$(document.body).append(form); form.submit();
-}
 function getIconClass(filename) {
 	var filetype = {
 		file_video: ["wmv", "rmvb", "mpeg4", "mpeg2", "flv", "avi", "3gp", "mpga", "qt", "rm", "wmz", "wmd", "wvx", "wmx", "wm", "mpg", "mp4", "mkv", "mpeg", "mov", "asf", "m4v", "m3u8", "swf"],
@@ -62,23 +56,48 @@ function getIconClass(filename) {
 	for (var icon in filetype) for (var type in filetype[icon]) if (t === filetype[icon][type]) return "fa-" + icon.replace('_', '-');
 	return "";
 }
-function OpenRoot(surl, pwd) {
-	if (surl == "") { Swal.fire("错误", "兼容模式下无法返回根目录，请返回首页重新解析。"); return false; }
-	var form = $('<form method="post"></form>');
-	form.append(`<input type="hidden" name="surl" value="${surl}"/><input type="hidden" name="pwd" value="${pwd}"/>`);
-	$(document.body).append(form); form.submit();
-}
 function Getpw() {
-	var link = document.forms["form1"]["surl"].value;
-	var pw = link.match(/提取码.? *(\w{4})/);
-	var pw2 = link.match(/pwd=(\w{4})/); // support new version of share link; thanks to #216
-	if (pw != null) {
-		document.forms["form1"]["pwd"].value = pw[1];
-	} else if (pw2 != null) {
-		document.forms["form1"]["pwd"].value = pw2[1];
+	var link = $("[name='surl']").val();
+	var pw = link.match(/(提取码|pwd=|pwd:|密码)( |:|：)*([a-zA-Z0-9]{4})/i);
+	if (pw != null && pw.length === 4) {
+		$("[name='pwd']").val(pw[3]);
 	}
 }
+function SubmitLink() {
+	var link = $("[name='surl']").val();
 
+	var uk = link.match(/uk=(\d+)/),
+		shareid = link.match(/shareid=(\d+)/);
+	if (uk != null && shareid != null) {
+		Swal.fire("Tip", "暂不支持老版本分享链接，请保存到网盘后重新分享", "info");
+		return false;
+	}
+
+	var surl = link.match(/surl=([A-Za-z0-9-_]+)/);
+	if (surl == null) {
+		surl = link.match(/1[A-Za-z0-9-_]+/);
+		if (surl != null) {
+			surl = surl[0];
+		}
+	} else {
+		surl = "1" + surl[1];
+	}
+
+	if (surl == null || surl === "") {
+		$("[name='surl']").focus();
+		Swal.fire("Tip", "未检测到有效百度网盘分享链接，请检查输入的链接", "info");
+		return false;
+	}
+	var pw = $("[name='pwd']").val();
+	if (pw.length != 0 && pw.length != 4) {
+		$("[name='pwd']").focus();
+		Swal.fire("Tip", "提取码错误，请检查", "info");
+		return false;
+	}
+	OpenRoot(surl, pw);
+	$("#index").hide();
+	$("#list").show();
+}
 function getCookie(name) {
 	var nameEQ = name + "=";
 	var ca = document.cookie.split(';');
@@ -188,4 +207,178 @@ async function getAPI(method) { // 获取 API 数据
 			msg: '连接服务器过程中出现异常，消息：' + reason.message
 		};
 	}
+}
+
+function Backtoindex() {
+	$("#list").hide();
+	$("#index").show();
+}
+// https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+function formatBytes(a, b = 2) {
+	if (0 === a) return "0 Bytes";
+	const c = 0 > b ? 0 : b,
+		d = Math.floor(Math.log(a) / Math.log(1024));
+	return parseFloat((a / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
+}
+
+function formatDate(time, format = 'YY-MM-DD hh:mm:ss') {
+	if (time == undefined) return "--";
+	time = Number(time + "000");
+	var date = new Date(time);
+
+	var year = date.getFullYear(),
+		month = date.getMonth() + 1,
+		day = date.getDate(),
+		hour = date.getHours(),
+		min = date.getMinutes(),
+		sec = date.getSeconds();
+	var preArr = Array.apply(null, Array(10)).map(function (elem, index) {
+		return '0' + index;
+	});
+
+	var newTime = format.replace(/YY/g, year)
+		.replace(/MM/g, preArr[month] || month)
+		.replace(/DD/g, preArr[day] || day)
+		.replace(/hh/g, preArr[hour] || hour)
+		.replace(/mm/g, preArr[min] || min)
+		.replace(/ss/g, preArr[sec] || sec);
+
+	return newTime;
+}
+
+async function OpenRoot(surl, pwd) {
+	Swal.fire({
+		title: "正在获取文件列表",
+		icon: "info",
+		html: "请稍候...",
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+	});
+	Swal.showLoading();
+	try {
+		data = `surl=${surl}&pwd=${pwd}`;
+		await fetch(`api.php?m=GetList`, { // fetch API
+			credentials: 'same-origin',
+			method: 'POST',
+			body: data,
+			headers: new Headers({
+				'Content-Type': 'application/x-www-form-urlencoded'
+			})
+		}).then(function (response) {
+			return response.json();
+		})
+			.then(function (json) {
+				console.log(json);
+				if (json.error == 0) {
+					// success
+					LoadList(json);
+					Swal.close();
+				} else {
+					// fail
+					Swal.fire(json.title, json.msg, "error");
+					Backtoindex();
+				}
+
+			});
+
+	} catch (reason) {
+		Swal.fire("获取文件列表失败", "连接服务器过程中出现异常，消息：" + reason.message, "error");
+		Backtoindex();
+	}
+}
+
+async function OpenDir(path) {
+	Swal.fire({
+		title: "正在获取文件列表",
+		icon: "info",
+		html: "请稍候...",
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+	});
+	Swal.showLoading();
+	try {
+		randsk = encodeURIComponent(files.dirdata.randsk);
+		dir = encodeURIComponent(path);
+		data = `surl=${files.dirdata.surl}&pwd=${files.dirdata.pwd}&dir=${dir}&randsk=${randsk}&uk=${files.dirdata.uk}&sign=${files.dirdata.sign}&time=${files.dirdata.timestamp}&shareid=${files.dirdata.shareid}`;
+		await fetch(`api.php?m=GetList`, { // fetch API
+			credentials: 'same-origin',
+			method: 'POST',
+			body: data,
+			headers: new Headers({
+				'Content-Type': 'application/x-www-form-urlencoded'
+			})
+		}).then(function (response) {
+			return response.json();
+		})
+			.then(function (json) {
+				console.log(json);
+				if (json.error == 0) {
+					// success
+					LoadList(json);
+					Swal.close();
+				} else {
+					// fail
+					Swal.fire(json.title, json.msg, "error");
+				}
+
+			});
+
+	} catch (reason) {
+		Swal.fire("获取文件列表失败", "连接服务器过程中出现异常，消息：" + reason.message, "error");
+	}
+}
+
+
+function LoadList(json) {
+	if (typeof (json) == "string") files = JSON.parse(json);
+	else files = json;
+	if (files.error != 0) {
+		Swal.fire("无法加载列表", "请刷新页面重试，错误代码：" + files.error, "error");
+		return;
+	}
+	var Src = `<li class="breadcrumb-item"><a href="javascript:OpenRoot('${files.dirdata.surl}','${files.dirdata.pwd}');">All files</a></li>`;
+	for (var i = 0; i < files.dirdata.src.length; i++) {
+		Dir = files.dirdata.src[i];
+		Active = (Dir.isactive) ? "active" : "";
+		fullsrc = Dir.fullsrc.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/\'/g, "\\\'"); // use &amp; to replace & to avoid error
+		Src = Src + `<li class="breadcrumb-item ${Active}"><a href="javascript:OpenDir('${fullsrc}');">${Dir.dirname}</a></li>`;
+	}
+	Src = Src + `<span class="mx-2">(${files.filenum} 个文件)<span>`;
+
+	$("#dir-list").html(Src);
+
+	var List = "";
+	var filesnum = 0;
+
+	for (var i = 0; i < files.filedata.length; i++) {
+		Files = files.filedata[i];
+		Time = formatDate(Files.uploadtime, 'YY/MM/DD hh:mm:ss');
+		Num = (Array(3).join(0) + (i + 1)).slice(-3);
+		if (files.filedata[i].isdir) {
+			// dir
+			path = Files.path.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/\'/g, "\\\'"); // use &amp; to replace & to avoid error
+			List = List + `<li class="list-group-item border-muted text-muted py-2" id="item${i}"><i class="far fa-folder mr-2"></i>
+<a href="javascript:OpenDir('${path}');" class="filename">${Files.name}</a>
+<br><span>${Num} | ${Time}</span>
+</li>`
+		} else {
+			// file
+			Size = formatBytes(Files.size);
+			List = List + `<li class="list-group-item border-muted text-muted py-2" id="item${i}"><i class="far fa-file mr-2"></i>
+<a href="javascript:Download('${i}');" class="filename">${Files.name}</a>
+<br><span>${Num} | ${Time} | ${Size}</span>
+</li>`;
+			filesnum++;
+		}
+	}
+	$("#files-list").html(List);
+
+	// load file icon
+	$(".fa-file").each(function () {
+		var icon = getIconClass($(this).next().text());
+		if (icon !== "") {
+			if ($.inArray(icon, ['fa-windows', 'fa-android', 'fa-apple']) >= 0) $(this).removeClass("far").addClass("fab");
+			$(this).removeClass("fa-file").addClass(icon);
+		}
+	});
 }

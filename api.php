@@ -1,4 +1,5 @@
 <?php
+require_once('./common/list.php');
 
 /**
  * PanDownload 网页复刻版，PHP 语言版API文件
@@ -358,6 +359,17 @@ switch ($method) {
 		$result = CheckUpdate($includePreRelease, $enforce); // 获取结果
 		header('Content-Type: application/json; charset=utf-8'); // 设置响应头
 		echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); // 输出响应
+		break;
+	case "GetList":
+		// 获取文件列表
+		$surl = $_POST["surl"] ?? ""; // 获取surl
+		$pwd = $_POST["pwd"] ?? ""; // 获取密码
+		$dir = $_POST["dir"] ?? ""; // 获取目录
+		$sign = $_POST["sign"] ?? "";
+		$timestamp = $_POST["timestamp"] ?? "";
+		$result = Parse::getList($surl, $pwd, $dir, $sign, $timestamp);
+		header('Content-Type: application/json; charset=utf-8');
+		echo json_encode($result);
 		break;
 	default:
 		EchoInfo(-1, array("msg" => "无传入数据"));

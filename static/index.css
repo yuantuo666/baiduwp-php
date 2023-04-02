@@ -22,8 +22,8 @@
     word-wrap: break-word;
 }
 
-form input,
-form button {
+.form-group input,
+button.form-group {
     height: 3em !important;
 }
 

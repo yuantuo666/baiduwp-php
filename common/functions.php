@@ -188,21 +188,6 @@ function connectdb(bool $isAPI = false)
 	mysqli_query($conn, "set character set 'utf8'");
 	mysqli_query($conn, "set names 'utf8'");
 }
-function GetList(string $Shorturl, string $Dir, bool $IsRoot, string $Password, int $Page = 1)
-{
-	$Url = 'https://pan.baidu.com/share/wxlist?channel=weixin&version=2.2.2&clienttype=25&web=1';
-
-	$Root = ($IsRoot) ? "1" : "0";
-	$Dir = urlencode($Dir);
-	$Data = "shorturl=$Shorturl&dir=$Dir&root=$Root&pwd=$Password&page=$Page&num=1000&order=time";
-	$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
-	$header = ["User-Agent: netdisk", "Cookie: BDUSS=$BDUSS", "Referer: https://pan.baidu.com/disk/home"];
-	$result = json_decode(post($Url, $Data, $header), true);
-	if (DEBUG) {
-		echo '<script>console.log("GetList():");console.log(' . json_encode($result) . ');</script>';
-	}
-	return $result;
-}
 $getConstant = function (string $name) {
 	return constant($name);
 };
