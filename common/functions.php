@@ -254,7 +254,7 @@ function GetSvipTablePage(string $page)
 	$dbtable = $GLOBALS['dbtable'];
 	$AllRow = "";
 	$StartNum = ((int)$page - 1) * $EachPageNum;
-	$sql = "SELECT * FROM `" . $dbtable . "_svip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
+	$sql = "SELECT * FROM `{$dbtable}_svip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
 	$mysql_query = mysqli_query($conn, $sql);
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
 		// 存在数据
@@ -286,7 +286,7 @@ function GetIPTablePage(string $page)
 	$dbtable = $GLOBALS['dbtable'];
 	$AllRow = "";
 	$StartNum = ((int)$page - 1) * $EachPageNum;
-	$sql = "SELECT * FROM `" . $dbtable . "_ip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
+	$sql = "SELECT * FROM `{$dbtable}_ip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
 	$mysql_query = mysqli_query($conn, $sql);
 	while ($Result = mysqli_fetch_assoc($mysql_query)) {
 		// 存在数据
@@ -318,7 +318,7 @@ function GetDBBDUSS()
 		case 1:
 			//模式1：用到废为止
 			// 时间倒序输出第一项未被限速账号
-			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
+			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
 			$Result = mysqli_query($conn, $sql);
 			if ($Result =  mysqli_fetch_assoc($Result)) {
 				$SVIP_BDUSS = $Result["svip_bduss"];
@@ -334,7 +334,7 @@ function GetDBBDUSS()
 		case 2:
 			//模式2：轮番上
 			// 时间顺序输出第一项未被限速账号
-			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
+			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
 
 			$Result = mysqli_query($conn, $sql);
 			if ($Result =  mysqli_fetch_assoc($Result)) {
@@ -345,7 +345,7 @@ function GetDBBDUSS()
 				// 开始处理
 				// 这里最新的时间表示可用账号，按顺序排序
 				$is_using = date("Y-m-d H:i:s");
-				$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+				$sql = "UPDATE `{$dbtable}_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
 				$mysql_query = mysqli_query($conn, $sql);
 				if ($mysql_query == false) {
 					// 失败 但可继续解析
@@ -361,7 +361,7 @@ function GetDBBDUSS()
 		case 3:
 			//模式3：手动切换，不管限速
 			// 时间倒序输出第一项账号，不管限速
-			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `" . $dbtable . "_svip` ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
+			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `{$dbtable}_svip` ORDER BY `is_using` DESC,`id` DESC LIMIT 0,1";
 			$Result = mysqli_query($conn, $sql);
 			if ($Result =  mysqli_fetch_assoc($Result)) {
 				$SVIP_BDUSS = $Result["svip_bduss"];
@@ -377,7 +377,7 @@ function GetDBBDUSS()
 		case 4:
 			//模式4：轮番上(无视限速)
 			// 时间顺序输出第一项限速账号
-			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `" . $dbtable . "_svip` ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
+			$sql = "SELECT `id`,`svip_bduss`,`svip_stoken` FROM `{$dbtable}_svip` ORDER BY `is_using` ASC,`id` DESC LIMIT 0,1";
 
 			$Result = mysqli_query($conn, $sql);
 			if ($Result =  mysqli_fetch_assoc($Result)) {
@@ -388,7 +388,7 @@ function GetDBBDUSS()
 				// 开始处理
 				// 这里最新的时间表示可用账号，按顺序排序
 				$is_using = date("Y-m-d H:i:s");
-				$sql = "UPDATE `" . $dbtable . "_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+				$sql = "UPDATE `{$dbtable}_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
 				$mysql_query = mysqli_query($conn, $sql);
 				if ($mysql_query == false) {
 					// 失败 但可继续解析

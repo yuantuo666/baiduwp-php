@@ -199,7 +199,7 @@ if ($is_login) connectdb();
 							<div class="card-body">
 								<h5 class="card-title">默认账号</h5>
 								<?php
-								$sql = "SELECT * FROM `" . $dbtable . "_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
+								$sql = "SELECT * FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
 								$Result = mysqli_query($conn, $sql);
 
 								if ($Result =  mysqli_fetch_assoc($Result)) {
@@ -518,9 +518,20 @@ if ($is_login) connectdb();
 										<h5>普通账号状态</h5>
 										<p class="card-text">
 											<?php
+											// 添加缓存 #253
+											// TODO: 后台也进行前后端分离
 											$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
 											$STOKEN = getSubstr(Cookie, 'STOKEN=', ';');
-											$Status = AccountStatus($BDUSS, $STOKEN);
+											$cache_key = md5($BDUSS);
+											if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
+												$Status = $_SESSION['cache'][$cache_key]['data'];
+											} else {
+												$Status = AccountStatus($BDUSS, $STOKEN);
+												$_SESSION['cache'][$cache_key] = [
+													'time' => time(),
+													'data' => $Status
+												];
+											}
 											if ($Status[0] == 0) {
 												//正常
 												$AccountName = $Status[2];
@@ -560,7 +571,16 @@ if ($is_login) connectdb();
 											if ($SVIP_STOKEN == "") {
 												echo "id为 $id 的SVIP账号没有设置对应STOKEN，无法检测<br />";
 											} else {
-												$Status = AccountStatus($SVIP_BDUSS, $SVIP_STOKEN);
+												$cache_key = md5($SVIP_BDUSS);
+												if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
+													$Status = $_SESSION['cache'][$cache_key]['data'];
+												} else {
+													$Status = AccountStatus($SVIP_BDUSS, $STOKEN);
+													$_SESSION['cache'][$cache_key] = [
+														'time' => time(),
+														'data' => $Status
+													];
+												}
 												if ($Status[0] == 0) {
 													$AccountName = $Status[2];
 													echo "账号名称：$AccountName<br />";
@@ -629,11 +649,11 @@ if ($is_login) connectdb();
 										<h5 class="card-title">SVIP账号</h5>
 										<p class="card-text">
 											<?php
-											$sql = "SELECT count(`id`) as AllCount FROM `" . $dbtable . "_svip`";
+											$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_svip`";
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 											$AllCount = $Result["AllCount"];
 											$SvipCountMsg =  "数据库中共 $AllCount 个账号";
-											$sql = "SELECT count(`id`) as AllCount FROM `" . $dbtable . "_svip` WHERE `state`=-1";
+											$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_svip` WHERE `state`=-1";
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 											$AllCount = $Result["AllCount"];
 											$SvipFailCountMsg = "有 $AllCount 个账号已被限速";
@@ -649,16 +669,16 @@ if ($is_login) connectdb();
 										<h5 class="card-title">黑/白名单</h5>
 										<p class="card-text">
 											<?php
-											$sql = "SELECT count(`id`) as AllCount FROM `" . $dbtable . "_ip`";
+											$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip`";
 											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 											$AllCount = $Result["AllCount"];
 											$SvipCountMsg =  "数据库中共 $AllCount 个ip";
 											if ($AllCount != 0) {
-												$sql = "SELECT count(`id`) as AllCount FROM `" . $dbtable . "_ip` WHERE `type`=-1";
+												$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=-1";
 												$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 												$AllCount = $Result["AllCount"];
 												$SvipFailCountMsg = "有 $AllCount 个黑名单";
-												$sql = "SELECT count(`id`) as AllCount FROM `" . $dbtable . "_ip` WHERE `type`=0";
+												$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=0";
 												$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 												$AllCount = $Result["AllCount"];
 												$SvipSuccCountMsg = "有 $AllCount 个白名单";
