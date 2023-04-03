@@ -110,7 +110,7 @@ require_once("./common/invalidCheck.php");
 					<a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#SendToAria2">发送到 Aira2 / Motrix</a>
 					<a class="btn btn-outline-primary" href="" id="filecxx" style="display: none;">发送到 文件蜈蚣</a>
 				</p>
-				<p class="card-text"><a class="btn btn-outline-secondary" href="?help" target="_blank">下载帮助（必读）</a></p>
+				<p class="card-text"><a class="btn btn-outline-secondary" href="./#/help" target="_blank">下载帮助（必读）</a></p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>

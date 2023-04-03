@@ -94,7 +94,7 @@ if ($is_login) connectdb();
 		<div class="row justify-content-center">
 			<?php if (!$is_login) { ?>
 				<!-- 登录 -->
-				<div class="col-lg-6 col-md-9 mx-auto mb-5 input-card">
+				<div class="col-lg-6 col-md-9 mx-auto my-5 input-card">
 					<div class="card">
 						<div class="card-header bg-dark text-light">Pandownload复刻版 - 后台登录</div>
 						<div class="card-body">

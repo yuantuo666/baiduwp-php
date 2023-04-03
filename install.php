@@ -135,7 +135,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			getConfig($ADMIN_PASSWORD, 'ADMIN_PASSWORD');
 			getConfig($DownloadTimes, 'DownloadTimes', '5');
 			getConfig($DownloadLinkAvailableTime, 'DownloadLinkAvailableTime', '8');
-			getConfig($IsConfirmDownload, 'IsConfirmDownload', true);
 			getConfig($Footer, 'Footer');
 
 			getConfig($Cookie, 'Cookie');
@@ -275,23 +274,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<div class="col-sm-10">
 								<input class="form-control" name="DownloadLinkAvailableTime" value="<?php echo $DownloadLinkAvailableTime; ?>">
 								<small class="form-text">设置解析出来的下载链接有效时间，超出对应时间则重新获取。（仅开启数据库有效，默认及最大为8小时，单位小时）</small>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label">是否开启下载次数提示</label>
-							<div class="col-sm-10">
-								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload1" value="true" <?php if ($IsConfirmDownload) echo "checked"; ?>>
-									<label class="form-check-label" for="IsConfirmDownload1">
-										是
-									</label>
-								</div>
-								<div class="form-check  form-check-inline">
-									<input class="form-check-input" type="radio" name="IsConfirmDownload" id="IsConfirmDownload2" value="false" <?php if (!$IsConfirmDownload) echo "checked"; ?>>
-									<label class="form-check-label" for="IsConfirmDownload2">
-										否
-									</label>
-								</div>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -638,7 +620,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$ADMIN_PASSWORD = (!empty($_POST["ADMIN_PASSWORD"])) ? $_POST["ADMIN_PASSWORD"] : "";
 				$DownloadTimes = (!empty($_POST["DownloadTimes"])) ? $_POST["DownloadTimes"] : "";
 				$DownloadLinkAvailableTime = (!empty($_POST["DownloadLinkAvailableTime"])) ? $_POST["DownloadLinkAvailableTime"] : "8";
-				$IsConfirmDownload = (!empty($_POST["IsConfirmDownload"])) ? $_POST["IsConfirmDownload"] : "true";
 				$Footer = (!empty($_POST["Footer"])) ? $_POST["Footer"] : "";
 
 				$Cookie = (!empty($_POST["Cookie"])) ? $_POST["Cookie"] : "";
@@ -702,7 +683,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<ADMIN_PASSWORD>', $ADMIN_PASSWORD, $update_config);
 				$update_config = str_replace('<DownloadTimes>', $DownloadTimes, $update_config);
 				$update_config = str_replace('<DownloadLinkAvailableTime>', $DownloadLinkAvailableTime, $update_config);
-				$update_config = str_replace('<IsConfirmDownload>', $IsConfirmDownload, $update_config);
 				$update_config = str_replace('<Footer>', $Footer, $update_config);
 
 				$update_config = str_replace('<Cookie>', $Cookie, $update_config);

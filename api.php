@@ -353,6 +353,7 @@ switch ($method) {
 			$enforce = true;
 		}
 		$result = CheckUpdate($includePreRelease, $enforce); // 获取结果
+		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); // 输出响应
 		break;
 	case "GetList":
@@ -368,6 +369,7 @@ switch ($method) {
 		$sign = $_POST["sign"] ?? "";
 		$timestamp = $_POST["timestamp"] ?? "";
 		$result = Parse::getList($surl, $pwd, $dir, $sign, $timestamp);
+		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($result);
 		break;
 	case "Download":
@@ -385,10 +387,12 @@ switch ($method) {
 		$uk = $_POST["uk"] ?? "";
 
 		$result = Parse::download($fs_id, $timestamp, $sign, $randsk, $shareid, $uk);
+		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($result);
 		break;
 	case "Password":
 		// 密码验证
+		header('Content-Type: application/json; charset=utf-8');
 		if (!IsCheckPassword) {
 			echo json_encode(array("status" => 0, "msg" => "Never Gonna Let You Down"));
 			exit;
