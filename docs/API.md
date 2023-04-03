@@ -8,13 +8,7 @@ Base URLs:
 
 ## GET 获取解析统计
 
-GET /api.php
-
-### 请求参数
-
-|名称|位置|类型|必选|说明|
-|---|---|---|---|---|
-|m|query|string| 否 |none|
+GET /api.php?m=ParseCount
 
 > 返回示例
 
@@ -22,8 +16,8 @@ GET /api.php
 
 ```json
 {
-  "error": -1,
-  "msg": "string"
+  "error": 0,
+  "msg": "系统使用统计<br /><div align='left'>累计解析: 39 (123.62GB)<br />今日解析: 1 (43.58MB)</div>"
 }
 ```
 
@@ -49,9 +43,58 @@ GET /api.php
 |error|-1|
 |error|0|
 
+
+## GET 获取上次解析数据
+
+GET /api.php?m=LastParse
+
+### 请求参数
+
+|名称|位置|类型|必选|说明|
+|---|---|---|---|---|
+|m|query|string| 否 |none|
+
+> 返回示例
+
+> 200 Response
+
+```json
+{
+  "error": 0,
+  "msg": "SVIP账号状态<br />上次解析: 2023-04-03 23:48:25<br />账号状态: 状态正常",
+  "svipstate": 1,
+  "sviptips": "正常"
+}
+```
+
+### 返回结果
+
+|状态码|状态码含义|说明|数据模型|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|成功|Inline|
+
+### 返回数据结构
+
+状态码 **200**
+
+|名称|类型|必选|约束|中文名|说明|
+|---|---|---|---|---|---|
+|» error|integer|true|none|错误码|none|
+|» msg|string|true|none|上次解析数据|HTML格式返回|
+|» svipstate|integer|true|none|会员状态|none|
+|» sviptips|string|true|none|状态信息|none|
+
+#### 枚举值
+
+|属性|值|
+|---|---|
+|error|-1|
+|svipstate|0|
+|svipstate|1|
+
 ## GET 获取密码状态
 
-GET /api.php
+GET /api.php?m=Password
 
 检查是否启用密码设置，是否完成密码验证
 
@@ -69,7 +112,7 @@ GET /api.php
 ```json
 {
   "status": 0,
-  "msg": "string"
+  "msg": "Never Gonna Let You Down"
 }
 ```
 
@@ -90,15 +133,15 @@ GET /api.php
 
 #### 枚举值
 
-|属性|值|
-|---|---|
-|status|0|
-|status|1|
-|status|2|
+|属性|值|备注|
+|---|---|---|
+|status|0|无密码|
+|status|1|有密码|
+|status|2|密码验证通过|
 
 ## GET 检查更新
 
-GET /api.php
+GET /api.php?m=CheckUpdate
 
 ### 请求参数
 
@@ -148,7 +191,7 @@ GET /api.php
 
 ## POST 解析链接根目录
 
-POST /api.php
+POST /api.php?m=GetList
 
 > Body 请求参数
 
@@ -237,57 +280,9 @@ password: "1"
 |»» uploadtime|integer|true|none||创建时间|
 |»» dlink|string|false|none||仅文件有，dlink下载地址|
 
-## GET 获取上次解析数据
-
-GET /api.php
-
-### 请求参数
-
-|名称|位置|类型|必选|说明|
-|---|---|---|---|---|
-|m|query|string| 否 |none|
-
-> 返回示例
-
-> 200 Response
-
-```json
-{
-  "error": -1,
-  "msg": "string",
-  "svipstate": 0,
-  "sviptips": "string"
-}
-```
-
-### 返回结果
-
-|状态码|状态码含义|说明|数据模型|
-|---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|成功|Inline|
-
-### 返回数据结构
-
-状态码 **200**
-
-|名称|类型|必选|约束|中文名|说明|
-|---|---|---|---|---|---|
-|» error|integer|true|none|错误码|none|
-|» msg|string|true|none|上次解析数据|HTML格式返回|
-|» svipstate|integer|true|none|会员状态|none|
-|» sviptips|string|true|none|状态信息|none|
-
-#### 枚举值
-
-|属性|值|
-|---|---|
-|error|-1|
-|svipstate|0|
-|svipstate|1|
-
 ## POST 解析链接文件夹
 
-POST /api.php
+POST /api.php?m=GetList
 
 > Body 请求参数
 
@@ -386,7 +381,7 @@ randsk: p7NjPNOpKqcgcmz1SXU0MbvIOZR4vsR8D2lCS5Tp%2ByQ%3D
 
 ## POST 获取下载地址
 
-POST /api.php
+POST /api.php?m=Download
 
 > Body 请求参数
 
@@ -465,6 +460,3 @@ uk: "1529664763"
 |» directlink|string|true|none|真实直链|大于50MB文件需设置UA下载|
 |» user_agent|string|true|none|下载时需要使用的UA|none|
 |» message|[string]|true|none|运行信息|none|
-
-
-
