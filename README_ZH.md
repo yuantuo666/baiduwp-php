@@ -84,6 +84,7 @@ http://服务器IP:8080/settings.php
 ```
 
 ## 宝塔面板 / 虚拟主机安装
+[AFF] 市面上虚拟主机参数参差不齐，经测试 [雨云](https://www.rainyun.cc/?ref=MjQyNDk=) 可完美运行本程序(香港EP二代 入门版, 7元/月)。
 1. 进入 [Releases](https://github.com/yuantuo666/baiduwp-php/releases) 下载项目文件 解压到对应目录
 2. 访问 `/install.php` 文件并填写相关信息进行安装
 3. 最后点击提交即可，需进行设置可网页访问 `/settings.php` （需启用数据库功能）
