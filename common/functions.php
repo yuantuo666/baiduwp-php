@@ -82,26 +82,19 @@ function formatSize(float $size, int $times = 0)
 		return round($size, 2) . $unit[$times];
 	}
 }
-function CheckPassword(bool $IsReturnBool = false)
+function CheckPassword()
 {
 	if (!IsCheckPassword) {
 		return true;
 	}
-	$return = false;
-	if (!isset($_POST["Password"])) { // 若未传入 Password
-		if (isset($_SESSION["Password"]) && $_SESSION["Password"] === Password) { // 若 SESSION 中密码正确
-			$return = true;
-		}
-	} else if ($_POST["Password"] === Password) { // 若传入密码正确
-		$_SESSION['Password'] = $_POST["Password"]; // 设置 SESSION
-		$return = true;
+	if (($_SESSION["Password"] ?? "") === Password) { // 若 SESSION 中密码正确
+		return true;
 	}
-	if ($IsReturnBool) { // 若 $IsReturnBool 为 true 则只返回 true/false，不执行 dl_error
-		return $return;
+	if (($_POST["password"] ?? "") === Password) { // 若传入密码正确
+		$_SESSION['Password'] = $_POST["password"]; // 设置 SESSION
+		return true;
 	}
-	if (!$return) { // 若 $IsReturnBool 为 false 且验证失败，则执行 dl_error
-		dl_error("密码错误", "请检查你输入的密码！");
-	}
+	return false;
 }
 function GetSign(string $surl = "", string $share_id = "", string $uk = "")
 {
@@ -124,31 +117,6 @@ function GetSign(string $surl = "", string $share_id = "", string $uk = "")
 	} else {
 		return [-1, $result["show_msg"] ?? "", ""];
 	}
-}
-function FileInfo(string $filename, float $size, string $md5, int $server_ctime)
-{ // 输出 HTML 字符串
-	return '<p class="card-text" id="filename" >文件名：<b>' . $filename .
-		'</b></p><p class="card-text">文件大小：<b>' . formatSize($size) .
-		'</b></p><p class="card-text">文件MD5：<b>' . $md5 .
-		'</b></p><p class="card-text">上传时间：<b>' . date("Y年m月d日 H:i:s", $server_ctime) . '</b></p>';
-}
-function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, int $app_id = 250528)
-{ // 获取下载链接
-	$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
-
-	if (strstr($randsk, "%") != false) $randsk = urldecode($randsk);
-	$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . $randsk . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
-	$header = array(
-		"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69",
-		"Cookie: " . Cookie,
-		"Referer: https://pan.baidu.com/disk/home"
-	);
-	$result = json_decode(post($url, $data, $header), true);
-	if (DEBUG) {
-		echo '<script>console.log("getDlink():", ' . json_encode($result) . ');</script>';
-	}
-	return $result;
-	// 没有 referer 就 112, 没有 sekey 参数就 118, -20出现验证码
 }
 function dl_error(string $title, string $content, bool $jumptip = false)
 {
@@ -197,6 +165,7 @@ $getConstant = function (string $name) {
  */
 function EchoInfo(int $error, array $Result)
 {
+	header('Content-Type: application/json; charset=utf-8');
 	$ReturnArray = array("error" => $error);
 	$ReturnArray += $Result;
 	echo json_encode($ReturnArray);

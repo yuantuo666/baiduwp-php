@@ -42,7 +42,7 @@ if ($is_login) connectdb();
 ?>
 
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html data-bs-theme="light" lang="zh-CN">
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -53,13 +53,11 @@ if ($is_login) connectdb();
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://fastly.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
-	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/jquery-form@4.3.0/dist/jquery.form.min.js"></script>
 	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
@@ -272,9 +270,8 @@ if ($is_login) connectdb();
 										Swal.showLoading();
 										$.get(`api.php?m=ADMINAPI&act=SvipSettingFirstAccount&id=${id}`, function(data, status) {
 											if (status == "success") {
-												var json = JSON.parse(data);
-												Swal.fire(json.msg);
-												if (json.refresh == true) setTimeout("location.reload();", 3000);
+												Swal.fire(data.msg);
+												if (data.refresh == true) setTimeout("location.reload();", 3000);
 											} else {
 												Swal.fire("请求错误，请检查网络是否正常");
 											}
@@ -286,9 +283,8 @@ if ($is_login) connectdb();
 										Swal.showLoading();
 										$.get(`api.php?m=ADMINAPI&act=SvipSettingNormalAccount&id=${id}`, function(data, status) {
 											if (status == "success") {
-												var json = JSON.parse(data);
-												Swal.fire(json.msg);
-												if (json.refresh == true) setTimeout("location.reload();", 3000);
+												Swal.fire(data.msg);
+												if (data.refresh == true) setTimeout("location.reload();", 3000);
 											} else {
 												Swal.fire("请求错误，请检查网络是否正常");
 											}
@@ -301,15 +297,15 @@ if ($is_login) connectdb();
 								<form class="ajaxform" action="api.php?m=ADMINAPI&act=singleBDUSS">
 									<div class="form-group">
 										<label>账号名称</label>
-										<input type="text" class="form-control form-control-sm" name="name">
+										<input type="text" class="form-control" name="name">
 									</div>
 									<div class="form-group">
 										<label>BDUSS</label>
-										<input type="text" class="form-control form-control-sm" name="BDUSS">
+										<input type="text" class="form-control" name="BDUSS">
 									</div>
 									<div class="form-group">
 										<label>STOKEN</label>
-										<input type="text" class="form-control form-control-sm" name="STOKEN">
+										<input type="text" class="form-control" name="STOKEN">
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
 								</form>
@@ -319,11 +315,11 @@ if ($is_login) connectdb();
 								<form class="ajaxform" action="api.php?m=ADMINAPI&act=multiBDUSS">
 									<div class="form-group">
 										<label>账号名称</label>
-										<input type="text" class="form-control form-control-sm" name="name">
+										<input type="text" class="form-control" name="name">
 									</div>
 									<div class="form-group">
 										<label>MULTI BDUSS</label>
-										<textarea type="text" class="form-control form-control-sm" name="MULTI_BDUSS" style="height: 200px;" placeholder="liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号&#13;&#10;liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号"></textarea>
+										<textarea type="text" class="form-control" name="MULTI_BDUSS" style="height: 200px;" placeholder="liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号&#13;&#10;liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号"></textarea>
 										<small>每行设置一个账号，每行格式：BDUSS----STOKEN----账号名称<br />如账号名称为空，则将使用上方设置的统一账号名称</small>
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
@@ -388,16 +384,16 @@ if ($is_login) connectdb();
 								<form class="ajaxform" action="api.php?m=ADMINAPI&act=NewIp">
 									<div class="form-group">
 										<label>IP地址</label>
-										<input type="text" class="form-control form-control-sm" name="ip">
+										<input type="text" class="form-control" name="ip">
 										<small>现在已经支持对 IP 地址进行模糊匹配，您可以使用“%”代替任意个字符，“_”代替单个字符，更多使用方法请自行搜索 <a href="https://cn.bing.com/search?q=SQL+%E9%80%9A%E9%85%8D%E7%AC%A6" target="_blank" title="SQL 通配符 - 国内版 Bing">SQL 通配符</a>。</small>
 									</div>
 									<div class="form-group">
 										<label>备注</label>
-										<input type="text" class="form-control form-control-sm" name="remark">
+										<input type="text" class="form-control" name="remark">
 									</div>
 									<div class="form-group">
 										<label>账号种类</label>
-										<select class="form-control form-control-sm" name="type">
+										<select class="form-control" name="type">
 											<option value="0">白名单</option>
 											<option value="-1">黑名单</option>
 										</select>
@@ -432,7 +428,7 @@ if ($is_login) connectdb();
 								<form class="ajaxform" action="api.php?m=ADMINAPI&act=setDownloadTimes">
 									<div class="form-group">
 										<label>下载次数</label>
-										<input type="text" class="form-control form-control-sm" name="DownloadTimes">
+										<input type="text" class="form-control" name="DownloadTimes">
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
 								</form>
@@ -745,9 +741,8 @@ if ($is_login) connectdb();
 			Swal.showLoading();
 			$.get(`api.php?m=ADMINAPI&act=DeleteById&id=${Id}&type=${Type}`, function(data, status) {
 				if (status == "success") {
-					var json = JSON.parse(data);
-					Swal.fire(json.msg);
-					if (json.refresh == true) setTimeout("location.reload();", 3000);
+					Swal.fire(data.msg);
+					if (data.refresh == true) setTimeout("location.reload();", 3000);
 				} else {
 					Swal.fire("请求错误，请检查网络是否正常");
 				}

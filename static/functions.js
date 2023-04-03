@@ -8,31 +8,86 @@
  * @link https://space.bilibili.com/88197958
  *
  */
-function validateForm() {
-	var input = document.forms["form1"]["surl"];
-	var link = input.value;
-	if (link == null || link === "") { input.focus(); Swal.fire("提示", "请填写分享链接", "info"); return false; }
-	var uk = link.match(/uk=(\d+)/), shareid = link.match(/shareid=(\d+)/);
-	if (uk != null && shareid != null) {
-		input.value = "";
-		$("form").append(`<input type="hidden" name="uk" value="${uk[1]}"/><input type="hidden" name="shareid" value="${shareid[1]}"/>`);
-		return true;
+addEventListener('DOMContentLoaded', function () {
+	window.downloadpage = new bootstrap.Modal('#downloadpage', {
+		keyboard: false,
+		backdrop: 'static'
+	});
+
+});
+function http_build_query(params, numeric_prefix, arg_separator) {
+	let value, key, tmp = [];
+	const _http_build_query_helper = (key, val, arg_separator) => {
+		let k, tmp = [];
+		if (val === true) {
+			val = "1";
+		} else if (val === false) {
+			val = "0";
+		}
+		if (val !== null) {
+			if (typeof val === "object") {
+				for (k in val) {
+					if (val[k] !== null) {
+						tmp.push(_http_build_query_helper(key + "[" + k + "]", val[k], arg_separator));
+					}
+				}
+				return tmp.join(arg_separator);
+			} else if (typeof val !== "function") {
+				return encodeURIComponent(key) + "=" + encodeURIComponent(val);
+			} else {
+				throw new Error('There was an error processing for http_build_query().');
+			}
+		} else {
+			return '';
+		}
+	};
+
+	if (!arg_separator) {
+		arg_separator = "&";
 	}
-	var surl = link.match(/surl=([A-Za-z0-9-_]+)/);
-	if (surl == null) {
-		surl = link.match(/1[A-Za-z0-9-_]+/);
-		if (surl == null) {
-			input.focus(); Swal.fire("提示", "分享链接填写有误，请检查", "info"); return false;
-		} else surl = surl[0];
-	} else surl = "1" + surl[1];
-	input.value = surl;
-	return true;
+	for (key in params) {
+		value = params[key];
+		if (numeric_prefix && !isNaN(key)) {
+			key = String(numeric_prefix) + key;
+		}
+		let query = _http_build_query_helper(key, value, arg_separator);
+		if (query !== '') {
+			tmp.push(query);
+		}
+	}
+
+	return tmp.join(arg_separator);
 }
-function dl(fs_id, timestamp, sign, randsk, share_id, uk) {
-	var form = $('<form method="post" action="?download" target="_blank"></form>');
-	form.append(`<input type="hidden" name="fs_id" value="${fs_id}"/><input type="hidden" name="time" value="${timestamp}"/><input type="hidden" name="sign" value="${sign}"/>
-		<input type="hidden" name="randsk" value="${randsk}"/><input type="hidden" name="share_id" value="${share_id}"/><input type="hidden" name="uk" value="${uk}"/>`);
-	$(document.body).append(form); form.submit();
+// https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+function formatBytes(a, b = 2) {
+	if (0 === a) return "0 Bytes";
+	const c = 0 > b ? 0 : b,
+		d = Math.floor(Math.log(a) / Math.log(1024));
+	return parseFloat((a / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
+}
+function formatDate(time, format = 'YY-MM-DD hh:mm:ss') {
+	if (time == undefined) return "--";
+	time = Number(time + "000");
+	var date = new Date(time);
+
+	var year = date.getFullYear(),
+		month = date.getMonth() + 1,
+		day = date.getDate(),
+		hour = date.getHours(),
+		min = date.getMinutes(),
+		sec = date.getSeconds();
+	var preArr = Array.apply(null, Array(10)).map(function (elem, index) {
+		return '0' + index;
+	});
+
+	var newTime = format.replace(/YY/g, year)
+		.replace(/MM/g, preArr[month] || month)
+		.replace(/DD/g, preArr[day] || day)
+		.replace(/hh/g, preArr[hour] || hour)
+		.replace(/mm/g, preArr[min] || min)
+		.replace(/ss/g, preArr[sec] || sec);
+
+	return newTime;
 }
 function getIconClass(filename) {
 	var filetype = {
@@ -94,31 +149,34 @@ function SubmitLink() {
 		Swal.fire("Tip", "提取码错误，请检查", "info");
 		return false;
 	}
-	OpenRoot(surl, pw);
-	$("#index").hide();
-	$("#list").show();
-}
-function getCookie(name) {
-	var nameEQ = name + "=";
-	var ca = document.cookie.split(';');
-	for (var i = 0; i < ca.length; i++) {
-		var c = ca[i];
-		while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-	}
-	return null;
+
+	var password = $("[name='password']").val();
+
+	OpenRoot(surl, pw, password);
+	navigate('list')
 }
 function addUri() {
+	Swal.fire({
+		title: '正在添加下载任务',
+		html: '请稍后...',
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+		allowEnterKey: false,
+		showConfirmButton: false,
+		onOpen: () => {
+			Swal.showLoading();
+		}
+	});
 	//配置
 	var wsurl = $('#wsurl').val();
-	var uris = [$('#http')[0].href, $('#https')[0].href];
+	var uris = [$('input#downloadlink').val()];
 	var token = $('#token').val();
-	var filename = $('#filename b').text();;
-
+	var filename = $('b#filename').text();
+	var ua = $('b#ua').text();
 
 	var options = {
 		"max-connection-per-server": "16",
-		"user-agent": "LogStatistic"
+		"user-agent": ua
 	};
 	if (filename != "") {
 		options.out = filename;
@@ -209,44 +267,18 @@ async function getAPI(method) { // 获取 API 数据
 	}
 }
 
-function Backtoindex() {
+function navigate(path) {
+	if (path && path.substring(0, 1) === "/") path = path.substring(1);
+	$("#index").hide();
 	$("#list").hide();
-	$("#index").show();
+	$("#help").hide();
+	$("#usersettings").hide();
+
+	if (path == "" || $(`div.page#${path}`).length == 0) path = "index";
+	window.location.hash = "/" + path;
+	$(`#${path}`).show();
 }
-// https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
-function formatBytes(a, b = 2) {
-	if (0 === a) return "0 Bytes";
-	const c = 0 > b ? 0 : b,
-		d = Math.floor(Math.log(a) / Math.log(1024));
-	return parseFloat((a / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
-}
-
-function formatDate(time, format = 'YY-MM-DD hh:mm:ss') {
-	if (time == undefined) return "--";
-	time = Number(time + "000");
-	var date = new Date(time);
-
-	var year = date.getFullYear(),
-		month = date.getMonth() + 1,
-		day = date.getDate(),
-		hour = date.getHours(),
-		min = date.getMinutes(),
-		sec = date.getSeconds();
-	var preArr = Array.apply(null, Array(10)).map(function (elem, index) {
-		return '0' + index;
-	});
-
-	var newTime = format.replace(/YY/g, year)
-		.replace(/MM/g, preArr[month] || month)
-		.replace(/DD/g, preArr[day] || day)
-		.replace(/hh/g, preArr[hour] || hour)
-		.replace(/mm/g, preArr[min] || min)
-		.replace(/ss/g, preArr[sec] || sec);
-
-	return newTime;
-}
-
-async function OpenRoot(surl, pwd) {
+async function OpenRoot(surl, pwd, password = "") {
 	Swal.fire({
 		title: "正在获取文件列表",
 		icon: "info",
@@ -256,11 +288,15 @@ async function OpenRoot(surl, pwd) {
 	});
 	Swal.showLoading();
 	try {
-		data = `surl=${surl}&pwd=${pwd}`;
+		data = {
+			surl,
+			pwd,
+			password
+		}
 		await fetch(`api.php?m=GetList`, { // fetch API
 			credentials: 'same-origin',
 			method: 'POST',
-			body: data,
+			body: http_build_query(data),
 			headers: new Headers({
 				'Content-Type': 'application/x-www-form-urlencoded'
 			})
@@ -275,15 +311,15 @@ async function OpenRoot(surl, pwd) {
 					Swal.close();
 				} else {
 					// fail
-					Swal.fire(json.title, json.msg, "error");
-					Backtoindex();
+					Swal.fire(json.title || "获取文件列表失败", json.msg, "error");
+					navigate('index');
 				}
 
 			});
 
 	} catch (reason) {
 		Swal.fire("获取文件列表失败", "连接服务器过程中出现异常，消息：" + reason.message, "error");
-		Backtoindex();
+		navigate('index');
 	}
 }
 
@@ -297,13 +333,14 @@ async function OpenDir(path) {
 	});
 	Swal.showLoading();
 	try {
-		randsk = encodeURIComponent(files.dirdata.randsk);
-		dir = encodeURIComponent(path);
-		data = `surl=${files.dirdata.surl}&pwd=${files.dirdata.pwd}&dir=${dir}&randsk=${randsk}&uk=${files.dirdata.uk}&sign=${files.dirdata.sign}&time=${files.dirdata.timestamp}&shareid=${files.dirdata.shareid}`;
+		data = {
+			dir: path,
+			...files.dirdata
+		}
 		await fetch(`api.php?m=GetList`, { // fetch API
 			credentials: 'same-origin',
 			method: 'POST',
-			body: data,
+			body: http_build_query(data),
 			headers: new Headers({
 				'Content-Type': 'application/x-www-form-urlencoded'
 			})
@@ -318,7 +355,7 @@ async function OpenDir(path) {
 					Swal.close();
 				} else {
 					// fail
-					Swal.fire(json.title, json.msg, "error");
+					Swal.fire(json.title || "获取文件列表失败", json.msg, "error");
 				}
 
 			});
@@ -336,20 +373,19 @@ function LoadList(json) {
 		Swal.fire("无法加载列表", "请刷新页面重试，错误代码：" + files.error, "error");
 		return;
 	}
-	var Src = `<li class="breadcrumb-item"><a href="javascript:OpenRoot('${files.dirdata.surl}','${files.dirdata.pwd}');">All files</a></li>`;
+	window.files = files;
+	var Src = `<li class="breadcrumb-item"><a class="filename" href="javascript:OpenRoot('${files.dirdata.surl}','${files.dirdata.pwd}');">全部文件</a></li>`;
 	for (var i = 0; i < files.dirdata.src.length; i++) {
 		Dir = files.dirdata.src[i];
 		Active = (Dir.isactive) ? "active" : "";
 		fullsrc = Dir.fullsrc.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/\'/g, "\\\'"); // use &amp; to replace & to avoid error
-		Src = Src + `<li class="breadcrumb-item ${Active}"><a href="javascript:OpenDir('${fullsrc}');">${Dir.dirname}</a></li>`;
+		Src = Src + `<li class="breadcrumb-item ${Active}"><a class="filename" href="javascript:OpenDir('${fullsrc}');">${Dir.dirname}</a></li>`;
 	}
 	Src = Src + `<span class="mx-2">(${files.filenum} 个文件)<span>`;
 
 	$("#dir-list").html(Src);
 
 	var List = "";
-	var filesnum = 0;
-
 	for (var i = 0; i < files.filedata.length; i++) {
 		Files = files.filedata[i];
 		Time = formatDate(Files.uploadtime, 'YY/MM/DD hh:mm:ss');
@@ -358,17 +394,16 @@ function LoadList(json) {
 			// dir
 			path = Files.path.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/\'/g, "\\\'"); // use &amp; to replace & to avoid error
 			List = List + `<li class="list-group-item border-muted text-muted py-2" id="item${i}"><i class="far fa-folder mr-2"></i>
-<a href="javascript:OpenDir('${path}');" class="filename">${Files.name}</a>
+<a onclick="OpenDir('${path}');" class="filename">${Files.name}</a>
 <br><span>${Num} | ${Time}</span>
 </li>`
 		} else {
 			// file
 			Size = formatBytes(Files.size);
 			List = List + `<li class="list-group-item border-muted text-muted py-2" id="item${i}"><i class="far fa-file mr-2"></i>
-<a href="javascript:Download('${i}');" class="filename">${Files.name}</a>
+<a onclick="Download('${i}');" class="filename">${Files.name}</a>
 <br><span>${Num} | ${Time} | ${Size}</span>
 </li>`;
-			filesnum++;
 		}
 	}
 	$("#files-list").html(List);
@@ -380,5 +415,139 @@ function LoadList(json) {
 			if ($.inArray(icon, ['fa-windows', 'fa-android', 'fa-apple']) >= 0) $(this).removeClass("far").addClass("fab");
 			$(this).removeClass("fa-file").addClass(icon);
 		}
+	});
+}
+async function Download(index = 0) {
+	Swal.fire({
+		title: "正在获取下载链接",
+		icon: "info",
+		html: "请稍候...",
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+	});
+	Swal.showLoading();
+	files = window.files;
+	downloadfile = files.filedata[index];
+
+	data = {
+		fs_id: downloadfile.fs_id,
+		...files.dirdata
+	}
+
+	try {
+		await fetch(`api.php?m=Download`, { // fetch API
+			credentials: 'same-origin',
+			method: 'POST',
+			body: http_build_query(data),
+			headers: new Headers({
+				'Content-Type': 'application/x-www-form-urlencoded'
+			})
+		}).then(function (response) {
+			return response.json();
+		}).then(function (json) {
+			console.log(json);
+			if (json.error == 0) {
+				Swal.close();
+				// success
+				Size = formatBytes(json.filedata.size);
+				Time = formatDate(json.filedata.uploadtime, 'YY/MM/DD hh:mm:ss');
+
+				html = `<div class="list-group">
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">文件名称</label>
+                <div class="col-sm-9">
+                    <b id="filename">${json.filedata.filename}</b>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">文件大小</label>
+                <div class="col-sm-9">
+                    <b>${Size}</b>
+                </div>
+            </div>
+			<div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">MD5</label>
+                <div class="col-sm-9">
+                    <b>${json.filedata.md5}</b>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">上传时间</label>
+                <div class="col-sm-9">
+                    <b>${Time}</b>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">User-Agent</label>
+                <div class="col-sm-9">
+                    <b id="ua">${json.user_agent}</b>
+                </div>
+            </div>`
+				if (json.filedata.size <= 52428800) {
+					html = html + `
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">下载地址</label>
+                <div class="col-sm-9 input-group">
+                    <input class="form-control" id="downloadlink" aria-describedby="copy" value="${json.directlink}"/>
+                    <a type="button" class="btn btn-outline-secondary" id="copy" href="${json.directlink}" target="_blank"><i class="fas fa-download"></i></a>
+                </div>
+            </div>
+        </div>`;
+				} else {
+					html = html + `
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">下载地址</label>
+                <div class="col-sm-9 input-group">
+                    <input class="form-control" id="downloadlink" aria-describedby="copy" value="${json.directlink}"/>
+                    <button type="button" class="btn btn-outline-secondary" id="copy" onclick="CopyDownloadlink()"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+        </div>`;
+				}
+				$("#downloadlinkdiv").html(html);
+				if (json.directlink.indexOf("//qdall01") != -1) {
+					$("#limit-tip").show();
+				} else {
+					$("#limit-tip").hide();
+				}
+				downloadpage.show();
+				try {
+					let filec_address = create_fileu_address({
+						uri: json.directlink,
+						user_agent: json.user_agent,
+						file_name: json.filedata.filename
+					});
+					$("#filecxx").attr("href", filec_address);
+					$("#filecxx").show();
+				} catch (e) {
+					$("#filecxx").hide();
+				}
+
+			} else {
+				Swal.fire(json.title || "获取下载链接失败", json.msg, "error");
+			}
+
+		});
+
+	} catch (reason) {
+		Swal.fire("获取下载链接失败", reason.message, "error");
+	}
+
+}
+function CopyDownloadlink() {
+	navigator.clipboard.writeText($("input#downloadlink").val()).then(function () {
+		console.log('Copying to clipboard was successful!');
+	}, function (err) {
+		console.error('Could not copy text: ', err);
+		$("input#downloadlink").select();
+		document.execCommand("copy");
+	}).then(function () {
+		Swal.fire({
+			title: "成功复制下载链接",
+			html: "请设置下载器的 User-Agent 为 <b id='ua'>" + $("#ua").text() + "</b> 后下载，参考使用帮助",
+			timer: 3000,
+			timerProgressBar: true,
+			icon: "success"
+		});
 	});
 }

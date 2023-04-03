@@ -1,14 +1,14 @@
 const colorMode = localStorage.getItem('colorMode'); // 获取色彩模式配置
 { // 限制变量作用域
 	function DarkMod() { // 更改为深色模式
-		document.querySelector('#ColorMode-Light').disabled = true;
-		document.querySelector('#ColorMode-Dark').disabled = false;
+		document.querySelector('html').setAttribute('data-bs-theme', 'dark');
+
 		document.querySelector('#Swal2-Light').disabled = true;
 		document.querySelector('#Swal2-Dark').disabled = false;
 	}
 	function LightMod() { // 更改为浅色模式
-		document.querySelector('#ColorMode-Dark').disabled = true;
-		document.querySelector('#ColorMode-Light').disabled = false;
+		document.querySelector('html').setAttribute('data-bs-theme', 'light');
+
 		document.querySelector('#Swal2-Dark').disabled = true;
 		document.querySelector('#Swal2-Light').disabled = false;
 	}

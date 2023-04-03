@@ -53,7 +53,7 @@ if (!$BDUSS or !$STOKEN or !$csrfToken or !$BAIDUID) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=./install.php');
-	die("HTTP 503 服务不可用！\r\n配置错误，使用本项目必须配置**完整**的普通账号 Cookie！\r\n请重安装此项目！\r\n将在五秒内跳转到安装界面！");
+	die("HTTP 503 服务不可用！\r\n配置错误，使用本项目必须配置**完整**的普通账号 Cookie！\r\n请重新安装此项目！\r\n将在五秒内跳转到安装界面！");
 }
 
 // 通用响应头
@@ -67,7 +67,7 @@ if (DEBUG) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="light">
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -81,55 +81,29 @@ if (DEBUG) {
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
-	<link rel="stylesheet" id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
-	<link rel="stylesheet" id="ColorMode-Dark" href="https://fastly.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
-	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/@keeex/qrcodejs-kx"></script>
-	<script src="http://filecxx.com/script/create_filec_address.js"></script>
+	<script src="https://filecxx.com/script/create_filec_address.js"></script>
 	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
 	<script src="static/functions.js?v=<?php echo programVersion; ?>"></script>
-	<script defer src="static/ready.js?v=<?php echo programVersion; ?>"></script>
-	<script>
-		var USING_DB = <?php echo USING_DB ? "true" : "false"; ?>;
-		var IsConfirmDownload = <?php echo IsConfirmDownload ? "true" : "false"; ?>;
-
-		function confirmdl(fs_id, timestamp, sign, randsk, share_id, uk) {
-			if (!USING_DB || !IsConfirmDownload) {
-				dl(fs_id, timestamp, sign, randsk, share_id, uk)
-				return
-			}
-
-			Swal.fire({
-				title: "<?php echo Language["ConfirmTitle"] ?>",
-				html: "<?php echo Language["ConfirmText"] ?>",
-				icon: "warning",
-				showCancelButton: true,
-				confirmButtonText: "<?php echo Language["ConfirmmButtonText"] ?>",
-				reverseButtons: true
-			}).then(function(e) {
-				if (e.isConfirmed) {
-					dl(fs_id, timestamp, sign, randsk, share_id, uk);
-				}
-			});
-		}
-	</script>
+	<script async="false" src="static/ready.js?v=<?php echo programVersion; ?>"></script>
 </head>
 
 <body>
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<div class="container">
-			<a class="navbar-brand" href="./"><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO" />PanDownload</a>
-			<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
+			<a class="navbar-brand" href="./"><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO" /> PanDownload</a>
+			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="./"><?php echo Language["IndexButton"]; ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="?help" target="_blank"><?php echo Language["HelpButton"]; ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="?usersettings"><?php echo Language["UserSettings"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('index')"><?php echo Language["IndexButton"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('help')"><?php echo Language["HelpButton"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('usersettings')"><?php echo Language["UserSettings"]; ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github</a></li>
 				</ul>
 			</div>
@@ -141,12 +115,10 @@ if (DEBUG) {
 			echo '<script>console.log("$_GET",' . json_encode($_GET) . ')</script>';
 			echo '<script>console.log("$_POST",' . json_encode($_POST) . ')</script>';
 		}
-		if (isset($_GET["help"])) echo Language["HelpPage"]; // 帮助页
-		elseif (isset($_GET["usersettings"])) require("./common/usersettings.php"); // 用户设置页面
-		elseif (isset($_GET["download"])) require("./common/download.php");  // 解析下载地址页面
-		else require("./common/index.php"); // 首页
 
-		echo Footer; ?>
+		require("./common/index.php"); // 首页
+		echo Footer;
+		?>
 	</div>
 
 	<?php

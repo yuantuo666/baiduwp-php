@@ -1,5 +1,5 @@
 <?php
-require_once('./common/list.php');
+require_once('./common/Parse.php');
 
 /**
  * PanDownload 网页复刻版，PHP 语言版API文件
@@ -59,7 +59,7 @@ if ($method === "CheckMySQLConnect") {
 		exit;
 	}
 	EchoInfo(0, array("msg" => "成功连接并创建数据库 $dbname 。"));
-	die();
+	exit;
 }
 
 if (!file_exists('./common/invalidCheck.php')) {
@@ -71,15 +71,8 @@ if (!file_exists('./common/invalidCheck.php')) {
 require('./common/invalidCheck.php');
 // 导入配置和函数
 require('./config.php');
-// 通用响应头
-header('Content-Type: text/html; charset=utf-8');
-header('X-UA-Compatible: IE=edge,chrome=1');
-// 隐藏错误代码，保护信息安全
-if (DEBUG) {
-	error_reporting(E_ALL);
-} else {
-	error_reporting(0); // 关闭错误报告
-}
+error_reporting(0); // 关闭错误报告
+
 $is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
 if ($method == "ADMINAPI") {
 	if (!$is_login) {
@@ -93,10 +86,12 @@ if ($method == "ADMINAPI") {
 	switch ($action) {
 		case "AnalyseGetTable":
 			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
+			header('Content-Type: text/html; charset=utf-8');
 			echo GetAnalyseTablePage($page);
 			break;
 		case "SvipGetTable":
 			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
+			header('Content-Type: text/html; charset=utf-8');
 			echo GetSvipTablePage($page);
 			break;
 		case "singleBDUSS":
@@ -195,6 +190,7 @@ if ($method == "ADMINAPI") {
 			break;
 		case "IPGetTable":
 			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
+			header('Content-Type: text/html; charset=utf-8');
 			echo GetIPTablePage($page);
 			break;
 		case "NewIp":
@@ -305,7 +301,7 @@ switch ($method) {
 		$SvipStateMsg = ($SvipState) ? "状态正常" : "已被限速";
 		$SvipTips = ($SvipState) ? "正常" : "限速";
 		EchoInfo(0, array(
-			"msg" => "SVIP账号状态<br /><div align='left'>上次解析时间：" . $Time . "<br />上次解析状态：" . $SvipStateMsg . "</div>",
+			"msg" => "SVIP账号状态<br />上次解析: " . $Time . "<br />账号状态: " . $SvipStateMsg,
 			"svipstate" => $SvipState,
 			"sviptips" => $SvipTips
 		));
@@ -332,7 +328,7 @@ switch ($method) {
 		// 存在数据
 		$AllCount = $Result["AllCount"];
 		$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
-		$ParseCountMsg =  "累计解析 $AllCount 个，共 $AllSize";
+		$ParseCountMsg =  "累计解析: $AllCount ($AllSize)";
 
 		$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());"; // 获取今天的解析量
 		$mysql_query = mysqli_query($conn, $sql);
@@ -344,7 +340,7 @@ switch ($method) {
 		// 存在数据
 		$AllCount = $Result["AllCount"];
 		$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
-		$TodayParseCountMsg =  "今日解析 $AllCount 个，共 $AllSize";
+		$TodayParseCountMsg =  "今日解析: $AllCount ($AllSize)";
 		EchoInfo(0, array("msg" => "系统使用统计<br /><div align='left'>$ParseCountMsg<br />$TodayParseCountMsg</div>"));
 		break;
 	case "CheckUpdate":
@@ -357,20 +353,53 @@ switch ($method) {
 			$enforce = true;
 		}
 		$result = CheckUpdate($includePreRelease, $enforce); // 获取结果
-		header('Content-Type: application/json; charset=utf-8'); // 设置响应头
 		echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); // 输出响应
 		break;
 	case "GetList":
 		// 获取文件列表
+		if (!CheckPassword()) {
+			// 密码错误
+			EchoInfo(-1, array("msg" => "网站访问密码错误"));
+			exit;
+		}
 		$surl = $_POST["surl"] ?? ""; // 获取surl
 		$pwd = $_POST["pwd"] ?? ""; // 获取密码
 		$dir = $_POST["dir"] ?? ""; // 获取目录
 		$sign = $_POST["sign"] ?? "";
 		$timestamp = $_POST["timestamp"] ?? "";
 		$result = Parse::getList($surl, $pwd, $dir, $sign, $timestamp);
-		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($result);
 		break;
+	case "Download":
+		// 下载文件
+		if (!CheckPassword()) {
+			// 密码错误
+			EchoInfo(-1, array("msg" => "网站访问密码错误"));
+			exit;
+		}
+		$fs_id = $_POST["fs_id"] ?? "";
+		$timestamp = $_POST["timestamp"] ?? "";
+		$sign = $_POST["sign"] ?? "";
+		$randsk = $_POST["randsk"] ?? "";
+		$shareid = $_POST["shareid"] ?? "";
+		$uk = $_POST["uk"] ?? "";
+
+		$result = Parse::download($fs_id, $timestamp, $sign, $randsk, $shareid, $uk);
+		echo json_encode($result);
+		break;
+	case "Password":
+		// 密码验证
+		if (!IsCheckPassword) {
+			echo json_encode(array("status" => 0, "msg" => "Never Gonna Let You Down"));
+			exit;
+		}
+		if ($_SESSION["Password"] ?? "1234" === Password) {
+			echo json_encode(array("status" => 2, "msg" => "意大利面拌42号混凝土"));
+			exit;
+		}
+		echo json_encode(array("status" => 1, "msg" => "Never Gonna Give You Up"));
+		exit;
 	default:
 		EchoInfo(-1, array("msg" => "无传入数据"));
+		exit;
 }
