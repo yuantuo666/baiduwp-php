@@ -37,7 +37,7 @@ header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
 ?>
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html data-bs-theme="light" lang="zh-CN">
 
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -46,14 +46,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<meta name="author" content="LC" />
 	<title>PanDownload 复刻版 - 安装程序</title>
 	<link rel="icon" href="favicon.ico" />
+	<link rel="stylesheet" href="static/index.css?r=<?php echo random_int(1000, 9999); ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Light" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="ColorMode-Dark" href="https://fastly.jsdelivr.net/gh/vinorodrigues/bootstrap-dark@0.0.9/dist/bootstrap-dark.min.css" />
+	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Light" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
-	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="static/color.js?r=<?php echo random_int(1000, 9999); ?>"></script>
 	<script>
@@ -171,14 +170,14 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				<hr>
 				<p>为减少一些不必要的错误，请仔细阅读此安装提示。</p>
 				<p style="color: red;">因百度对 API 进行修改，更新版本后需要设置完整的 Cookie 参数，可通过 抓包 获取。</p>
-				<p>建议小白使用宝塔面板，保证 PHP 版本 ≥ 7.0.0 即可，其他保持默认设置即可完美使用本项目。</p>
+				<p>建议小白使用 宝塔面板/Docker ，保证 PHP 版本 ≥ 7.0.0 即可，其他保持默认设置即可完美使用本项目。</p>
 
 				<h5>初次安装时请检查：</h5>
 				<ol>
 					<li>请确认你的 PHP 版本 ≥ 7.0.0.</li>
 					<li>本项目不需要配置静态及其他设置，请保持默认。</li>
 					<li>请确认当前目录及目录下所有文件 PHP 有足够访问权限。</li>
-					<li>请确认已安装 curl 。</li>
+					<li>请确认已安装 curl 及其扩展。</li>
 					<li>请确认当前页面正确加载了 JavaScript 文件。如点击按钮无反映说明为正常加载，检查文件是否完整 并 刷新浏览器 一般能解决此问题。</li>
 				</ol>
 				<h5>软件更新时请检查：</h5>
@@ -196,7 +195,6 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				<ol>
 					<li>因使用的是分享接口，存在客户端未限速，本项目显示限速的情况。</li>
 					<li>获取账号的 BDUSS 和 STOKEN 之后不要退出登录，退出登录会使 BDUSS 和 STOKEN 失效。</li>
-					<li>（可选）你可以手动在安装项目目录下新建一个 notice.html 文件，当加载首页时会自动引用该文件。</li>
 				</ol>
 			</div>
 
@@ -262,7 +260,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<label class="col-sm-2 col-form-label">管理员密码设置</label>
 							<div class="col-sm-10">
 								<input class="form-control" name="ADMIN_PASSWORD" value="<?php echo $ADMIN_PASSWORD; ?>">
-								<small class="form-text">用于登录管理后台(setting.php)的密码。</small>
+								<small class="form-text">用于登录管理后台(/settings.php)的密码。</small>
 							</div>
 						</div>
 						<div class="form-group row">

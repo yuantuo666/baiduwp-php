@@ -22,7 +22,7 @@ a.filename:hover {
     margin-top: 7.0em;
 }
 
-.form-group input,
+input.form-control,
 .form-group button {
     height: 3em !important;
 }
@@ -111,4 +111,8 @@ nav.breadcrumb {
 
 [data-bs-theme="light"] nav.breadcrumb {
     background-color: #e9ecef;
+}
+
+.form-group.row {
+    margin-block: 10px;
 }
