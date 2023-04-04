@@ -11,11 +11,15 @@ class Parse
 {
 	public static function getList($surl, $pwd, $dir, $sign = "", $timestamp = "")
 	{
+		$message = [];
 		if (!$sign || !$timestamp) {
 			[$status, $sign, $timestamp] = GetSign($surl);
 			if ($status !== 0) {
 				$sign = '';
 				$timestamp = '1';
+				$message[] = "无传入，自动获取sign和timestamp失败, $sign";
+			} else {
+				$message[] = "无传入，自动获取sign和timestamp成功: $sign, $timestamp";
 			}
 		}
 
@@ -26,10 +30,10 @@ class Parse
 		// 获取所有文件 fix #86
 		while (true) {
 			$Filejson = self::getListApi($surl, $dir, $IsRoot, $pwd, $Page, $sign, $timestamp);
-			if ($Filejson["errno"] ?? 999 !== 0) {
-				return self::listError($Filejson);
-			}
 			if (DEBUG) $message[] = json_encode($Filejson);
+			if ($Filejson["errno"] ?? 999 !== 0) {
+				return self::listError($Filejson, $message);
+			}
 			foreach ($Filejson['data']['list'] as $v) {
 				$file_list[] = $v;
 			}
@@ -120,11 +124,10 @@ class Parse
 				// 存在 判断类型
 				if ($result["type"] == -1) {
 					// 黑名单
-					$isipwhite = FALSE;
-					return array("error" => -1, "msg" => "当前ip已被加入黑名单，请联系站长解封");
+					return array("error" => -1, "msg" => "当前ip已被加入黑名单，请联系站长解封", "ip" => $ip);
 				} elseif ($result["type"] == 0) {
 					// 白名单
-					$message[] = "当前ip为白名单~";
+					$message[] = "当前ip为白名单~ $ip";
 					$isipwhite = TRUE;
 				}
 			}
@@ -144,6 +147,11 @@ class Parse
 		$json4 = self::getDlink($fs_id, $timestamp, $sign, $randsk, $share_id, $uk, APP_ID);
 		$errno = $json4["errno"] ?? 999;
 		if ($errno !== 0) {
+			if (DEBUG) {
+				$message[] = "获取下载链接失败: " . json_encode($json4);
+			} else {
+				$message[] = "获取下载链接失败: " . $json4["error_msg"] ?? "未知错误";
+			}
 			return self::downloadError($json4, $message);
 		}
 
@@ -190,7 +198,7 @@ class Parse
 				$result = mysqli_fetch_assoc($mysql_query);
 				if ($result["Num"] >= DownloadTimes) {
 					// 提示无权继续
-					return array("error" => 1, "msg" => "今日解析次数已达上限，请明天再试");
+					return array("error" => 1, "msg" => "今日解析次数已达上限，请明天再试", "ip" => $ip);
 				}
 			}
 		}
@@ -220,10 +228,10 @@ class Parse
 				$mysql_query = mysqli_query($conn, $sql);
 				if ($mysql_query != false) {
 					// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
-					return array("error" => -1, "msg" => "SVIP账号自动切换成功，正在刷新页面重新获取下载链接", "refresh" => true);
+					return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
 				} else {
 					// SVIP账号自动切换失败
-					return array("error" => -1, "msg" => "SVIP账号自动切换失败");
+					return array("error" => -1, "msg" => "SVIP账号自动切换失败", "message" => $message);
 				}
 			}
 
@@ -243,7 +251,7 @@ class Parse
 			$mysql_query = mysqli_query($conn, $sql);
 			if ($mysql_query == false) {
 				// 保存错误
-				return array("error" => -1, "msg" => "数据库保存错误");
+				return array("error" => -1, "msg" => "数据库保存错误", "message" => $message);
 			}
 		}
 
@@ -276,10 +284,10 @@ class Parse
 		);
 		$result = json_decode(post($url, $data, $header), true);
 		return $result;
-		// 没有 referer 就 112, 没有 sekey 参数就 118, -20出现验证码
+		// 没有 sekey 参数就 118, -20出现验证码
 	}
 
-	private static function listError($Filejson)
+	private static function listError($Filejson, $message)
 	{
 		// 解析异常
 		$ErrorCode = $Filejson["errtype"] ?? ($Filejson["errno"] ?? 999);
@@ -293,13 +301,17 @@ class Parse
 			3 => "此链接分享内容可能因为涉及侵权、色情、反动、低俗等信息，无法访问！",
 			0 => "啊哦，你来晚了，分享的文件已经被删除了，下次要早点哟。",
 			10 => "啊哦，来晚了，该分享文件已过期",
-			8001 => "普通账号被限制，请检查普通账号状态",
-			9013 => "普通账号 Cookie 状态异常，请检查：Cookie 是否设置完整正确；账号是否被限制；Cookie 是否过期",
-			9019 => "普通账号 Cookie 状态异常，请检查：Cookie 是否设置完整正确；账号是否被限制；Cookie 是否过期",
+			8001 => "普通账号可能被限制，请检查普通账号状态",
+			9013 => "普通账号被限制，请检查普通账号状态",
+			9019 => "普通账号 Cookie 状态异常，请检查：账号是否被限制、Cookie 是否过期",
 			999 => "错误 -> " . json_encode($Filejson)
 		];
-		if (isset($ErrorMessage[$ErrorCode])) return array("error" => -1, "title" => "[微信API] 解析错误 ($ErrorCode)", "msg" => $ErrorMessage[$ErrorCode]);
-		else return array("error" => -1, "title" => "[微信API] 解析错误 ($ErrorCode)", "msg" => "未知错误代码:" . json_encode($Filejson));
+		return [
+			"error" => -1,
+			"title" => "获取列表错误 ($ErrorCode)",
+			"msg" => $ErrorMessage[$ErrorCode] ?? "未知错误，如多次出现请向提出issue反馈",
+			"message" => $message
+		];
 	}
 
 	private static function downloadError($json4, $message)
@@ -318,22 +330,32 @@ class Parse
 			118 => ["没有下载权限(118)", "没有下载权限，请求百度服务器时，未传入sekey参数或参数错误。"],
 			110 => ["服务器错误(110)", "服务器错误，可能服务器IP被百度封禁，请切换 IP 或更换服务器重试。"],
 			121 => ["服务器错误(121)", "你选择操作的文件过多，减点试试吧"],
-			8001 => ["普通账号错误(8001)", "普通账号被限制，请检查普通账号状态"],
+			8001 => ["普通账号错误(8001)", "普通账号可能被限制，请检查普通账号状态"],
 			9013 => ["普通账号错误(9013)", "普通账号被限制，请检查普通账号状态"],
-			9019 => ["普通账号错误(9019)", "普通账号 Cookie 状态异常，请检查：Cookie 是否设置完整正确；账号是否被限制；Cookie 是否过期"],
+			9019 => ["普通账号错误(9019)", "普通账号 Cookie 状态异常，请检查：账号是否被限制、Cookie 是否过期"],
 		];
 
-		if (isset($error[$errno])) return ["error" => -1, "title" => $error[$errno][0], "msg" => $error[$errno][1], "message" => $message];
-		else return ["error" => -1, "title" => "获取下载链接失败 ($errno)", "msg" => "未知错误！错误：" . json_encode($json4), "message" => $message];
+		if (isset($error[$errno])) return [
+			"error" => -1,
+			"title" => $error[$errno][0],
+			"msg" => $error[$errno][1],
+			"message" => $message
+		];
+		else return [
+			"error" => -1,
+			"title" => "获取下载链接失败 ($errno)",
+			"msg" => "未知错误！错误：" . json_encode($json4),
+			"message" => $message
+		];
 	}
 
 	private static function realLinkError($body_decode, $message)
 	{
 		$ErrorCode = $body_decode["errno"] ?? 999;
 		$ErrorMessage = [
-			8001 => "SVIP 账号状态异常，请检查 SVIP 的 BDUSS 和 STOKEN 是否设置正确且有效",
-			9013 => "SVIP 账号状态异常，请检查 SVIP 的 BDUSS 和 STOKEN 是否设置正确且有效",
-			9019 => "SVIP 账号状态异常，请检查 SVIP 的 BDUSS 和 STOKEN 是否设置正确且有效",
+			8001 => "SVIP 账号可能被限制，请检查 SVIP 的 BDUSS 是否设置正确且有效",
+			9013 => "SVIP 账号被限制，请检查更换 SVIP 账号",
+			9019 => "SVIP 账号可能被限制，请检查 SVIP 的 BDUSS 是否设置正确且有效",
 			999 => "错误 -> " . json_encode($body_decode)
 		];
 
