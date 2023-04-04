@@ -29,6 +29,7 @@ class Parse
 			if ($Filejson["errno"] ?? 999 !== 0) {
 				return self::listError($Filejson);
 			}
+			if (DEBUG) $message[] = json_encode($Filejson);
 			foreach ($Filejson['data']['list'] as $v) {
 				$file_list[] = $v;
 			}
@@ -65,7 +66,7 @@ class Parse
 		);
 
 		foreach ($file_list as $file) {
-			if ($file["isdir"] === 0) {
+			if ($file["isdir"] == 0) { // 根目录返回的居然是字符串 #255
 				//文件
 				$FileData[] = array(
 					"isdir" => 0,
@@ -88,7 +89,14 @@ class Parse
 			}
 		}
 
-		return array("error" => 0, "isroot" => $IsRoot, "dirdata" => $RootData, "filenum" => $Filenum, "filedata" => $FileData);
+		return array(
+			"error" => 0,
+			"isroot" => $IsRoot,
+			"dirdata" => $RootData,
+			"filenum" => $Filenum,
+			"filedata" => $FileData,
+			"message" => $message
+		);
 	}
 
 	public static function download($fs_id, $timestamp, $sign, $randsk, $share_id, $uk)
@@ -171,7 +179,7 @@ class Parse
 			if ($result) {
 				// 存在
 				$realLink = $result["realLink"];
-				return array("error" => 0, "usingcache" => true,"filedata" => $FileData, "directlink" => "https://" . $realLink, "user_agent" => "LogStatistic", "message" => $message);
+				return array("error" => 0, "usingcache" => true, "filedata" => $FileData, "directlink" => "https://" . $realLink, "user_agent" => "LogStatistic", "message" => $message);
 			}
 
 			// 判断今天内是否获取过文件
