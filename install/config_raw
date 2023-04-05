@@ -9,7 +9,7 @@
  */
 require_once "./common/invalidCheck.php";
 
-const programVersion = '3.0.0';
+const programVersion = '3.0.1';
 const Sitename = '<Sitename>';
 
 const Cookie = '<Cookie>';
