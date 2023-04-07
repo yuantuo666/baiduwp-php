@@ -116,3 +116,25 @@ nav.breadcrumb {
 .form-group.row {
     margin-block: 10px;
 }
+
+.card {
+    margin-top: 3rem;
+}
+
+#Browser-ColorMode,
+#Browser-Language {
+    margin-right: 2rem;
+
+}
+
+.SaveTime {
+    margin-right: 0.8rem;
+}
+
+.card-item:not(:first-of-type) {
+    margin-top: 2rem;
+}
+
+select {
+    margin-top: 0.5rem;
+}

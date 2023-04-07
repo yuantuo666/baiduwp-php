@@ -155,30 +155,6 @@ require_once("./common/invalidCheck.php");
 	</script>
 </div>
 
-<style>
-	.card {
-		margin-top: 3rem;
-	}
-
-	#Browser-ColorMode,
-	#Browser-Language {
-		margin-right: 2rem;
-
-	}
-
-	.SaveTime {
-		margin-right: 0.8rem;
-	}
-
-	.card-item:not(:first-of-type) {
-		margin-top: 2rem;
-	}
-
-	select {
-		margin-top: 0.5rem;
-	}
-</style>
-
 <div class="card page" id="usersettings" style="display: none;">
 	<div class="card-header"><?php t("UserSettings") ?></div>
 	<div class="card-body">
