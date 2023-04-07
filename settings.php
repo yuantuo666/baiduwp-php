@@ -6,9 +6,7 @@
  * 设置及后台功能
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
- *
+ * @link https://github.com/yuantuo666/baiduwp-php
  */
 session_start();
 define('init', true);
@@ -513,99 +511,30 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 								<div class="row">
 									<div class="col-md-6 col-sm-12 card-item">
 										<h5>普通账号状态</h5>
-										<p class="card-text">
-											<?php
-											// 添加缓存 #253
-											// TODO: 后台也进行前后端分离
-											$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
-											$STOKEN = getSubstr(Cookie, 'STOKEN=', ';');
-											$cache_key = md5($BDUSS);
-											if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
-												$Status = $_SESSION['cache'][$cache_key]['data'];
-											} else {
-												$Status = AccountStatus($BDUSS, $STOKEN);
-												$_SESSION['cache'][$cache_key] = [
-													'time' => time(),
-													'data' => $Status
-												];
-											}
-											if ($Status[0] == 0) {
-												//正常
-												$AccountName = $Status[2];
-												echo "账号名称：$AccountName<br />";
-												if ($Status[3] == 1)
-													echo "登录状态：<span class=\"text-success\">正常</span><br />";
-												else
-													echo "登录状态：<span class=\"text-danger\">异常</span><br />";
-
-												$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
-												echo "会员状态：$AccountVIP<br />";
-												if ($Status[4] != 0) {
-													$AccountTime = time2Units($Status[4]);
-													if ($Status[4] <= 60480)
-														echo "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
-													else
-														echo "剩余时间：$AccountTime<br />";
-												}
-											} elseif ($Status[0] == -6) {
-												echo "id为 $id 的SVIP账号已经失效<br />";
-											} else {
-												echo "出现位置错误代码：" . $Status[0] . "<br />";
-											}
-											?>
+										<p class="card-text" id="normal_msg">
+											正在获取账号状态...
 										</p>
 										<br />
 									</div>
 									<div class="col-md-6 col-sm-12 card-item">
 										<h5>会员账号状态</h5>
-										<p class="card-text">
-											<?php
-											// 获取对应BDUSS
-											$DBSVIP = GetDBBDUSS();
-											$SVIP_BDUSS = $DBSVIP[0];
-											$id = $DBSVIP[1];
-											$SVIP_STOKEN = $DBSVIP[2];
-											if ($SVIP_STOKEN == "") {
-												echo "id为 $id 的SVIP账号没有设置对应STOKEN，无法检测<br />";
-											} else {
-												$cache_key = md5($SVIP_BDUSS);
-												if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
-													$Status = $_SESSION['cache'][$cache_key]['data'];
-												} else {
-													$Status = AccountStatus($SVIP_BDUSS, $SVIP_STOKEN);
-													$_SESSION['cache'][$cache_key] = [
-														'time' => time(),
-														'data' => $Status
-													];
-												}
-												if ($Status[0] == 0) {
-													$AccountName = $Status[2];
-													echo "账号名称：$AccountName<br />";
-													if ($Status[3] == 1)
-														echo "登录状态：<span class=\"text-success\">正常</span><br />";
-													else
-														echo "登录状态：<span class=\"text-danger\">异常</span><br />";
-
-													$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
-													echo "会员状态：$AccountVIP<br />";
-													if ($Status[4] != 0) {
-														$AccountTime = time2Units($Status[4]);
-														if ($Status[4] <= 60480)
-															echo "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
-														else
-															echo "剩余时间：$AccountTime<br />";
-													}
-												} elseif ($Status[0] == -6) {
-													echo "id为 $id 的SVIP账号已经失效<br />";
-												} else {
-													echo "出现位置错误代码：" . $Status[0] . "<br />";
-												}
-											}
-											?>
+										<p class="card-text" id="svip_msg">
+											正在获取账号状态...
 										</p>
 										<br />
 									</div>
 								</div>
+								<script>
+									$.get(`api.php?m=ADMINAPI&act=AccountStatus`, function(data, status) {
+										if (data.error == 0) {
+											$("#normal_msg").html(data.normal_msg);
+											$("#svip_msg").html(data.svip_msg);
+										} else {
+											$("#normal_msg").html("获取失败");
+											$("#svip_msg").html("获取失败");
+										}
+									});
+								</script>
 							</div>
 						</div>
 

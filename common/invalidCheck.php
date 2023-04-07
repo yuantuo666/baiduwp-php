@@ -6,8 +6,7 @@
  * 检查是否初始化
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
 if (!defined('init')) { // 直接访问处理程序

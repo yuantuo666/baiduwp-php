@@ -5,16 +5,11 @@
  *
  * 功能描述：使用百度 SVIP 账号获取真实下载地址，与 Pandownload 原版无关。
  *
- * 希望在使用时能够保留导航栏的 Github 感谢！
- *
- * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
-$programVersion_Index = "3.0.1";
+$programVersion_Index = "3.0.2";
 session_start();
 define('init', true);
 if (!file_exists('./common/invalidCheck.php')) {

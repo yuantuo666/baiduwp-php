@@ -7,8 +7,7 @@ require_once('./common/Parse.php');
  * 提供一些接口服务
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
 session_start();
@@ -80,10 +79,103 @@ if ($method == "ADMINAPI") {
 		EchoInfo(-1, array("msg" => "未登录"));
 		exit;
 	}
+	if (!USING_DB) {
+		EchoInfo(-1, array("msg" => "未启用数据库功能"));
+		exit;
+	}
 	connectdb();
 
 	$action = (!empty($_GET["act"])) ? $_GET["act"] : "";
 	switch ($action) {
+		case "AccountStatus":
+			// 普通账号
+			$return = "";
+			$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
+			$STOKEN = getSubstr(Cookie, 'STOKEN=', ';');
+			$cache_key = md5($BDUSS);
+			if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
+				$Status = $_SESSION['cache'][$cache_key]['data'];
+			} else {
+				$Status = AccountStatus($BDUSS, $STOKEN);
+				$_SESSION['cache'][$cache_key] = [
+					'time' => time(),
+					'data' => $Status
+				];
+			}
+			if ($Status[0] == 0) {
+				//正常
+				$AccountName = $Status[2];
+				$return .= "账号名称：$AccountName<br />";
+				if ($Status[3] == 1)
+					$return .= "登录状态：<span class=\"text-success\">正常</span><br />";
+				else
+					$return .= "登录状态：<span class=\"text-danger\">异常</span><br />";
+
+				$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
+				$return .= "会员状态：$AccountVIP<br />";
+				if ($Status[4] != 0) {
+					$AccountTime = time2Units($Status[4]);
+					if ($Status[4] <= 60480)
+						$return .= "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
+					else
+						$return .= "剩余时间：$AccountTime<br />";
+				}
+			} elseif ($Status[0] == -6) {
+				$return .= "id为 $id 的SVIP账号已经失效<br />";
+			} else {
+				$return .= "出现位置错误代码：" . $Status[0] . "<br />";
+			}
+			$normal_account_msg = $return;
+			$return = "";
+
+			// SVIP账号
+			// 获取对应BDUSS
+			$DBSVIP = GetDBBDUSS();
+			$SVIP_BDUSS = $DBSVIP[0];
+			$id = $DBSVIP[1];
+			$SVIP_STOKEN = $DBSVIP[2];
+			if ($SVIP_STOKEN == "") {
+				$return .= "id为 $id 的SVIP账号没有设置对应STOKEN，无法检测<br />";
+			} else {
+				$cache_key = md5($SVIP_BDUSS);
+				if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
+					$Status = $_SESSION['cache'][$cache_key]['data'];
+				} else {
+					$Status = AccountStatus($SVIP_BDUSS, $SVIP_STOKEN);
+					$_SESSION['cache'][$cache_key] = [
+						'time' => time(),
+						'data' => $Status
+					];
+				}
+				if ($Status[0] == 0) {
+					$AccountName = $Status[2];
+					$return .= "账号名称：$AccountName<br />";
+					if ($Status[3] == 1)
+						$return .= "登录状态：<span class=\"text-success\">正常</span><br />";
+					else
+						$return .= "登录状态：<span class=\"text-danger\">异常</span><br />";
+
+					$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
+					$return .= "会员状态：$AccountVIP<br />";
+					if ($Status[4] != 0) {
+						$AccountTime = time2Units($Status[4]);
+						if ($Status[4] <= 60480)
+							$return .= "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
+						else
+							$return .= "剩余时间：$AccountTime<br />";
+					}
+				} elseif ($Status[0] == -6) {
+					$return .= "id为 $id 的SVIP账号已经失效<br />";
+				} else {
+					$return .= "出现位置错误代码：" . $Status[0] . "<br />";
+				}
+			}
+
+			$svip_account_msg = $return;
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode(array("error" => 0, "normal_msg" => $normal_account_msg, "svip_msg" => $svip_account_msg));
+			break;
+
 		case "AnalyseGetTable":
 			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
 			header('Content-Type: text/html; charset=utf-8');

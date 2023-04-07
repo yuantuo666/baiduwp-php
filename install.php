@@ -5,12 +5,8 @@
  *
  * 功能描述：安装PanDownload 网页复刻版
  *
- * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
- *
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
 define('init', true);

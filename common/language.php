@@ -5,11 +5,8 @@
  *
  * 功能描述：为一些页面添加必要的语言翻译
  *
- * 此项目 GitHub 地址：https://github.com/yuantuo666/baiduwp-php
- *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
 require_once("./common/invalidCheck.php");

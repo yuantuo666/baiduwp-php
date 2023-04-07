@@ -8,8 +8,7 @@
  * 请勿随意修改此文件！如需更改相关配置请到 config.php ！
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
 if (!init) require_once("./common/invalidCheck.php");

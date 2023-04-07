@@ -4,8 +4,7 @@
  * PanDownload 网页复刻版，PHP 语言版
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  */
 class Parse
 {

@@ -4,12 +4,11 @@
  * ！！！请勿修改本文件，如果手动修改后再在后台设置，可能导致config.php文件被清空！！！
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  */
 require_once "./common/invalidCheck.php";
 
-const programVersion = '3.0.1';
+const programVersion = '3.0.2';
 const Sitename = '<Sitename>';
 
 const Cookie = '<Cookie>';

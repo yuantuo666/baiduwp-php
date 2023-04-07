@@ -4,8 +4,7 @@
  * 许多函数来源于github，详见项目里的Thanks
  *
  * @author Yuan_Tuo <yuantuo666@gmail.com>
- * @link https://imwcr.cn/
- * @link https://space.bilibili.com/88197958
+ * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
 addEventListener('DOMContentLoaded', function () {

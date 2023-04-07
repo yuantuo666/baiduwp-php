@@ -1,6 +1,6 @@
 # baiduwp-php
 
-> v3.0.1
+> v3.0.2
 
 Base URLs:
 
