@@ -535,13 +535,7 @@ async function Download(index = 0) {
 
 }
 function CopyDownloadlink() {
-	navigator.clipboard.writeText($("input#downloadlink").val()).then(function () {
-		console.log('Copying to clipboard was successful!');
-	}, function (err) {
-		console.error('Could not copy text: ', err);
-		$("input#downloadlink").select();
-		document.execCommand("copy");
-	}).then(function () {
+	function Success() {
 		Swal.fire({
 			title: "成功复制下载链接",
 			html: "请设置下载器的 User-Agent 为 <b id='ua'>" + $("#ua").text() + "</b> 后下载，参考使用帮助",
@@ -549,5 +543,24 @@ function CopyDownloadlink() {
 			timerProgressBar: true,
 			icon: "success"
 		});
-	});
+	}
+	function CopyDownloadlink_old() {
+		$("input#downloadlink").select();
+		document.execCommand("copy");
+		Success();
+	}
+
+	// In unsecure site will not work, add check
+	if (navigator.clipboard && window.isSecureContext) {
+		navigator.clipboard.writeText($("input#downloadlink").val()).then(function () {
+			console.log('Copying to clipboard was successful!');
+		}, function (err) {
+			console.error('Could not copy text: ', err);
+			CopyDownloadlink_old()
+		}).then(function () {
+			Success();
+		});
+	} else {
+		CopyDownloadlink_old()
+	}
 }

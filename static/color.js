@@ -43,7 +43,7 @@ const colorMode = localStorage.getItem('colorMode'); // 获取色彩模式配置
 				title: '色彩配置有误',
 				html: '色彩模式配置出现错误，已重置配置！<br/>按 OK 刷新页面。',
 				icon: 'warning',
-				footer: '<a href="?usersettings" target="_blank">点此去修改颜色模式的页面</a>'
+				footer: '<a href="./#/usersettings" target="_blank">点此去修改颜色模式的页面</a>'
 			}).then(function () {
 				location.reload(); // 重载页面
 			});

@@ -38,8 +38,6 @@ if (USING_DB == false and SVIPSwitchMod != 0) {
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
 	die("HTTP 503 服务不可用！\r\n配置错误，未启用数据库无法使用其他会员模式！无法正常运行程序！\r\n请重新 Clone 项目并配置！\r\n将在五秒内跳转到 GitHub 储存库！");
 }
-// 保存启动时间
-$system_start_time = microtime(true);
 // 导入配置和函数
 require('./common/language.php');
 require('./common/functions.php');
@@ -101,9 +99,9 @@ if (DEBUG) {
 			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('index')"><?php echo Language["IndexButton"]; ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('help')"><?php echo Language["HelpButton"]; ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('usersettings')"><?php echo Language["UserSettings"]; ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('index')"><?php t("IndexButton") ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('help')"><?php t("HelpButton") ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('usersettings')"><?php t("UserSettings") ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github</a></li>
 				</ul>
 			</div>
@@ -120,12 +118,6 @@ if (DEBUG) {
 		echo Footer;
 		?>
 	</div>
-
-	<?php
-	$system_end_time = microtime(true);
-	$system_runningtime = $system_end_time - $system_start_time;
-	echo "<script>console.log('后端计算时间 $system_runningtime 秒');</script>";
-	?>
 </body>
 
 </html>

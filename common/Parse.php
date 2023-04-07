@@ -221,7 +221,7 @@ class Parse
 		$realLink = trim($realLink); // delete space
 
 		// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
-		if (!$realLink || strlen($realLink) < 20 || strstr($realLink, "//qdall01")) {
+		if (!$realLink || strlen($realLink) < 20 || strstr($realLink, "qdall01")) {
 			if ($id != "-1" && (SVIPSwitchMod === 1 || SVIPSwitchMod === 2)) {
 				//限速进行标记 并刷新页面重新解析
 				$sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";

@@ -19,6 +19,7 @@ $lang = [
 		"ConfirmTitle" => "继续解析？",
 		"ConfirmText" => "为保证服务稳定，每个IP每天有" . DownloadTimes . "次免费解析次数，是否继续？",
 		"ConfirmmButtonText" => "确定",
+		"Connecting" => "请稍等，正在连接服务器...",
 		"IndexButton" => "首页",
 		"HelpButton" => "使用帮助",
 		"TipTitle" => "提示",
@@ -35,11 +36,13 @@ $lang = [
 		"NotSupportWithUA" => "暂不支持当前文件。",
 		"NotSupportWithoutUA" => "目前只支持 <b>50MB以下文件</b> 或 <b>设置UA</b> 后使用在线预览功能。",
 		"DownloadLink" => "下载链接",
+		"DownloadHelp" => "下载帮助（必读）",
 		"DownloadTip" => "Tips: 电脑端右键即可复制下载链接，手机端长按可复制下载链接。推荐使用 Aria2、Motrix 下载，速度更快，使用方法请访问帮助页面。",
 		"SendToAria2" => "发送到 Aria2",
 		"SendToFilecxx" => "发送到 文件蜈蚣",
 		"Send" => "发送",
 		"Close" => "关闭",
+		"Return" => "返回",
 		"IndexTitle" => "百度网盘在线解析",
 		"ShareLink" => "请输入分享链接(可输入带提取码链接)",
 		"SharePassword" => "请输入提取码(没有留空)",
@@ -54,6 +57,7 @@ $lang = [
 		"DarkMode" => "深色模式",
 		"LightMode" => "浅色模式",
 		"LanguageChoose" => "选择语言",
+		"LimittedDownload" => "当前 SVIP 账号已被限速，请更换账号。",
 		"SaveForever" => '将会永久保存。',
 		"Save365" => '将会保存 365 天，每次访问此项目会自动续期。',
 		"CurrentDisplayed" => "当前显示：",
@@ -153,6 +157,7 @@ $lang = [
 		"ConfirmTitle" => "Continue?",
 		"ConfirmText" => "You have " . DownloadTimes . " download times, continue?",
 		"ConfirmmButtonText" => "Yes",
+		"Connecting" => "Connecting to server, please wait...",
 		"IndexButton" => "Home",
 		"HelpButton" => "Using Help",
 		"TipTitle" => "Tip",
@@ -169,11 +174,13 @@ $lang = [
 		"NotSupportWithUA" => "The type is not support",
 		"NotSupportWithoutUA" => "The type is not support",
 		"DownloadLink" => "Download Link",
+		"DownloadHelp" => "Download Help (MUST READ)",
 		"DownloadTip" => "Tips: Copy the download link and put it in your download apps.",
 		"SendToAria2" => "Send to aria2",
 		"SendToFilecxx" => "Send to File Centipede",
 		"Send" => "Send",
 		"Close" => "Close",
+		"Return" => "Return",
 		"IndexTitle" => "Get Download Link of pan.baidu.com",
 		"ShareLink" => "Please enter the share link",
 		"SharePassword" => "Please enter the share link password",
@@ -188,6 +195,7 @@ $lang = [
 		"DarkMode" => "Dark mode",
 		"LightMode" => "Light mode",
 		"LanguageChoose" => "Choose a language",
+		"LimittedDownload" => "Current SVIP account in the system was limmited, wait website owner to fix it.",
 		"SaveForever" => 'Will be saved forever.',
 		"Save365" => 'It will be saved for 365 days and will be automatically renewed every time you visit this item.',
 		"CurrentDisplayed" => "Current displayed: ",
@@ -344,5 +352,11 @@ if (!defined('Lang')) { // 如果没有支持的语言
 	}
 }
 
-define("Language", $lang[Lang]); // 定义使用的语言
+// define("Language", $lang[Lang]); // 定义使用的语言
 header('Content-Language: ' . Lang); // 输出响应头
+
+function t($key)
+{
+	global $lang;
+	echo $lang[Lang][$key];
+}

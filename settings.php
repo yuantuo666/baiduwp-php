@@ -38,7 +38,6 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 		$PasswordError = true;
 	}
 }
-if ($is_login) connectdb();
 ?>
 
 <!DOCTYPE html>
@@ -119,6 +118,8 @@ if ($is_login) connectdb();
 				</div>
 			<?php } else {
 				// 登录后操作
+				if (!USING_DB) dl_error("数据库未启用，无法使用后台功能", "请在 <code>config.php</code> 中启用并正确配置数据库");
+				connectdb();
 			?>
 				<div class="col-md-12 col-sm-12 col-12">
 					<?php if ($method == "analyse") { ?>
@@ -571,7 +572,7 @@ if ($is_login) connectdb();
 												if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
 													$Status = $_SESSION['cache'][$cache_key]['data'];
 												} else {
-													$Status = AccountStatus($SVIP_BDUSS, $STOKEN);
+													$Status = AccountStatus($SVIP_BDUSS, $SVIP_STOKEN);
 													$_SESSION['cache'][$cache_key] = [
 														'time' => time(),
 														'data' => $Status
