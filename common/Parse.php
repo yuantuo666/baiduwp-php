@@ -181,7 +181,7 @@ class Parse
 		    {
 		    	$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL $DownloadLinkAvailableTime HOUR);";
 		    }elseif($dbtype === "sqlite") {
-		    	$sql = "SELECT * FROM \"$dbtable\" WHERE \"md5\"='$md5' AND \"ptime\" > strftime('%s', 'now', '-$DownloadLinkAvailableTime hour')*1000;";
+		    	$sql = "SELECT * FROM \"$dbtable\" WHERE \"md5\"='$md5' AND \"ptime\" > strftime('%s', datetime('now')) - $DownloadLinkAvailableTime * 3600;";
 		    }
 		    
 		    $result = fetch_assoc($sql);
@@ -198,7 +198,7 @@ class Parse
 		        if($dbtype === "mysql") {
 		    		$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND date(`ptime`)=date(now());";
 		    	}elseif($dbtype === "sqlite") {
-		    		$sql = "SELECT count(*) as Num FROM \"$dbtable\" WHERE \"userip\"='$ip' AND date(\"ptime\"/1000, 'unixepoch')=date('now');";
+		    		$sql = "SELECT count(*) as Num FROM \"$dbtable\" WHERE \"userip\"='$ip' AND date(\"ptime\") = date('now');";
 		    	}
 
 		        $result = fetch_assoc($sql);
@@ -232,7 +232,7 @@ class Parse
 		    if ($id != "-1" && (SVIPSwitchMod === 1 || SVIPSwitchMod === 2)) {
 		        //限速进行标记 并刷新页面重新解析
 		        $sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
-		        $result = execute_query($sql);
+		        $result = execute_exec($sql);
 		        if ($result != false) {
 		            // SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
 		            return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);

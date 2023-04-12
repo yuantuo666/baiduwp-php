@@ -405,7 +405,7 @@ switch ($method) {
 		}
 		// 开启了数据库
 		connectdb(true);
-
+		$dbtype = $GLOBALS['dbtype'];
 		$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable`";
 		$Result = fetch_assoc($sql);
 
@@ -419,7 +419,11 @@ switch ($method) {
 		$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 		$ParseCountMsg =  "累计解析: $AllCount ($AllSize)";
 
-		$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());"; // 获取今天的解析量
+		if ($dbtype === "mysql") {
+			$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());";
+		}elseif ($dbtype === "sqlite") {
+			$sql = "SELECT count(`id`) as AllCount, sum(`size`) as AllSize FROM \"$dbtable\" WHERE date(`ptime`) = date('now')";
+		}// 获取今天的解析量
 		$Result = fetch_assoc($sql);
 
 		if (!$Result) {
