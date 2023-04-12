@@ -14,51 +14,37 @@ session_start();
 define('init', true);
 require('./common/functions.php');
 $method = (!empty($_GET["m"])) ? $_GET["m"] : "";
+
 if ($method === "CheckMySQLConnect") {
-	if (file_exists('config.php')) {
-		// 如果已经安装过一次，必须管理员登录
-		$is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
-		if (!$is_login) { // 未登录
-			EchoInfo(-3, array("msg" => "请刷新页面后重新登录"));
-			exit;
-		}
-	}
-	error_reporting(0);
-	// 检查数据库连接是否正常
-	$servername = htmlspecialchars((!empty($_POST["servername"])) ? $_POST["servername"] : "", ENT_QUOTES);
-	$username = htmlspecialchars((!empty($_POST["username"])) ? $_POST["username"] : "", ENT_QUOTES);
-	$DBPassword = htmlspecialchars((!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "", ENT_QUOTES);
-	$dbname = htmlspecialchars((!empty($_POST["dbname"])) ? $_POST["dbname"] : "", ENT_QUOTES);
-	$dbtable = htmlspecialchars((!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "", ENT_QUOTES);
-	if (!function_exists('mysqli_connect')) {
-		EchoInfo(-2, array("msg" => "<br/>您未安装或未启用 mysqli 扩展，<br/>不能使用数据库功能。<br/>请自行关闭数据库功能。"));
-		exit;
-	}
-	$conn = mysqli_connect($servername, $username, $DBPassword);
-	$GLOBALS['conn'] = $conn;
-	// Check connection
-	if (!$conn) {
-		EchoInfo(-1, array("msg" => mysqli_connect_error()));
-		exit;
-	}
-	// 连接成功，检查数据库是否存在
-	$sql = "SELECT * FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '$dbname';"; // 查询是否有此数据库
-	$mysql_query = mysqli_query($conn, $sql);
-	if (mysqli_fetch_assoc($mysql_query)) {
-		// 存在数据库
-		EchoInfo(0, array("msg" => "数据库连接成功，存在 $dbname 数据库"));
-		exit;
-	}
-	// 不存在数据库，需创建
-	$sql = "CREATE DATABASE `$dbname` character set utf8;"; // 查询是否有此数据库
-	$mysql_query = mysqli_query($conn, $sql);
-	if (!$mysql_query) {
-		// 创建失败
-		EchoInfo(-1, array("msg" => "数据库连接成功，但创建数据库失败。<br />请手动创建 $dbname 数据库后再次检查连接。<br />"));
-		exit;
-	}
-	EchoInfo(0, array("msg" => "成功连接并创建数据库 $dbname 。"));
-	exit;
+    // 验证管理员是否登录
+    if (file_exists('config.php') && empty($_SESSION["admin_login"])) {
+        EchoInfo(-3, array("msg" => "请刷新页面后重新登录"));
+        exit;
+    }
+    error_reporting(0);
+    // 获取数据库连接信息
+    $dbtype = htmlspecialchars((!empty($_POST["dbtype"])) ? $_POST["dbtype"] : "", ENT_QUOTES);
+    $servername = htmlspecialchars((!empty($_POST["servername"])) ? $_POST["servername"] : "", ENT_QUOTES);
+    $username = htmlspecialchars((!empty($_POST["username"])) ? $_POST["username"] : "", ENT_QUOTES);
+    $DBPassword = htmlspecialchars((!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "", ENT_QUOTES);
+    $dbname = htmlspecialchars((!empty($_POST["dbname"])) ? $_POST["dbname"] : "", ENT_QUOTES);
+    $dbtable = htmlspecialchars((!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "", ENT_QUOTES);
+
+    try {
+        if ($dbtype === "mysql") {
+            $conn = connect_mysql($servername, $username, $DBPassword, $dbname, false, true);
+            EchoInfo(0, array("msg" => "数据库连接成功，创建 {$dbname} 数据库"));
+        } elseif ($dbtype === "sqlite") {
+            $conn = connect_sqlite($servername, false);
+            EchoInfo(0, array("msg" => "成功连接 SQLite 数据库。"));
+        } else {
+            throw new Exception("不支持的数据库类型: {$dbtype}");
+        }
+    } catch (Exception $e) {
+        EchoInfo(-1, array("msg" => $e->getMessage()));
+        exit;
+    }
+    exit;
 }
 
 if (!file_exists('./common/invalidCheck.php')) {
@@ -198,14 +184,13 @@ if ($method == "ADMINAPI") {
 			// 开始录入
 			$add_time = date("Y-m-d H:i:s");
 			$sql = "INSERT INTO `{$dbtable}_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$name','$BDUSS','$STOKEN','$add_time',1,'')";
-			$Result = mysqli_query($conn, $sql);
-			if (!$Result) {
-				$Error = addslashes(mysqli_error($conn));
-				EchoInfo(-1, array("msg" => "添加失败", "detail" => $Error));
-				exit;
-			}
-			EchoInfo(0, array("msg" => "新增成功", "detail" => "已经成功新增一条会员数据。3s后将刷新该页面。", "refresh" => true));
-			break;
+			$Result = execute_exec($sql);
+		    if (!$Result) {
+		        EchoInfo(-1, array("msg" => "添加失败", "detail" => fetch_error()));
+		        exit;
+		    }
+		    EchoInfo(0, array("msg" => "新增成功", "detail" => "已经成功新增一条会员数据。3s后将刷新该页面。", "refresh" => true));
+		    break;
 		case "multiBDUSS":
 			$BDUSS = (!empty($_POST["MULTI_BDUSS"])) ? trim($_POST["MULTI_BDUSS"]) : "";
 			$name = htmlspecialchars((!empty($_POST["name"])) ? $_POST["name"] : "", ENT_QUOTES);
@@ -230,19 +215,24 @@ if ($method == "ADMINAPI") {
 			}
 
 			$success_result = 0;
-			if (mysqli_multi_query($conn, $allsql)) {
-				do {
-					$success_result = $success_result + 1;
-				} while (mysqli_more_results($conn) && mysqli_next_result($conn));
-			}
+			$dbtype = $GLOBALS['dbtype'];
+		    if ($dbtype === "mysql") {
+		        if (mysqli_multi_query($allsql)) {
+		            do {
+		                $success_result += 1;
+		            } while (mysqli_more_results($conn) && mysqli_next_result($conn));
+		        }
+		    } elseif ($dbtype === "sqlite") {
+		        $success_result = execute_exec($allsql);
+		    }
 
-			$affect_row = mysqli_affected_rows($conn);
-			if ($affect_row == -1) {
-				EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误在" . $success_result . "行"));
-				exit;
-			}
-			EchoInfo(0, array("msg" => "导入成功", "detail" =>	"成功导入" . $success_result . "条数据。3s后将刷新该页面。", "refresh" => true));
-			break;
+		    $affect_row = get_affected_rows();
+		    if ($affect_row == -1) {
+		        EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误在" . $success_result . "行"));
+		        exit;
+		    }
+		    EchoInfo(0, array("msg" => "导入成功", "detail" => "成功导入" . $success_result . "条数据。3s后将刷新该页面。", "refresh" => true));
+		    break;
 		case "SvipSettingFirstAccount":
 			$id = htmlspecialchars((!empty($_GET["id"])) ? $_GET["id"] : "", ENT_QUOTES);
 			if ($id == "") {
@@ -254,15 +244,15 @@ if ($method == "ADMINAPI") {
 			// 这里最新的时间表示可用账号，按顺序排序
 			$is_using = date("Y-m-d H:i:s");
 			$sql = "UPDATE `{$dbtable}_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
-			$mysql_query = mysqli_query($conn, $sql);
-			if (!$mysql_query) {
-				// 失败
-				EchoInfo(-1, array("msg" => "修改失败"));
-				exit;
-			}
-			// 成功
-			EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为首选账号。3s后将刷新该页面。", "refresh" => true));
-			break;
+			$mysql_query = execute_exec($sql);
+		    if (!$mysql_query) {
+		        // 失败
+		        EchoInfo(-1, array("msg" => "修改失败"));
+		        exit;
+		    }
+		    // 成功
+		    EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为首选账号。3s后将刷新该页面。", "refresh" => true));
+		    break;
 		case "SvipSettingNormalAccount":
 			$id = htmlspecialchars((!empty($_GET["id"])) ? $_GET["id"] : "", ENT_QUOTES);
 			if ($id == "") {
@@ -272,7 +262,7 @@ if ($method == "ADMINAPI") {
 			}
 			// 开始处理
 			$sql = "UPDATE `{$dbtable}_svip` SET `state`= 1 WHERE `id`=$id";
-			$mysql_query = mysqli_query($conn, $sql);
+			$mysql_query = execute_exec($sql);
 			if (!$mysql_query) {
 				EchoInfo(-1, array("msg" => "修改失败"));
 				exit;
@@ -296,10 +286,9 @@ if ($method == "ADMINAPI") {
 			// 开始录入
 			$add_time = date("Y-m-d H:i:s");
 			$sql = "INSERT INTO `{$dbtable}_ip`( `ip`, `remark`, `type`, `add_time`) VALUES ('$ip','$remark',$type,'$add_time')";
-			$Result = mysqli_query($conn, $sql);
+			$Result = execute_exec($sql);
 			if (!$Result) {
-				$Error = addslashes(mysqli_error($conn));
-				EchoInfo(-1, array("msg" => "添加失败", "detail" => $Error));
+				EchoInfo(-1, array("msg" => "添加失败", "detail" => fetch_error()));
 			}
 			EchoInfo(0, array("msg" => "新增成功", "detail" => "成功新增一条ip记录。3s后将刷新该页面。", "refresh" => true));
 			break;
@@ -354,10 +343,10 @@ if ($method == "ADMINAPI") {
 					exit;
 			}
 			// 开始执行sql
-			$Result = mysqli_query($conn, $Sql);
+			$Result = execute_exec($Sql);
 			if (!$Result) {
-				$Error = addslashes(mysqli_error($conn));
-				EchoInfo(-1, array("msg" => "删除失败，返回信息:$Error"));
+				$Error = fetch_error();
+		    	EchoInfo(-1, array("msg" => "删除失败，返回信息:$Error"));
 			}
 			EchoInfo(0, array("msg" => "成功删除id为 $Id 的数据。3s后将刷新该页面。", "refresh" => true)); //成功删除
 			break;
@@ -372,20 +361,27 @@ switch ($method) {
 	case 'LastParse':
 		// 返回数据库中上一次解析的时间，及SVIP状态
 		if (!USING_DB) {
-			// 未开启数据库
-			EchoInfo(-1, array("msg" => "未开启数据库功能", "sviptips" => "Unknown"));
-			exit;
+    		// 未开启数据库
+    		EchoInfo(-1, array("msg" => "未开启数据库功能", "sviptips" => "Unknown"));
+    		exit;
 		}
+
 		// 开启了数据库
 		connectdb(true);
-
-		$sql = "SELECT * FROM `$dbtable` WHERE `size`>=52428800 ORDER BY `ptime` DESC LIMIT 0,1"; // 时间倒序输出第一项
-		$mysql_query = mysqli_query($conn, $sql);
-		$Result = mysqli_fetch_assoc($mysql_query);
-		if (!$Result) {
-			EchoInfo(-1, array("msg" => "数据库中没有状态数据，请解析一次大于50MB文件以刷新账号状态", "sviptips" => "Unknown")); //防止产生误解，把提示写完全
-			exit;
+		$dbtype = $GLOBALS['dbtype'];
+		if ($dbtype === "mysql") {
+			$sql = "SELECT * FROM `$dbtable` WHERE `size`>=52428800 ORDER BY `ptime` DESC LIMIT 0,1"; // 时间倒序输出第一项
+		}elseif ($dbtype === "sqlite") {
+			$sql = "SELECT * FROM \"$dbtable\" WHERE CAST(\"size\" AS INTEGER) >= 52428800 ORDER BY \"ptime\" DESC LIMIT 1;";
 		}
+
+		$Result = fetch_assoc($sql);
+
+		if (!$Result) {
+    		EchoInfo(-1, array("msg" => "数据库中没有状态数据，请解析一次大于50MB文件以刷新账号状态", "sviptips" => "Unknown")); //防止产生误解，把提示写完全
+    		exit;
+		}
+
 		// 存在数据
 		$Time = $Result["ptime"];
 		$realLink = $Result["realLink"];
@@ -393,9 +389,9 @@ switch ($method) {
 		$SvipStateMsg = ($SvipState) ? "状态正常" : "已被限速";
 		$SvipTips = ($SvipState) ? "正常" : "限速";
 		EchoInfo(0, array(
-			"msg" => "SVIP账号状态<br />上次解析: " . $Time . "<br />账号状态: " . $SvipStateMsg,
-			"svipstate" => $SvipState,
-			"sviptips" => $SvipTips
+    		"msg" => "SVIP账号状态<br />上次解析: " . $Time . "<br />账号状态: " . $SvipStateMsg,
+    		"svipstate" => $SvipState,
+    		"sviptips" => $SvipTips
 		));
 		break;
 
@@ -403,32 +399,34 @@ switch ($method) {
 		// TODO: 增加缓存功能，防止频繁查询数据库 OR 数据库增加统计表格
 		// 返回数据库中所有的解析总数和文件总大小
 		if (!USING_DB) {
-			// 未开启数据库
-			EchoInfo(-1, array("msg" => "未开启数据库功能"));
-			exit;
+		    // 未开启数据库
+		    EchoInfo(-1, array("msg" => "未开启数据库功能"));
+		    exit;
 		}
 		// 开启了数据库
 		connectdb(true);
 
 		$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable`";
-		$mysql_query = mysqli_query($conn, $sql);
-		$Result = mysqli_fetch_assoc($mysql_query);
+		$Result = fetch_assoc($sql);
+
 		if (!$Result) {
-			EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
-			exit;
+		    EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
+		    exit;
 		}
+
 		// 存在数据
 		$AllCount = $Result["AllCount"];
 		$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 		$ParseCountMsg =  "累计解析: $AllCount ($AllSize)";
 
 		$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());"; // 获取今天的解析量
-		$mysql_query = mysqli_query($conn, $sql);
-		$Result = mysqli_fetch_assoc($mysql_query);
+		$Result = fetch_assoc($sql);
+
 		if (!$Result) {
-			EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
-			exit;
+		    EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
+		    exit;
 		}
+
 		// 存在数据
 		$AllCount = $Result["AllCount"];
 		$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小

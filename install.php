@@ -331,6 +331,15 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						</div>
 						<div id="DbConfig" <?php if (!$USING_DB) echo "style=\"display: none;\""; ?>>
 							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">数据库类型</label>
+								<div class="col-sm-10">
+									<select class="form-control" name="DbConfig_dbtype">
+										<option value="mysql">MySQL</option>
+										<option value="sqlite">SQLite</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库地址</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_servername" value="<?php echo $servername; ?>">
@@ -495,6 +504,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							function CheckMySQLConnect() {
 								Swal.fire("正在连接数据库，请稍等");
 								Swal.showLoading();
+								dbtype = $("select[name='DbConfig_dbtype']").val()
 								servername = $("input[name='DbConfig_servername']").val();
 								username = $("input[name='DbConfig_username']").val();
 								DBPassword = $("input[name='DbConfig_DBPassword']").val();
@@ -506,7 +516,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									return;
 								}
 
-								body = `servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
+								body = `dbtype=${dbtype}&servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
 
 								postAPI('CheckMySQLConnect', body).then(function(response) {
 									if (response.success) {
@@ -623,6 +633,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$SVIP_STOKEN = (!empty($_POST["SVIP_STOKEN"])) ? $_POST["SVIP_STOKEN"] : "";
 
 				$USING_DB = (!empty($_POST["USING_DB"])) ? $_POST["USING_DB"] : "false";
+				$dbtype = (!empty($_POST["DbConfig_dbtype"])) ? $_POST["DbConfig_dbtype"] : "";
 				$servername = (!empty($_POST["DbConfig_servername"])) ? $_POST["DbConfig_servername"] : "";
 				$username = (!empty($_POST["DbConfig_username"])) ? $_POST["DbConfig_username"] : "";
 				$DBPassword = (!empty($_POST["DbConfig_DBPassword"])) ? $_POST["DbConfig_DBPassword"] : "";
@@ -633,39 +644,72 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 				$DefaultLanguage = (!empty($_POST["DefaultLanguage"])) ? $_POST["DefaultLanguage"] : "en";
 
-				if ($USING_DB == "true") { //注意判断要用string类型进行
-					// 连接数据库
-					$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
-					// Check connection
-					if (!$conn) {
-						die("数据库连接错误，详细信息：" . mysqli_connect_error());
-					}
-					if ($ReserveDBData == "true") {
-						echo "保存以前数据库数据<br />";
-					} else {
-						// 打开sql文件
-						$SQLfile = file_get_contents("./install/bdwp.sql");
-						if ($SQLfile == false) die("无法打开bdwp.sql文件");
-
-						$SQLfile = str_replace('<dbtable>', $dbtable, $SQLfile);
-
-						$sccess_result = 0;
-						if (mysqli_multi_query($conn, $SQLfile)) {
-							do {
-								$sccess_result = $sccess_result + 1;
-							} while (mysqli_more_results($conn) && mysqli_next_result($conn));
-						}
-
-						$affect_row = mysqli_affected_rows($conn);
-						if ($affect_row == -1) {
-							die("数据库导入出错，错误在" . $sccess_result . "行");
-						} else {
-							echo "数据库导入成功，成功导入" . $sccess_result . "条数据<br />";
-						}
-					}
-				} else {
-					echo "不启用数据库<br />";
+				function connect_mysql($servername, $username, $DBPassword, $dbname) {
+				    $conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
+				    if (!$conn) {
+				        throw new Exception("数据库连接错误，详细信息：" . mysqli_connect_error());
+				    }
+				    return $conn;
 				}
+
+				function connect_sqlite($servername) {
+				    $db = new PDO("sqlite:$servername");
+				    return $db;
+				}
+
+				function import_data($conn, $dbtype, $dbtable, $sql_filename) {
+				    $SQLfile = file_get_contents($sql_filename);
+				    if ($SQLfile === false) {
+				        throw new Exception("无法打开 {$sql_filename} 文件");
+				    }
+
+				    $SQLfile = str_replace("<dbtable>", $dbtable, $SQLfile);
+
+				    if ($dbtype === "mysql") {
+				        if (mysqli_multi_query($conn, $SQLfile)) {
+				            $success_result = 0;
+				            do {
+				                $success_result += 1;
+				            } while (mysqli_more_results($conn) && mysqli_next_result($conn));
+				        }
+				        $affected_rows = mysqli_affected_rows($conn);
+				        if ($affected_rows == -1) {
+				            throw new Exception("数据库导入出错，错误在 {$success_result} 行");
+				        }
+				        return $affected_rows;
+				    } elseif ($dbtype === "sqlite") {
+				        if ($conn->exec($SQLfile) === false) {
+				            $errorInfo = $conn->errorInfo();
+				            throw new Exception("数据库导入出错，错误信息：" . $errorInfo[2]);
+				        }
+				        return $conn->query("SELECT changes()")->fetchColumn();
+				    }
+				    return 0;
+				}
+
+				if ($USING_DB === "true") {
+				    try {
+				        if ($dbtype === "mysql") {
+				            $conn = connect_mysql($servername, $username, $DBPassword, $dbname);
+				        } elseif ($dbtype === "sqlite") {
+				            $conn = connect_sqlite($servername);
+				        } else {
+				            throw new Exception("不支持的数据库类型: {$dbtype}");
+				        }
+
+				        if ($ReserveDBData === "true") {
+				            echo "保存以前数据库数据<br />";
+				        } else {
+				            $sql_filename = ($dbtype === "mysql") ? "./install/bdwp.sql" : "./install/bdwp_sqlite.sql";
+				            $affected_rows = import_data($conn, $dbtype, $dbtable, $sql_filename);
+				            echo "数据库导入成功，成功导入 {$affected_rows} 条数据<br />";
+				        }
+
+				    } catch (Exception $e) {
+				        die($e->getMessage());
+				    }
+				}
+
 				// 修改文件
 				$raw_config = file_get_contents("./install/config_raw");
 				if ($raw_config == false) die("无法打开config_raw文件");
@@ -686,6 +730,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<SVIP_STOKEN>', $SVIP_STOKEN, $update_config);
 
 				$update_config = str_replace('<USING_DB>', $USING_DB, $update_config);
+				$update_config = str_replace('<dbtype>', $dbtype, $update_config);
 				$update_config = str_replace('<servername>', $servername, $update_config);
 				$update_config = str_replace('<username>', $username, $update_config);
 				$update_config = str_replace('<DBPassword>', $DBPassword, $update_config);

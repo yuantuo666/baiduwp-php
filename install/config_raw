@@ -24,7 +24,7 @@ const APP_ID = '250528';
 const DEBUG = false;
 
 const USING_DB = <USING_DB>;
-const DbConfig = array("servername" => "<servername>", "username" => "<username>", "DBPassword" => "<DBPassword>", "dbname" => "<dbname>", "dbtable" => "<dbtable>");
+const DbConfig = array("dbtype" => "<dbtype>", "servername" => "<servername>", "username" => "<username>", "DBPassword" => "<DBPassword>", "dbname" => "<dbname>", "dbtable" => "<dbtable>");
 
 const ADMIN_PASSWORD = '<ADMIN_PASSWORD>';
 const DownloadTimes = <DownloadTimes>;
