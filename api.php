@@ -217,20 +217,34 @@ if ($method == "ADMINAPI") {
 			$success_result = 0;
 			$dbtype = $GLOBALS['dbtype'];
 		    if ($dbtype === "mysql") {
-		        if (mysqli_multi_query($allsql)) {
-		            do {
-		                $success_result += 1;
-		            } while (mysqli_more_results($conn) && mysqli_next_result($conn));
-		        }
+		        if (mysqli_multi_query($conn, $allsql)) {
+					do {
+						$success_result = $success_result + 1;
+					} while (mysqli_more_results($conn) && mysqli_next_result($conn));
+				}
+				$affect_row = get_affected_rows();
+				if ($affect_row == -1) {
+					EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误在" . $success_result . "行"));
+					exit;
+				}
 		    } elseif ($dbtype === "sqlite") {
-		        $success_result = execute_exec($allsql);
+		        // 执行多个 SQL 查询语句
+				$result = execute_exec($allsql);
+
+				// 检查查询是否成功执行
+				if (!$result) {
+				    // 查询执行失败
+				    $error_message = fetch_error();
+				    EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误信息为：$error_message"));
+				    exit;
+				}
+				// 检查成功语句条数
+				for ($i = 0; $i < count($AllBduss); $i++) {
+					$success_result = $success_result + get_affected_rows();
+				}
 		    }
 
-		    $affect_row = get_affected_rows();
-		    if ($affect_row == -1) {
-		        EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误在" . $success_result . "行"));
-		        exit;
-		    }
+		    // 成功执行查询
 		    EchoInfo(0, array("msg" => "导入成功", "detail" => "成功导入" . $success_result . "条数据。3s后将刷新该页面。", "refresh" => true));
 		    break;
 		case "SvipSettingFirstAccount":
@@ -422,7 +436,7 @@ switch ($method) {
 		if ($dbtype === "mysql") {
 			$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());";
 		}elseif ($dbtype === "sqlite") {
-			$sql = "SELECT count(`id`) as AllCount, sum(`size`) as AllSize FROM \"$dbtable\" WHERE date(`ptime`) = date('now')";
+			$sql = "SELECT count(`id`) as AllCount, sum(`size`) as AllSize FROM \"$dbtable\" WHERE date(`ptime`) = date('now', 'localtime')";
 		}// 获取今天的解析量
 		$Result = fetch_assoc($sql);
 

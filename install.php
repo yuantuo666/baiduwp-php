@@ -146,6 +146,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				{
 					$var = isset(DbConfig[$key]) ? DbConfig[$key] : '';
 				}
+				getDbConfig($dbtype, 'dbtype');
 				getDbConfig($servername, 'servername');
 				getDbConfig($username, 'username');
 				getDbConfig($DBPassword, 'DBPassword');
@@ -333,32 +334,32 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库类型</label>
 								<div class="col-sm-10">
-									<select class="form-control" name="DbConfig_dbtype">
-										<option value="mysql">MySQL</option>
-										<option value="sqlite">SQLite</option>
+									<select class="form-control" name="DbConfig_dbtype" id="dbtype">
+										<option value="mysql" <?php if ($dbtype === "mysql") echo "selected"; ?>>MySQL</option>
+										<option value="sqlite" <?php if ($dbtype === "sqlite") echo "selected"; ?>>SQLite</option>
 									</select>
 								</div>
 							</div>
 							<div class="form-group row">
-								<label class="col-sm-2 col-form-label">数据库地址</label>
+								<label class="col-sm-2 col-form-label">数据库地址或路径</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_servername" value="<?php echo $servername; ?>">
-									<small class="form-text">填入MySQL数据库的地址。</small>
+									<small class="form-text">填入MySQL数据库的地址或Sqlite数据库路径。</small>
 								</div>
 							</div>
-							<div class="form-group row">
+							<div class="form-group row" id="username-field">
 								<label class="col-sm-2 col-form-label">数据库用户名</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_username" value="<?php echo $username; ?>">
 								</div>
 							</div>
-							<div class="form-group row">
+							<div class="form-group row" id="password-field">
 								<label class="col-sm-2 col-form-label">数据库密码</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_DBPassword" value="<?php echo $DBPassword; ?>">
 								</div>
 							</div>
-							<div class="form-group row">
+							<div class="form-group row" id="dbname-field">
 								<label class="col-sm-2 col-form-label">数据库名</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_dbname" value="<?php echo $dbname; ?>">
@@ -459,6 +460,28 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									$("div#DbConfig").slideDown();
 								}
 							});
+
+							$("input[name='USING_DB']").on('click', function() {
+								item = $(this).val();
+								if (item == "false") {
+									$("div#DbConfig").slideUp();
+									$("select#SVIPSwitchMod").val("0");
+								} else {
+									$("div#DbConfig").slideDown();
+								}
+							});
+							$('#dbtype').on('change', function() {
+							    // 根据所选值判断是否隐藏输入框
+							    if ($(this).val() === 'sqlite') {
+							      $('#username-field').hide();
+							      $('#password-field').hide();
+							      $('#dbname-field').hide();
+							    } else {
+							      $('#username-field').show();
+							      $('#password-field').show();
+							      $('#dbname-field').show();
+							    }
+							  });
 							$("#AgreeCheck").on('click', function() {
 								item = $(this).prop("checked");
 								if (item == true) {
@@ -579,7 +602,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							// 检查是否为 docker 环境
-							body = `servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
+							body = `dbtype==mysql&servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
 							postAPI('CheckMySQLConnect', body).then(function(response) {
 								if (response.success) {
 									const data = response.data;
@@ -653,7 +676,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				}
 
 				function connect_sqlite($servername) {
-				    $db = new PDO("sqlite:$servername");
+				    $db = new SQLite3($servername);
 				    return $db;
 				}
 
@@ -682,7 +705,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				            $errorInfo = $conn->errorInfo();
 				            throw new Exception("数据库导入出错，错误信息：" . $errorInfo[2]);
 				        }
-				        return $conn->query("SELECT changes()")->fetchColumn();
+				        return $conn->changes();
 				    }
 				    return 0;
 				}

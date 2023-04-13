@@ -196,7 +196,12 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 							<div class="card-body">
 								<h5 class="card-title">默认账号</h5>
 								<?php
-								$sql = "SELECT * FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
+								$dbtype = $GLOBALS['dbtype'];
+							    if ($dbtype === 'mysql') {
+							        $sql = "SELECT * FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1";
+							    } elseif ($dbtype === 'sqlite') {
+							        $sql = "SELECT * FROM '{$dbtable}_svip' WHERE state!=-1 ORDER BY is_using DESC LIMIT 1 OFFSET 0";
+							    }// 时间倒序输出第一项未被限速账号
 								if ($Result = fetch_assoc($sql)) {
 								    $id = $Result["id"];
 								    $name = $Result["name"];
@@ -207,7 +212,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 								    $sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE `paccount`=$id"; // 时间倒序输出第一项未被限速账号
 								    // $Result = mysqli_query($conn, $sql);
 								    // if ($Result = mysqli_fetch_assoc($Result)) {
-								    if ($Result = fetch_assoc($conn, $sql)) {
+								    if ($Result = fetch_assoc($sql)) {
 								        $AllCount = $Result["AllCount"];
 								        $AllSize = ($AllCount == "0") ? "无数据" : formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 								        $ParseCountMsg =  "累计解析次数：$AllCount 个<br />累计解析大小：$AllSize";
@@ -562,7 +567,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 											if ($GLOBALS['dbtype'] === 'mysql') {
     											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());";
 											} elseif ($GLOBALS['dbtype'] === 'sqlite') {
-    											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date('now');";
+    											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date('now', 'localtime');";
 											} else {
     											exit("Unsupported database type");
 											}

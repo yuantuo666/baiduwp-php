@@ -181,7 +181,7 @@ class Parse
 		    {
 		    	$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL $DownloadLinkAvailableTime HOUR);";
 		    }elseif($dbtype === "sqlite") {
-		    	$sql = "SELECT * FROM \"$dbtable\" WHERE \"md5\"='$md5' AND \"ptime\" > strftime('%s', datetime('now')) - $DownloadLinkAvailableTime * 3600;";
+		    	$sql = "SELECT * FROM \"$dbtable\" WHERE \"md5\"='$md5' AND \"ptime\"> datetime('now', 'localtime', '-$DownloadLinkAvailableTime hour')";
 		    }
 		    
 		    $result = fetch_assoc($sql);
@@ -198,7 +198,7 @@ class Parse
 		        if($dbtype === "mysql") {
 		    		$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND date(`ptime`)=date(now());";
 		    	}elseif($dbtype === "sqlite") {
-		    		$sql = "SELECT count(*) as Num FROM \"$dbtable\" WHERE \"userip\"='$ip' AND date(\"ptime\") = date('now');";
+		    		$sql = "SELECT count(*) as Num FROM \"$dbtable\" WHERE \"userip\"='$ip' AND date(\"ptime\") = date('now', 'localtime');";
 		    	}
 
 		        $result = fetch_assoc($sql);

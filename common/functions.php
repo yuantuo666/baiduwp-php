@@ -232,8 +232,9 @@ function fetch_row($query) {
     }
 }
 
-function fetch_error($query) {
+function fetch_error() {
     $dbtype = $GLOBALS['dbtype'];
+    $conn = $GLOBALS['conn'];
     if ($dbtype === "mysql") {
         return addslashes(mysqli_error($conn));
     } elseif ($dbtype === "sqlite") {
@@ -270,7 +271,7 @@ function get_affected_rows() {
     if ($dbtype === "mysql") {
         return mysqli_affected_rows($conn);
     } elseif ($dbtype === "sqlite") {
-        return $conn->query("SELECT changes()")->fetchColumn();
+        return $conn->changes();
     }
     return -1;
 }
@@ -349,7 +350,7 @@ function GetSvipTablePage(string $page)
 			"<td><a href=\"javascript:Swal.fire('{$Result["svip_stoken"]}');\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>" .
 			"</tr>";
 		$AllRow .= $EachRow;
-		$Result = fetch_assoc($query);
+		$Result = fetch_row($query);
 	}
 	return $AllRow;
 } // name 账号名称	svip_bduss 会员bduss	svip_stoken 会员stoken	add_time 会员账号加入时间	state 会员状态(0:正常,-1:限速)	is_using 是否正在使用(非零表示真)
