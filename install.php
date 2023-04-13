@@ -347,19 +347,19 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									<small class="form-text">填入MySQL数据库的地址或Sqlite数据库路径。</small>
 								</div>
 							</div>
-							<div class="form-group row" id="username-field">
+							<div class="form-group row" id="username-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库用户名</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_username" value="<?php echo $username; ?>">
 								</div>
 							</div>
-							<div class="form-group row" id="password-field">
+							<div class="form-group row" id="password-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库密码</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_DBPassword" value="<?php echo $DBPassword; ?>">
 								</div>
 							</div>
-							<div class="form-group row" id="dbname-field">
+							<div class="form-group row" id="dbname-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库名</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_dbname" value="<?php echo $dbname; ?>">
@@ -443,6 +443,16 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								}
 							}
 
+							function generateRandomString(length) {
+							    var result = '';
+							    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+							    var charactersLength = characters.length;
+							    for (var i = 0; i < length; i++) {
+							        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+							    }
+							    return result;
+							}
+
 							$("input[name='IsCheckPassword']").on('click', function() {
 								item = $(this).val(); // 这里获取的是你点击的那个radio的值，而不是设置的值。（虽然效果是一样的
 								if (item == "false") {
@@ -470,16 +480,18 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									$("div#DbConfig").slideDown();
 								}
 							});
-							$('#dbtype').on('change', function() {
+							$("select[name='DbConfig_dbtype']").on('change', function() {
 							    // 根据所选值判断是否隐藏输入框
 							    if ($(this).val() === 'sqlite') {
-							      $('#username-field').hide();
-							      $('#password-field').hide();
-							      $('#dbname-field').hide();
+							      	$('#username-field').hide();
+							      	$('#password-field').hide();
+							      	$('#dbname-field').hide();
+							       	var randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
+    								$('input[name="DbConfig_servername"]').val('bdwp_' + randomString + '.db'); // 将随机字符串设置为数据库地址的值
 							    } else {
-							      $('#username-field').show();
-							      $('#password-field').show();
-							      $('#dbname-field').show();
+							      	$('#username-field').show();
+							      	$('#password-field').show();
+							      	$('#dbname-field').show();
 							    }
 							  });
 							$("#AgreeCheck").on('click', function() {
