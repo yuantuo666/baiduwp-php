@@ -251,10 +251,14 @@ class Parse
 
 		// 记录下使用者ip，下次进入时提示
 		if (USING_DB) {
-		    $ptime = date("Y-m-d H:i:s");
 		    $Sqlfilename = htmlspecialchars($filename, ENT_QUOTES); // 防止出现一些刁钻的文件名无法处理
 		    $Sqlpath = htmlspecialchars($path, ENT_QUOTES);
-		    $sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink','$ptime','$id')";
+		    if($dbtype === "mysql") {
+	    		$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',NOW(),'$id')";
+	    	}elseif($dbtype === "sqlite") {
+	    		$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',datetime('now', 'localtime'),'$id')";
+	    	}
+		    
 		    $result = execute_exec($sql);
 		    if ($result == false) {
 		        // 保存错误
