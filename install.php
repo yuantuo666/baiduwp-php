@@ -334,7 +334,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库类型</label>
 								<div class="col-sm-10">
-									<select class="form-control" name="DbConfig_dbtype" id="dbtype">
+									<select class="form-control" name="DbConfig_dbtype">
 										<option value="mysql" <?php if ($dbtype === "mysql") echo "selected"; ?>>MySQL</option>
 										<option value="sqlite" <?php if ($dbtype === "sqlite") echo "selected"; ?>>SQLite</option>
 									</select>
