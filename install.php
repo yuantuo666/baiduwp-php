@@ -602,7 +602,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							// 检查是否为 docker 环境
-							body = `dbtype==mysql&servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
+							body = `dbtype=mysql&servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
 							postAPI('CheckMySQLConnect', body).then(function(response) {
 								if (response.success) {
 									const data = response.data;
