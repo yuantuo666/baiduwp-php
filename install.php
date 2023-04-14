@@ -497,7 +497,11 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							      	$('#username-field').show();
 							      	$('#password-field').show();
 							      	$('#dbname-field').show();
-    								$('input[name="DbConfig_servername"]').val('127.0.0.1'); //改回Mysql
+    								<?php if($dbtype === "mysql") { ?>
+							      		$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为Mysql，直接获取地址
+							      	<?php } else { ?>
+    									$('input[name="DbConfig_servername"]').val('127.0.0.1'); //否则给127.0.0.1
+							      	<?php } ?>
 							    }
 							  });
 							$("#AgreeCheck").on('click', function() {
