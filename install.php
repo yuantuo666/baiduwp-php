@@ -154,6 +154,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				getDbConfig($dbtable, 'dbtable');
 			} else {
 				//未处理默认情况 #76
+				$dbtype = "mysql";
 				$servername = "127.0.0.1";
 				$username = "";
 				$DBPassword = "";
@@ -486,12 +487,17 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							      	$('#username-field').hide();
 							      	$('#password-field').hide();
 							      	$('#dbname-field').hide();
-							       	var randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
-    								$('input[name="DbConfig_servername"]').val('bdwp_' + randomString + '.db'); // 将随机字符串设置为数据库地址的值
+							      	<?php if($dbtype === "sqlite") { ?>
+							      		$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为sqlite，直接获取路径
+							      	<?php } else { ?>
+							      		var randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
+    									$('input[name="DbConfig_servername"]').val('bdwp_' + randomString + '.db'); // 将随机字符串设置为数据库地址的值
+							      	<?php } ?>
 							    } else {
 							      	$('#username-field').show();
 							      	$('#password-field').show();
 							      	$('#dbname-field').show();
+    								$('input[name="DbConfig_servername"]').val('127.0.0.1'); //改回Mysql
 							    }
 							  });
 							$("#AgreeCheck").on('click', function() {
