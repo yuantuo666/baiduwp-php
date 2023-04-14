@@ -146,6 +146,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				{
 					$var = isset(DbConfig[$key]) ? DbConfig[$key] : '';
 				}
+				getDbConfig($dbtype, 'dbtype');
 				getDbConfig($servername, 'servername');
 				getDbConfig($username, 'username');
 				getDbConfig($DBPassword, 'DBPassword');
@@ -153,6 +154,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				getDbConfig($dbtable, 'dbtable');
 			} else {
 				//未处理默认情况 #76
+				$dbtype = "mysql";
 				$servername = "127.0.0.1";
 				$username = "";
 				$DBPassword = "";
@@ -331,25 +333,34 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						</div>
 						<div id="DbConfig" <?php if (!$USING_DB) echo "style=\"display: none;\""; ?>>
 							<div class="form-group row">
-								<label class="col-sm-2 col-form-label">数据库地址</label>
+								<label class="col-sm-2 col-form-label">数据库类型</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_servername" value="<?php echo $servername; ?>">
-									<small class="form-text">填入MySQL数据库的地址。</small>
+									<select class="form-control" name="DbConfig_dbtype">
+										<option value="mysql" <?php if ($dbtype === "mysql") echo "selected"; ?>>MySQL</option>
+										<option value="sqlite" <?php if ($dbtype === "sqlite") echo "selected"; ?>>SQLite</option>
+									</select>
 								</div>
 							</div>
 							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">数据库地址或路径</label>
+								<div class="col-sm-10">
+									<input class="form-control" name="DbConfig_servername" value="<?php echo $servername; ?>">
+									<small class="form-text">填入MySQL数据库的地址或Sqlite数据库路径。</small>
+								</div>
+							</div>
+							<div class="form-group row" id="username-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库用户名</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_username" value="<?php echo $username; ?>">
 								</div>
 							</div>
-							<div class="form-group row">
+							<div class="form-group row" id="password-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库密码</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_DBPassword" value="<?php echo $DBPassword; ?>">
 								</div>
 							</div>
-							<div class="form-group row">
+							<div class="form-group row" id="dbname-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库名</label>
 								<div class="col-sm-10">
 									<input class="form-control" name="DbConfig_dbname" value="<?php echo $dbname; ?>">
@@ -433,6 +444,16 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								}
 							}
 
+							function generateRandomString(length) {
+							    var result = '';
+							    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+							    var charactersLength = characters.length;
+							    for (var i = 0; i < length; i++) {
+							        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+							    }
+							    return result;
+							}
+
 							$("input[name='IsCheckPassword']").on('click', function() {
 								item = $(this).val(); // 这里获取的是你点击的那个radio的值，而不是设置的值。（虽然效果是一样的
 								if (item == "false") {
@@ -450,6 +471,39 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									$("div#DbConfig").slideDown();
 								}
 							});
+
+							$("input[name='USING_DB']").on('click', function() {
+								item = $(this).val();
+								if (item == "false") {
+									$("div#DbConfig").slideUp();
+									$("select#SVIPSwitchMod").val("0");
+								} else {
+									$("div#DbConfig").slideDown();
+								}
+							});
+							$("select[name='DbConfig_dbtype']").on('change', function() {
+							    // 根据所选值判断是否隐藏输入框
+							    if ($(this).val() === 'sqlite') {
+							      	$('#username-field').hide();
+							      	$('#password-field').hide();
+							      	$('#dbname-field').hide();
+							      	<?php if($dbtype === "sqlite") { ?>
+							      		$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为sqlite，直接获取路径
+							      	<?php } else { ?>
+							      		var randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
+    									$('input[name="DbConfig_servername"]').val('bdwp_' + randomString + '.db'); // 将随机字符串设置为数据库地址的值
+							      	<?php } ?>
+							    } else {
+							      	$('#username-field').show();
+							      	$('#password-field').show();
+							      	$('#dbname-field').show();
+    								<?php if($dbtype === "mysql") { ?>
+							      		$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为Mysql，直接获取地址
+							      	<?php } else { ?>
+    									$('input[name="DbConfig_servername"]').val('127.0.0.1'); //否则给127.0.0.1
+							      	<?php } ?>
+							    }
+							  });
 							$("#AgreeCheck").on('click', function() {
 								item = $(this).prop("checked");
 								if (item == true) {
@@ -495,6 +549,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							function CheckMySQLConnect() {
 								Swal.fire("正在连接数据库，请稍等");
 								Swal.showLoading();
+								dbtype = $("select[name='DbConfig_dbtype']").val()
 								servername = $("input[name='DbConfig_servername']").val();
 								username = $("input[name='DbConfig_username']").val();
 								DBPassword = $("input[name='DbConfig_DBPassword']").val();
@@ -506,7 +561,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									return;
 								}
 
-								body = `servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
+								body = `dbtype=${dbtype}&servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
 
 								postAPI('CheckMySQLConnect', body).then(function(response) {
 									if (response.success) {
@@ -569,7 +624,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							// 检查是否为 docker 环境
-							body = `servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
+							body = `dbtype=mysql&servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
 							postAPI('CheckMySQLConnect', body).then(function(response) {
 								if (response.success) {
 									const data = response.data;
@@ -623,6 +678,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$SVIP_STOKEN = (!empty($_POST["SVIP_STOKEN"])) ? $_POST["SVIP_STOKEN"] : "";
 
 				$USING_DB = (!empty($_POST["USING_DB"])) ? $_POST["USING_DB"] : "false";
+				$dbtype = (!empty($_POST["DbConfig_dbtype"])) ? $_POST["DbConfig_dbtype"] : "";
 				$servername = (!empty($_POST["DbConfig_servername"])) ? $_POST["DbConfig_servername"] : "";
 				$username = (!empty($_POST["DbConfig_username"])) ? $_POST["DbConfig_username"] : "";
 				$DBPassword = (!empty($_POST["DbConfig_DBPassword"])) ? $_POST["DbConfig_DBPassword"] : "";
@@ -633,39 +689,72 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 				$DefaultLanguage = (!empty($_POST["DefaultLanguage"])) ? $_POST["DefaultLanguage"] : "en";
 
-				if ($USING_DB == "true") { //注意判断要用string类型进行
-					// 连接数据库
-					$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
-					// Check connection
-					if (!$conn) {
-						die("数据库连接错误，详细信息：" . mysqli_connect_error());
-					}
-					if ($ReserveDBData == "true") {
-						echo "保存以前数据库数据<br />";
-					} else {
-						// 打开sql文件
-						$SQLfile = file_get_contents("./install/bdwp.sql");
-						if ($SQLfile == false) die("无法打开bdwp.sql文件");
-
-						$SQLfile = str_replace('<dbtable>', $dbtable, $SQLfile);
-
-						$sccess_result = 0;
-						if (mysqli_multi_query($conn, $SQLfile)) {
-							do {
-								$sccess_result = $sccess_result + 1;
-							} while (mysqli_more_results($conn) && mysqli_next_result($conn));
-						}
-
-						$affect_row = mysqli_affected_rows($conn);
-						if ($affect_row == -1) {
-							die("数据库导入出错，错误在" . $sccess_result . "行");
-						} else {
-							echo "数据库导入成功，成功导入" . $sccess_result . "条数据<br />";
-						}
-					}
-				} else {
-					echo "不启用数据库<br />";
+				function connect_mysql($servername, $username, $DBPassword, $dbname) {
+				    $conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
+				    if (!$conn) {
+				        throw new Exception("数据库连接错误，详细信息：" . mysqli_connect_error());
+				    }
+				    return $conn;
 				}
+
+				function connect_sqlite($servername) {
+				    $db = new SQLite3($servername);
+				    return $db;
+				}
+
+				function import_data($conn, $dbtype, $dbtable, $sql_filename) {
+				    $SQLfile = file_get_contents($sql_filename);
+				    if ($SQLfile === false) {
+				        throw new Exception("无法打开 {$sql_filename} 文件");
+				    }
+
+				    $SQLfile = str_replace("<dbtable>", $dbtable, $SQLfile);
+
+				    if ($dbtype === "mysql") {
+				        if (mysqli_multi_query($conn, $SQLfile)) {
+				            $success_result = 0;
+				            do {
+				                $success_result += 1;
+				            } while (mysqli_more_results($conn) && mysqli_next_result($conn));
+				        }
+				        $affected_rows = mysqli_affected_rows($conn);
+				        if ($affected_rows == -1) {
+				            throw new Exception("数据库导入出错，错误在 {$success_result} 行");
+				        }
+				        return $affected_rows;
+				    } elseif ($dbtype === "sqlite") {
+				        if ($conn->exec($SQLfile) === false) {
+				            $errorInfo = $conn->errorInfo();
+				            throw new Exception("数据库导入出错，错误信息：" . $errorInfo[2]);
+				        }
+				        return $conn->changes();
+				    }
+				    return 0;
+				}
+
+				if ($USING_DB === "true") {
+				    try {
+				        if ($dbtype === "mysql") {
+				            $conn = connect_mysql($servername, $username, $DBPassword, $dbname);
+				        } elseif ($dbtype === "sqlite") {
+				            $conn = connect_sqlite($servername);
+				        } else {
+				            throw new Exception("不支持的数据库类型: {$dbtype}");
+				        }
+
+				        if ($ReserveDBData === "true") {
+				            echo "保存以前数据库数据<br />";
+				        } else {
+				            $sql_filename = ($dbtype === "mysql") ? "./install/bdwp.sql" : "./install/bdwp_sqlite.sql";
+				            $affected_rows = import_data($conn, $dbtype, $dbtable, $sql_filename);
+				            echo "数据库导入成功，成功导入 {$affected_rows} 条数据<br />";
+				        }
+
+				    } catch (Exception $e) {
+				        die($e->getMessage());
+				    }
+				}
+
 				// 修改文件
 				$raw_config = file_get_contents("./install/config_raw");
 				if ($raw_config == false) die("无法打开config_raw文件");
@@ -686,6 +775,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 				$update_config = str_replace('<SVIP_STOKEN>', $SVIP_STOKEN, $update_config);
 
 				$update_config = str_replace('<USING_DB>', $USING_DB, $update_config);
+				$update_config = str_replace('<dbtype>', $dbtype, $update_config);
 				$update_config = str_replace('<servername>', $servername, $update_config);
 				$update_config = str_replace('<username>', $username, $update_config);
 				$update_config = str_replace('<DBPassword>', $DBPassword, $update_config);

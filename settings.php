@@ -196,24 +196,27 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 							<div class="card-body">
 								<h5 class="card-title">默认账号</h5>
 								<?php
-								$sql = "SELECT * FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1"; // 时间倒序输出第一项未被限速账号
-								$Result = mysqli_query($conn, $sql);
+								$dbtype = $GLOBALS['dbtype'];
+							    if ($dbtype === 'mysql') {
+							        $sql = "SELECT * FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1";
+							    } elseif ($dbtype === 'sqlite') {
+							        $sql = "SELECT * FROM '{$dbtable}_svip' WHERE state!=-1 ORDER BY is_using DESC LIMIT 1 OFFSET 0";
+							    }// 时间倒序输出第一项未被限速账号
+								if ($Result = fetch_assoc($sql)) {
+								    $id = $Result["id"];
+								    $name = $Result["name"];
+								    $add_time = $Result["add_time"];
+								    $is_using = $Result["is_using"];
+								    $state = ($Result["state"] == -1) ? "限速" : "正常";
 
-								if ($Result =  mysqli_fetch_assoc($Result)) {
-									$id = $Result["id"];
-									$name = $Result["name"];
-									$add_time = $Result["add_time"];
-									$is_using = $Result["is_using"];
-									$state = ($Result["state"] == -1) ? "限速" : "正常";
-
-									$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE `paccount`=$id"; // 时间倒序输出第一项未被限速账号
-									$Result = mysqli_query($conn, $sql);
-
-									if ($Result = mysqli_fetch_assoc($Result)) {
-										$AllCount = $Result["AllCount"];
-										$AllSize = ($AllCount == "0") ? "无数据" : formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
-										$ParseCountMsg =  "累计解析次数：$AllCount 个<br />累计解析大小：$AllSize";
-									}
+								    $sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE `paccount`=$id"; // 时间倒序输出第一项未被限速账号
+								    // $Result = mysqli_query($conn, $sql);
+								    // if ($Result = mysqli_fetch_assoc($Result)) {
+								    if ($Result = fetch_assoc($sql)) {
+								        $AllCount = $Result["AllCount"];
+								        $AllSize = ($AllCount == "0") ? "无数据" : formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
+								        $ParseCountMsg =  "累计解析次数：$AllCount 个<br />累计解析大小：$AllSize";
+								    }
 
 									echo "<p>ID：$id<br />";
 									echo "名称：$name<br />";
@@ -551,18 +554,25 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 										<h5 class="card-title">使用统计</h5>
 										<p class="card-text">
 											<?php
+											// 获取累计解析数量和大小
 											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable`";
-											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-											// 存在数据
+											$Result = fetch_assoc($sql);
 											$AllCount = $Result["AllCount"];
 											$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 											echo "累计解析 $AllCount 个，共 $AllSize";
 											?>
 											<br />
 											<?php
-											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());"; // 获取今天的解析量
-											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-											// 存在数据
+											// 获取今天的解析量
+											if ($GLOBALS['dbtype'] === 'mysql') {
+    											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());";
+											} elseif ($GLOBALS['dbtype'] === 'sqlite') {
+    											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date('now', 'localtime');";
+											} else {
+    											exit("Unsupported database type");
+											}
+
+											$Result = fetch_assoc($sql);
 											$AllCount = $Result["AllCount"];
 											$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
 											echo "今日解析 $AllCount 个，共 $AllSize";
@@ -575,14 +585,17 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 										<h5 class="card-title">SVIP账号</h5>
 										<p class="card-text">
 											<?php
+											// 获取SVIP账号信息
 											$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_svip`";
-											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
+											$Result = fetch_assoc($sql);
 											$AllCount = $Result["AllCount"];
-											$SvipCountMsg =  "数据库中共 $AllCount 个账号";
+											$SvipCountMsg = "数据库中共 $AllCount 个账号";
+
 											$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_svip` WHERE `state`=-1";
-											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
+											$Result = fetch_assoc($sql);
 											$AllCount = $Result["AllCount"];
 											$SvipFailCountMsg = "有 $AllCount 个账号已被限速";
+
 											echo $SvipCountMsg . "<br />" . $SvipFailCountMsg;
 											?>
 										</p>
@@ -595,20 +608,26 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 										<h5 class="card-title">黑/白名单</h5>
 										<p class="card-text">
 											<?php
+											// 获取IP黑/白名单信息
 											$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip`";
-											$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
+											$Result = fetch_assoc($sql);
 											$AllCount = $Result["AllCount"];
-											$SvipCountMsg =  "数据库中共 $AllCount 个ip";
+											$SvipCountMsg = "数据库中共 $AllCount 个ip";
+
 											if ($AllCount != 0) {
-												$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=-1";
-												$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-												$AllCount = $Result["AllCount"];
-												$SvipFailCountMsg = "有 $AllCount 个黑名单";
-												$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=0";
-												$Result = mysqli_fetch_assoc(mysqli_query($conn, $sql));
-												$AllCount = $Result["AllCount"];
-												$SvipSuccCountMsg = "有 $AllCount 个白名单";
-											} else $SvipFailCountMsg = $SvipSuccCountMsg = "";
+											    $sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=-1";
+											    $Result = fetch_assoc($sql);
+											    $AllCount = $Result["AllCount"];
+											    $SvipFailCountMsg = "有 $AllCount 个黑名单";
+
+											    $sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=0";
+											    $Result = fetch_assoc($sql);
+											    $AllCount = $Result["AllCount"];
+											    $SvipSuccCountMsg = "有 $AllCount 个白名单";
+											} else {
+    											$SvipFailCountMsg = $SvipSuccCountMsg = "";
+											}
+
 											echo $SvipCountMsg . "<br />" . $SvipFailCountMsg . "<br />" . $SvipSuccCountMsg;
 											?>
 										</p>
