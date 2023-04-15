@@ -128,152 +128,161 @@ function dl_error(string $title, string $content, bool $jumptip = false)
 	die();
 }
 
-function connect_mysql($servername, $username, $DBPassword, $dbname, $isAPI = false, $createIfNotExist = false) {
-    if (!function_exists('mysqli_connect')) {
-        throw new Exception("您未安装或未启用 mysqli 扩展，不能使用数据库功能。请自行关闭数据库功能。");
-    }
+function connect_mysql($servername, $username, $DBPassword, $dbname, $isAPI = false, $createIfNotExist = false)
+{
+	if (!function_exists('mysqli_connect')) {
+		throw new Exception("您未安装或未启用 mysqli 扩展，不能使用数据库功能。请自行关闭数据库功能。");
+	}
 
-    $conn = mysqli_init();
-    mysqli_options($conn, MYSQLI_OPT_LOCAL_INFILE, false); //感谢 unc1e 披露的漏洞 禁用 LOCAL INFILE，提高安全性
-    $connected = mysqli_real_connect($conn, $servername, $username, $DBPassword);
+	$conn = mysqli_init();
+	mysqli_options($conn, MYSQLI_OPT_LOCAL_INFILE, false); //感谢 unc1e 披露的漏洞 禁用 LOCAL INFILE，提高安全性
+	$connected = mysqli_real_connect($conn, $servername, $username, $DBPassword);
 
-    if (!$connected) {
-        $errorMsg = "数据库连接失败：" . mysqli_connect_error();
-        if ($isAPI) {
-            EchoInfo(-1, array("msg" => $errorMsg, "sviptips" => "Error"));
-            exit;
-        } else {
-            throw new Exception($errorMsg);
-        }
-    }
+	if (!$connected) {
+		$errorMsg = "数据库连接失败：" . mysqli_connect_error();
+		if ($isAPI) {
+			EchoInfo(-1, array("msg" => $errorMsg, "sviptips" => "Error"));
+			exit;
+		} else {
+			throw new Exception($errorMsg);
+		}
+	}
 
-    if ($createIfNotExist) {
-        $sql = "CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8;";
-        if (!mysqli_query($conn, $sql)) {
-            throw new Exception("数据库连接成功，但创建数据库失败。请手动创建 {$dbname} 数据库后再次检查连接。");
-        }
-    }
+	if ($createIfNotExist) {
+		$sql = "CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8;";
+		if (!mysqli_query($conn, $sql)) {
+			throw new Exception("数据库连接成功，但创建数据库失败。请手动创建 {$dbname} 数据库后再次检查连接。");
+		}
+	}
 
-    if (!mysqli_select_db($conn, $dbname)) {
-        throw new Exception("无法选择数据库 {$dbname}");
-    }
+	if (!mysqli_select_db($conn, $dbname)) {
+		throw new Exception("无法选择数据库 {$dbname}");
+	}
 
-    mysqli_query($conn, "set sql_mode = ''");
-    mysqli_query($conn, "set character set 'utf8'");
-    mysqli_query($conn, "set names 'utf8'");
+	mysqli_query($conn, "set sql_mode = ''");
+	mysqli_query($conn, "set character set 'utf8'");
+	mysqli_query($conn, "set names 'utf8'");
 
-    return $conn;
+	return $conn;
 }
 
 // 连接 SQLite 数据库并返回连接对象
-function connect_sqlite($servername, $isAPI=false) {
-    try {
-        $conn = new SQLite3($servername);
-    } catch (Exception $e) {
-        $errorMessage = "数据库连接失败：" . $e->getMessage();
-        if ($isAPI) {
-            EchoInfo(-1, array("msg" => $errorMessage, "sviptips" => "Error"));
-            exit;
-        } else {
-            dl_error("服务器错误", $errorMessage);
-        }
-    }
+function connect_sqlite($servername, $isAPI = false)
+{
+	try {
+		$conn = new SQLite3($servername);
+	} catch (Exception $e) {
+		$errorMessage = "数据库连接失败：" . $e->getMessage();
+		if ($isAPI) {
+			EchoInfo(-1, array("msg" => $errorMessage, "sviptips" => "Error"));
+			exit;
+		} else {
+			dl_error("服务器错误", $errorMessage);
+		}
+	}
 
-    // 设置 SQLite 参数
-    $conn->exec("PRAGMA encoding = 'UTF-8'");
-    $conn->exec("PRAGMA journal_mode = WAL");
-    $conn->exec("PRAGMA foreign_keys = ON");
-    $conn->exec("PRAGMA synchronous = NORMAL");
+	// 设置 SQLite 参数
+	$conn->exec("PRAGMA encoding = 'UTF-8'");
+	$conn->exec("PRAGMA journal_mode = WAL");
+	$conn->exec("PRAGMA foreign_keys = ON");
+	$conn->exec("PRAGMA synchronous = NORMAL");
 
-    return $conn;
+	return $conn;
 }
 
 // 连接数据库的主函数，支持 MySQL 和 SQLite
-function connectdb(bool $isAPI = false) {
-    $GLOBALS['dbtype'] = DbConfig["dbtype"];
-    $servername = DbConfig["servername"];
-    $username = DbConfig["username"];
-    $DBPassword = DbConfig["DBPassword"];
-    $dbname = DbConfig["dbname"];
-    $GLOBALS['dbtable'] = DbConfig["dbtable"];
+function connectdb(bool $isAPI = false)
+{
+	$GLOBALS['dbtype'] = DbConfig["dbtype"];
+	$servername = DbConfig["servername"];
+	$username = DbConfig["username"];
+	$DBPassword = DbConfig["DBPassword"];
+	$dbname = DbConfig["dbname"];
+	$GLOBALS['dbtable'] = DbConfig["dbtable"];
 
-    // 根据数据库类型选择连接方法
-    if ($GLOBALS['dbtype'] === "mysql") {
-        $GLOBALS['conn'] = connect_mysql($servername, $username, $DBPassword, $dbname, $isAPI);
-    } elseif ($GLOBALS['dbtype'] === "sqlite") {
-        $GLOBALS['conn'] = connect_sqlite($servername, $isAPI);
-    } else {
-        throw new Exception("不支持的数据库类型: {$GLOBALS['dbtype']}");
-    }
+	// 根据数据库类型选择连接方法
+	if ($GLOBALS['dbtype'] === "mysql") {
+		$GLOBALS['conn'] = connect_mysql($servername, $username, $DBPassword, $dbname, $isAPI);
+	} elseif ($GLOBALS['dbtype'] === "sqlite") {
+		$GLOBALS['conn'] = connect_sqlite($servername, $isAPI);
+	} else {
+		throw new Exception("不支持的数据库类型: {$GLOBALS['dbtype']}");
+	}
 }
 
-function fetch_assoc($sql) {
-    $dbtype = $GLOBALS['dbtype'];
-    $conn = $GLOBALS['conn'];
-    if ($dbtype === 'mysql') {
-        $query = mysqli_query($conn, $sql);
-        return mysqli_fetch_assoc($query);
-    } elseif ($dbtype === 'sqlite') {
-        $query = $conn->query($sql);
-        return $query->fetchArray(SQLITE3_ASSOC);
-    } else {
-        exit("Unsupported database type");
-    }
+function fetch_assoc($sql)
+{
+	$dbtype = $GLOBALS['dbtype'];
+	$conn = $GLOBALS['conn'];
+	if ($dbtype === 'mysql') {
+		$query = mysqli_query($conn, $sql);
+		return mysqli_fetch_assoc($query);
+	} elseif ($dbtype === 'sqlite') {
+		$query = $conn->query($sql);
+		return $query->fetchArray(SQLITE3_ASSOC);
+	} else {
+		exit("Unsupported database type");
+	}
 }
 
-function fetch_row($query) {
-    $dbtype = $GLOBALS['dbtype'];
-    if ($dbtype === 'mysql') {
-        return mysqli_fetch_assoc($query);
-    } elseif ($dbtype === 'sqlite') {
-        return $query->fetchArray(SQLITE3_ASSOC);
-    } else {
-        exit("Unsupported database type");
-    }
+function fetch_row($query)
+{
+	$dbtype = $GLOBALS['dbtype'];
+	if ($dbtype === 'mysql') {
+		return mysqli_fetch_assoc($query);
+	} elseif ($dbtype === 'sqlite') {
+		return $query->fetchArray(SQLITE3_ASSOC);
+	} else {
+		exit("Unsupported database type");
+	}
 }
 
-function fetch_error() {
-    $dbtype = $GLOBALS['dbtype'];
-    $conn = $GLOBALS['conn'];
-    if ($dbtype === "mysql") {
-        return addslashes(mysqli_error($conn));
-    } elseif ($dbtype === "sqlite") {
-        return addslashes($conn->lastErrorMsg());
-    }
+function fetch_error()
+{
+	$dbtype = $GLOBALS['dbtype'];
+	$conn = $GLOBALS['conn'];
+	if ($dbtype === "mysql") {
+		return addslashes(mysqli_error($conn));
+	} elseif ($dbtype === "sqlite") {
+		return addslashes($conn->lastErrorMsg());
+	}
 	return "未知错误";
 }
 
-function execute_exec($sql) {
-    $dbtype = $GLOBALS['dbtype'];
-    $conn = $GLOBALS['conn'];
-    if ($dbtype === "mysql") {
-        return mysqli_query($conn, $sql);
-    } elseif ($dbtype === "sqlite") {
-        return $conn->exec($sql);
-    }
-    return false;
-}
-
-function execute_query($sql) {
-    $dbtype = $GLOBALS['dbtype'];
-    $conn = $GLOBALS['conn'];
-    if ($dbtype === "mysql") {
-        return mysqli_query($conn, $sql);
-    } elseif ($dbtype === "sqlite") {
-        return $conn->query($sql);
-    }
-    return false;
-}
-
-function get_affected_rows() {
+function execute_exec($sql)
+{
 	$dbtype = $GLOBALS['dbtype'];
-    $conn = $GLOBALS['conn'];
-    if ($dbtype === "mysql") {
-        return mysqli_affected_rows($conn);
-    } elseif ($dbtype === "sqlite") {
-        return $conn->changes();
-    }
-    return -1;
+	$conn = $GLOBALS['conn'];
+	if ($dbtype === "mysql") {
+		return mysqli_query($conn, $sql);
+	} elseif ($dbtype === "sqlite") {
+		return $conn->exec($sql);
+	}
+	return false;
+}
+
+function execute_query($sql)
+{
+	$dbtype = $GLOBALS['dbtype'];
+	$conn = $GLOBALS['conn'];
+	if ($dbtype === "mysql") {
+		return mysqli_query($conn, $sql);
+	} elseif ($dbtype === "sqlite") {
+		return $conn->query($sql);
+	}
+	return false;
+}
+
+function get_affected_rows()
+{
+	$dbtype = $GLOBALS['dbtype'];
+	$conn = $GLOBALS['conn'];
+	if ($dbtype === "mysql") {
+		return mysqli_affected_rows($conn);
+	} elseif ($dbtype === "sqlite") {
+		return $conn->changes();
+	}
+	return -1;
 }
 
 $getConstant = function (string $name) {
@@ -357,32 +366,32 @@ function GetSvipTablePage(string $page)
 function GetIPTablePage(string $page)
 {
 	if (!is_numeric($page) || $page <= 0) {
-        throw new Exception("Invalid page number: $page");
-    }
+		throw new Exception("Invalid page number: $page");
+	}
 	$EachPageNum = 10;
 	$dbtable = $GLOBALS['dbtable'];
 	$AllRow = "";
 	$StartNum = ((int)$page - 1) * $EachPageNum;
 	$sql = "SELECT * FROM `{$dbtable}_ip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
 	$query = execute_query($sql);
-    $Result = fetch_row($query);
+	$Result = fetch_row($query);
 	while ($Result) {
-        // 存在数据
-        $type = ($Result["type"] == -1) ? "黑名单" : "白名单";
-        $EachRow = "<tr>" .
-            "<th>{$Result["id"]}</th>" .
-            "<td><div class=\"btn-group btn-group-sm\" role=\"group\">" .
-            "<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable',{$Result["id"]});\">删除</a>" .
-            "</div></td>" .
-            "<td>{$Result["ip"]}</td>" .
-            "<td>{$type}</td>" .
-            "<td>{$Result["remark"]}</td>" .
-            "<td>{$Result["add_time"]}</td>" .
-            "</tr>";
-        $AllRow .= $EachRow;
-        $Result = fetch_row($query);
-    }
-    return $AllRow;
+		// 存在数据
+		$type = ($Result["type"] == -1) ? "黑名单" : "白名单";
+		$EachRow = "<tr>" .
+			"<th>{$Result["id"]}</th>" .
+			"<td><div class=\"btn-group btn-group-sm\" role=\"group\">" .
+			"<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable',{$Result["id"]});\">删除</a>" .
+			"</div></td>" .
+			"<td>{$Result["ip"]}</td>" .
+			"<td>{$type}</td>" .
+			"<td>{$Result["remark"]}</td>" .
+			"<td>{$Result["add_time"]}</td>" .
+			"</tr>";
+		$AllRow .= $EachRow;
+		$Result = fetch_row($query);
+	}
+	return $AllRow;
 }
 /**
  * 获取数据库中的BDUSS数据
@@ -391,54 +400,54 @@ function GetIPTablePage(string $page)
  */
 function GetDBBDUSS()
 {
-    global $dbtable;
-    // 获取SVIP BDUSS
-    switch (SVIPSwitchMod) {
-        case 1:
-            //模式1：用到废为止
-            // 时间倒序输出第一项未被限速账号
-            $sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
-            $Result = fetch_assoc($sql);
-            break;
-        case 2:
-            //模式2：轮番上
-            // 时间顺序输出第一项未被限速账号
-            $sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
-            $Result = fetch_assoc($sql);
+	global $dbtable;
+	// 获取SVIP BDUSS
+	switch (SVIPSwitchMod) {
+		case 1:
+			//模式1：用到废为止
+			// 时间倒序输出第一项未被限速账号
+			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
+			$Result = fetch_assoc($sql);
+			break;
+		case 2:
+			//模式2：轮番上
+			// 时间顺序输出第一项未被限速账号
+			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
+			$Result = fetch_assoc($sql);
 
-            if ($Result) {
-                $id = $Result["id"];
-                //不论解析成功与否，将当前账号更新时间，下一次使用另一账号
-                // 开始处理
-                // 这里最新的时间表示可用账号，按顺序排序
-                $is_using = date("Y-m-d H:i:s");
-                $sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
-                $result = execute_exec($sql);
-                if ($result == false) {
-                    // 失败 但可继续解析
-                    dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
-                }
-            }
-            break;
-        case 3:
-            //模式3：手动切换，不管限速
-            // 时间倒序输出第一项账号，不管限速
-            $sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
-            $Result = fetch_assoc($sql);
-            break;
-        case 4:
-            //模式4：轮番上(无视限速)
-            // 时间顺序输出第一项限速账号
-            $sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
-            $Result = fetch_assoc($sql);
+			if ($Result) {
+				$id = $Result["id"];
+				//不论解析成功与否，将当前账号更新时间，下一次使用另一账号
+				// 开始处理
+				// 这里最新的时间表示可用账号，按顺序排序
+				$is_using = date("Y-m-d H:i:s");
+				$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
+				$result = execute_exec($sql);
+				if ($result == false) {
+					// 失败 但可继续解析
+					dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
+				}
+			}
+			break;
+		case 3:
+			//模式3：手动切换，不管限速
+			// 时间倒序输出第一项账号，不管限速
+			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
+			$Result = fetch_assoc($sql);
+			break;
+		case 4:
+			//模式4：轮番上(无视限速)
+			// 时间顺序输出第一项限速账号
+			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
+			$Result = fetch_assoc($sql);
 
-            if ($Result) {
-                $id = $Result["id"];
-                //不论解析成功与否，将当前账号更新时间，下一次使用另一账号
-                // 开始处理
-                // 这里最新的时间表示可用账号，按顺序排序
-                $is_using = date("Y-m-d H:i:s");
-                $sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
+			if ($Result) {
+				$id = $Result["id"];
+				//不论解析成功与否，将当前账号更新时间，下一次使用另一账号
+				// 开始处理
+				// 这里最新的时间表示可用账号，按顺序排序
+				$is_using = date("Y-m-d H:i:s");
+				$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
 				$result = execute_exec($sql);
 				if ($result == false) {
 					// 失败 但可继续解析
@@ -448,7 +457,7 @@ function GetDBBDUSS()
 			break;
 		case 0:
 			//模式0：使用本地解析
-			default:
+		default:
 			$SVIP_BDUSS = SVIP_BDUSS;
 			$SVIP_STOKEN = SVIP_STOKEN;
 			$id = "-1";

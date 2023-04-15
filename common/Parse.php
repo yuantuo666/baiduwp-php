@@ -113,22 +113,22 @@ class Parse
 		$ip = sanitizeContent(getip());
 		$isipwhite = FALSE;
 		if (USING_DB) {
-		    global $conn, $dbtable, $dbtype;
-		    connectdb();
+			global $conn, $dbtable, $dbtype;
+			connectdb();
 
-		    // 查询数据库中是否存在已经保存的数据
-		    $sql = "SELECT * FROM `{$dbtable}_ip` WHERE `ip` LIKE '$ip';";
-		    if ($result = fetch_assoc($sql)) {
-		        // 存在 判断类型
-		        if ($result["type"] == -1) {
-		            // 黑名单
-		            return array("error" => -1, "msg" => "当前ip已被加入黑名单，请联系站长解封", "ip" => $ip);
-		        } elseif ($result["type"] == 0) {
-		            // 白名单
-		            $message[] = "当前ip为白名单~ $ip";
-		            $isipwhite = TRUE;
-		        }
-		    }
+			// 查询数据库中是否存在已经保存的数据
+			$sql = "SELECT * FROM `{$dbtable}_ip` WHERE `ip` LIKE '$ip';";
+			if ($result = fetch_assoc($sql)) {
+				// 存在 判断类型
+				if ($result["type"] == -1) {
+					// 黑名单
+					return array("error" => -1, "msg" => "当前ip已被加入黑名单，请联系站长解封", "ip" => $ip);
+				} elseif ($result["type"] == 0) {
+					// 白名单
+					$message[] = "当前ip为白名单~ $ip";
+					$isipwhite = TRUE;
+				}
+			}
 		}
 
 		// check if the timestamp is valid
@@ -175,38 +175,37 @@ class Parse
 		}
 
 		if (USING_DB) {
-		    $DownloadLinkAvailableTime = (is_int(DownloadLinkAvailableTime)) ? DownloadLinkAvailableTime : 8;
-		    // 查询数据库中是否存在已经保存的数据
-		    if($dbtype === "mysql")
-		    {
-		    	$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL $DownloadLinkAvailableTime HOUR);";
-		    }elseif($dbtype === "sqlite") {
-		    	$sql = "SELECT * FROM \"$dbtable\" WHERE \"md5\"='$md5' AND \"ptime\"> datetime('now', 'localtime', '-$DownloadLinkAvailableTime hour')";
-		    }
-		    
-		    $result = fetch_assoc($sql);
+			$DownloadLinkAvailableTime = (is_int(DownloadLinkAvailableTime)) ? DownloadLinkAvailableTime : 8;
+			// 查询数据库中是否存在已经保存的数据
+			if ($dbtype === "mysql") {
+				$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL $DownloadLinkAvailableTime HOUR);";
+			} elseif ($dbtype === "sqlite") {
+				$sql = "SELECT * FROM \"$dbtable\" WHERE \"md5\"='$md5' AND \"ptime\"> datetime('now', 'localtime', '-$DownloadLinkAvailableTime hour')";
+			}
 
-		    if ($result) {
-		        // 存在
-		        $realLink = $result["realLink"];
-		        return array("error" => 0, "usingcache" => true, "filedata" => $FileData, "directlink" => "https://" . $realLink, "user_agent" => "LogStatistic", "message" => $message);
-		    }
+			$result = fetch_assoc($sql);
 
-		    // 判断今天内是否获取过文件
-		    if (!$isipwhite) { // 白名单跳过
-		        // 获取解析次数
-		        if($dbtype === "mysql") {
-		    		$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND date(`ptime`)=date(now());";
-		    	}elseif($dbtype === "sqlite") {
-		    		$sql = "SELECT count(*) as Num FROM \"$dbtable\" WHERE \"userip\"='$ip' AND date(\"ptime\") = date('now', 'localtime');";
-		    	}
+			if ($result) {
+				// 存在
+				$realLink = $result["realLink"];
+				return array("error" => 0, "usingcache" => true, "filedata" => $FileData, "directlink" => "https://" . $realLink, "user_agent" => "LogStatistic", "message" => $message);
+			}
 
-		        $result = fetch_assoc($sql);
-		        if ($result["Num"] >= DownloadTimes) {
-		            // 提示无权继续
-		            return array("error" => 1, "msg" => "今日解析次数已达上限，请明天再试", "ip" => $ip);
-		        }
-		    }
+			// 判断今天内是否获取过文件
+			if (!$isipwhite) { // 白名单跳过
+				// 获取解析次数
+				if ($dbtype === "mysql") {
+					$sql = "SELECT count(*) as Num FROM `$dbtable` WHERE `userip`='$ip' AND date(`ptime`)=date(now());";
+				} elseif ($dbtype === "sqlite") {
+					$sql = "SELECT count(*) as Num FROM \"$dbtable\" WHERE \"userip\"='$ip' AND date(\"ptime\") = date('now', 'localtime');";
+				}
+
+				$result = fetch_assoc($sql);
+				if ($result["Num"] >= DownloadTimes) {
+					// 提示无权继续
+					return array("error" => 1, "msg" => "今日解析次数已达上限，请明天再试", "ip" => $ip);
+				}
+			}
 		}
 
 		$DBSVIP = GetDBBDUSS();
@@ -229,41 +228,41 @@ class Parse
 
 		// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
 		if (!$realLink || strlen($realLink) < 20 || strstr($realLink, "qdall01")) {
-		    if ($id != "-1" && (SVIPSwitchMod === 1 || SVIPSwitchMod === 2)) {
-		        //限速进行标记 并刷新页面重新解析
-		        $sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
-		        $result = execute_exec($sql);
-		        if ($result != false) {
-		            // SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
-		            return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
-		        } else {
-		            // SVIP账号自动切换失败
-		            return array("error" => -1, "msg" => "SVIP账号自动切换失败", "message" => $message);
-		        }
-		    }
+			if ($id != "-1" && (SVIPSwitchMod === 1 || SVIPSwitchMod === 2)) {
+				//限速进行标记 并刷新页面重新解析
+				$sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
+				$result = execute_exec($sql);
+				if ($result != false) {
+					// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
+					return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
+				} else {
+					// SVIP账号自动切换失败
+					return array("error" => -1, "msg" => "SVIP账号自动切换失败", "message" => $message);
+				}
+			}
 
-		    $body = get($dlink, $headerArray);
-		    $body_decode = json_decode($body, true);
+			$body = get($dlink, $headerArray);
+			$body_decode = json_decode($body, true);
 
-		    $message[] = "获取真实下载链接出错：" . json_encode($body_decode);
-		    return self::realLinkError($body_decode, $message);
+			$message[] = "获取真实下载链接出错：" . json_encode($body_decode);
+			return self::realLinkError($body_decode, $message);
 		}
 
 		// 记录下使用者ip，下次进入时提示
 		if (USING_DB) {
-		    $Sqlfilename = htmlspecialchars($filename, ENT_QUOTES); // 防止出现一些刁钻的文件名无法处理
-		    $Sqlpath = htmlspecialchars($path, ENT_QUOTES);
-		    if($dbtype === "mysql") {
-	    		$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',NOW(),'$id')";
-	    	}elseif($dbtype === "sqlite") {
-	    		$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',datetime('now', 'localtime'),'$id')";
-	    	}
-		    
-		    $result = execute_exec($sql);
-		    if ($result == false) {
-		        // 保存错误
-		        return array("error" => -1, "msg" => "数据库保存错误", "message" => $message);
-		    }
+			$Sqlfilename = htmlspecialchars($filename, ENT_QUOTES); // 防止出现一些刁钻的文件名无法处理
+			$Sqlpath = htmlspecialchars($path, ENT_QUOTES);
+			if ($dbtype === "mysql") {
+				$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',NOW(),'$id')";
+			} elseif ($dbtype === "sqlite") {
+				$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',datetime('now', 'localtime'),'$id')";
+			}
+
+			$result = execute_exec($sql);
+			if ($result == false) {
+				// 保存错误
+				return array("error" => -1, "msg" => "数据库保存错误", "message" => $message);
+			}
 		}
 
 		return array("error" => 0, "filedata" => $FileData, "directlink" => "https://" . $realLink, "user_agent" => "LogStatistic", "message" => $message);

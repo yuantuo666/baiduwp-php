@@ -445,13 +445,13 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							function generateRandomString(length) {
-							    var result = '';
-							    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-							    var charactersLength = characters.length;
-							    for (var i = 0; i < length; i++) {
-							        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-							    }
-							    return result;
+								var result = '';
+								var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+								var charactersLength = characters.length;
+								for (var i = 0; i < length; i++) {
+									result += characters.charAt(Math.floor(Math.random() * charactersLength));
+								}
+								return result;
 							}
 
 							$("input[name='IsCheckPassword']").on('click', function() {
@@ -482,28 +482,28 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								}
 							});
 							$("select[name='DbConfig_dbtype']").on('change', function() {
-							    // 根据所选值判断是否隐藏输入框
-							    if ($(this).val() === 'sqlite') {
-							      	$('#username-field').hide();
-							      	$('#password-field').hide();
-							      	$('#dbname-field').hide();
-							      	<?php if($dbtype === "sqlite") { ?>
-							      		$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为sqlite，直接获取路径
-							      	<?php } else { ?>
-							      		var randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
-    									$('input[name="DbConfig_servername"]').val('bdwp_' + randomString + '.db'); // 将随机字符串设置为数据库地址的值
-							      	<?php } ?>
-							    } else {
-							      	$('#username-field').show();
-							      	$('#password-field').show();
-							      	$('#dbname-field').show();
-    								<?php if($dbtype === "mysql") { ?>
-							      		$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为Mysql，直接获取地址
-							      	<?php } else { ?>
-    									$('input[name="DbConfig_servername"]').val('127.0.0.1'); //否则给127.0.0.1
-							      	<?php } ?>
-							    }
-							  });
+								// 根据所选值判断是否隐藏输入框
+								if ($(this).val() === 'sqlite') {
+									$('#username-field').hide();
+									$('#password-field').hide();
+									$('#dbname-field').hide();
+									<?php if ($dbtype === "sqlite") { ?>
+										$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为sqlite，直接获取路径
+									<?php } else { ?>
+										var randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
+										$('input[name="DbConfig_servername"]').val('bdwp_' + randomString + '.db'); // 将随机字符串设置为数据库地址的值
+									<?php } ?>
+								} else {
+									$('#username-field').show();
+									$('#password-field').show();
+									$('#dbname-field').show();
+									<?php if ($dbtype === "mysql") { ?>
+										$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为Mysql，直接获取地址
+									<?php } else { ?>
+										$('input[name="DbConfig_servername"]').val('127.0.0.1'); //否则给127.0.0.1
+									<?php } ?>
+								}
+							});
 							$("#AgreeCheck").on('click', function() {
 								item = $(this).prop("checked");
 								if (item == true) {
@@ -689,70 +689,72 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 				$DefaultLanguage = (!empty($_POST["DefaultLanguage"])) ? $_POST["DefaultLanguage"] : "en";
 
-				function connect_mysql($servername, $username, $DBPassword, $dbname) {
-				    $conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
-				    if (!$conn) {
-				        throw new Exception("数据库连接错误，详细信息：" . mysqli_connect_error());
-				    }
-				    return $conn;
+				function connect_mysql($servername, $username, $DBPassword, $dbname)
+				{
+					$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
+					if (!$conn) {
+						throw new Exception("数据库连接错误，详细信息：" . mysqli_connect_error());
+					}
+					return $conn;
 				}
 
-				function connect_sqlite($servername) {
-				    $db = new SQLite3($servername);
-				    return $db;
+				function connect_sqlite($servername)
+				{
+					$db = new SQLite3($servername);
+					return $db;
 				}
 
-				function import_data($conn, $dbtype, $dbtable, $sql_filename) {
-				    $SQLfile = file_get_contents($sql_filename);
-				    if ($SQLfile === false) {
-				        throw new Exception("无法打开 {$sql_filename} 文件");
-				    }
+				function import_data($conn, $dbtype, $dbtable, $sql_filename)
+				{
+					$SQLfile = file_get_contents($sql_filename);
+					if ($SQLfile === false) {
+						throw new Exception("无法打开 {$sql_filename} 文件");
+					}
 
-				    $SQLfile = str_replace("<dbtable>", $dbtable, $SQLfile);
+					$SQLfile = str_replace("<dbtable>", $dbtable, $SQLfile);
 
-				    if ($dbtype === "mysql") {
-				        if (mysqli_multi_query($conn, $SQLfile)) {
-				            $success_result = 0;
-				            do {
-				                $success_result += 1;
-				            } while (mysqli_more_results($conn) && mysqli_next_result($conn));
-				        }
-				        $affected_rows = mysqli_affected_rows($conn);
-				        if ($affected_rows == -1) {
-				            throw new Exception("数据库导入出错，错误在 {$success_result} 行");
-				        }
-				        return $affected_rows;
-				    } elseif ($dbtype === "sqlite") {
-				        if ($conn->exec($SQLfile) === false) {
-				            $errorInfo = $conn->errorInfo();
-				            throw new Exception("数据库导入出错，错误信息：" . $errorInfo[2]);
-				        }
-				        return $conn->changes();
-				    }
-				    return 0;
+					if ($dbtype === "mysql") {
+						if (mysqli_multi_query($conn, $SQLfile)) {
+							$success_result = 0;
+							do {
+								$success_result += 1;
+							} while (mysqli_more_results($conn) && mysqli_next_result($conn));
+						}
+						$affected_rows = mysqli_affected_rows($conn);
+						if ($affected_rows == -1) {
+							throw new Exception("数据库导入出错，错误在 {$success_result} 行");
+						}
+						return $affected_rows;
+					} elseif ($dbtype === "sqlite") {
+						if ($conn->exec($SQLfile) === false) {
+							$errorInfo = $conn->errorInfo();
+							throw new Exception("数据库导入出错，错误信息：" . $errorInfo[2]);
+						}
+						return $conn->changes();
+					}
+					return 0;
 				}
 
 				if ($USING_DB === "true") {
-				    try {
-				        if ($dbtype === "mysql") {
-				            $conn = connect_mysql($servername, $username, $DBPassword, $dbname);
-				        } elseif ($dbtype === "sqlite") {
-				            $conn = connect_sqlite($servername);
-				        } else {
-				            throw new Exception("不支持的数据库类型: {$dbtype}");
-				        }
+					try {
+						if ($dbtype === "mysql") {
+							$conn = connect_mysql($servername, $username, $DBPassword, $dbname);
+						} elseif ($dbtype === "sqlite") {
+							$conn = connect_sqlite($servername);
+						} else {
+							throw new Exception("不支持的数据库类型: {$dbtype}");
+						}
 
-				        if ($ReserveDBData === "true") {
-				            echo "保存以前数据库数据<br />";
-				        } else {
-				            $sql_filename = ($dbtype === "mysql") ? "./install/bdwp.sql" : "./install/bdwp_sqlite.sql";
-				            $affected_rows = import_data($conn, $dbtype, $dbtable, $sql_filename);
-				            echo "数据库导入成功，成功导入 {$affected_rows} 条数据<br />";
-				        }
-
-				    } catch (Exception $e) {
-				        die($e->getMessage());
-				    }
+						if ($ReserveDBData === "true") {
+							echo "保存以前数据库数据<br />";
+						} else {
+							$sql_filename = ($dbtype === "mysql") ? "./install/bdwp.sql" : "./install/bdwp_sqlite.sql";
+							$affected_rows = import_data($conn, $dbtype, $dbtable, $sql_filename);
+							echo "数据库导入成功，成功导入 {$affected_rows} 条数据<br />";
+						}
+					} catch (Exception $e) {
+						die($e->getMessage());
+					}
 				}
 
 				// 修改文件
