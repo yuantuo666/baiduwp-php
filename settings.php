@@ -46,13 +46,17 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 	<meta name="referrer" content="same-origin" />
 	<meta name="author" content="Yuan_Tuo" />
 	<meta name="version" content="<?php echo programVersion; ?>" />
-	<title><?php echo Sitename; ?> - Settings</title>
+	<title>
+		<?php echo Sitename; ?> - Settings
+	</title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
-	<link rel="stylesheet" disabled id="Swal2-Light" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Dark"
+		href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Light"
+		href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
@@ -100,10 +104,12 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									<input type="text" class="form-control" name="setting_password" placeholder="Password">
 									<small class="form-text text-right">忘记密码可进入<b>config.php</b>中查看~</small>
 								</div>
-								<button onclick="Sumbitform()" class="mt-4 mb-3 form-control btn btn-success btn-block">登录</button>
+								<button onclick="Sumbitform()"
+									class="mt-4 mb-3 form-control btn btn-success btn-block">登录</button>
 							</form>
 							<script>
-								<?php if (isset($PasswordError) and $PasswordError) echo "Swal.fire('管理员密码错误','如果忘记管理员密码请进入 config.php 查看','error');"; ?>
+								<?php if (isset($PasswordError) and $PasswordError)
+									echo "Swal.fire('管理员密码错误','如果忘记管理员密码请进入 config.php 查看','error');"; ?>
 
 								function Sumbitform() {
 									Swal.fire("正在登录，请稍等");
@@ -116,9 +122,10 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 				</div>
 			<?php } else {
 				// 登录后操作
-				if (!USING_DB) dl_error("数据库未启用，无法使用后台功能", "请在 <code>config.php</code> 中启用并正确配置数据库");
+				if (!USING_DB)
+					dl_error("数据库未启用，无法使用后台功能", "请在 <code>config.php</code> 中启用并正确配置数据库");
 				connectdb();
-			?>
+				?>
 				<div class="col-md-12 col-sm-12 col-12">
 					<?php if ($method == "analyse") { ?>
 						<nav>
@@ -162,18 +169,48 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 								</div>
 								<br />
 								<a href="javascript:AnalyseLoadmore();" class="btn btn-primary">加载更多</a>
+								<a href="javascript:clearAll();" class="btn btn-danger">一键清空</a>
 								<script>
 									function AnalyseLoadmore() {
 										Swal.fire("正在加载，请稍等");
 										Swal.showLoading();
 										newpage = Number($("#AnalyseTable").attr("page")) + 1;
-										$.get(`api.php?m=ADMINAPI&act=AnalyseGetTable&page=${newpage}`, function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=AnalyseGetTable&page=${newpage}`, function (data, status) {
 											if (status == "success") {
 												$("#AnalyseTable").append(data);
 												$("#AnalyseTable").attr("page", newpage);
 												Swal.close();
 											} else {
 												Swal.fire("请求错误，请检查网络是否正常");
+											}
+										});
+									}
+									function clearAll() {
+										Swal.fire({
+											title: '确认清空?',
+											text: "此操作将清空所有解析数据，无法撤销！",
+											icon: 'warning',
+											showCancelButton: true,
+											confirmButtonColor: '#3085d6',
+											cancelButtonColor: '#d33',
+											confirmButtonText: '确定',
+											cancelButtonText: '取消'
+										}).then((result) => {
+											if (result.isConfirmed) {
+												Swal.fire("正在清空，请稍等");
+												Swal.showLoading();
+												$.post("api.php?m=ADMINAPI&act=clearAllAnalyseData", function (data, status) {
+													if (status == "success") {
+														if (data.error == 0) {
+															Swal.fire("清空成功！", "所有解析数据已被清空。");
+															location.reload();
+														} else {
+															Swal.fire("清空失败！", data.msg);
+														}
+													} else {
+														Swal.fire("请求错误，请检查网络是否正常");
+													}
+												}, "json");
 											}
 										});
 									}
@@ -197,26 +234,26 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 								<h5 class="card-title">默认账号</h5>
 								<?php
 								$dbtype = $GLOBALS['dbtype'];
-							    if ($dbtype === 'mysql') {
-							        $sql = "SELECT * FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1";
-							    } elseif ($dbtype === 'sqlite') {
-							        $sql = "SELECT * FROM '{$dbtable}_svip' WHERE state!=-1 ORDER BY is_using DESC LIMIT 1 OFFSET 0";
-							    }// 时间倒序输出第一项未被限速账号
+								if ($dbtype === 'mysql') {
+									$sql = "SELECT * FROM `{$dbtable}_svip` WHERE `state`!=-1 ORDER BY `is_using` DESC LIMIT 0,1";
+								} elseif ($dbtype === 'sqlite') {
+									$sql = "SELECT * FROM '{$dbtable}_svip' WHERE state!=-1 ORDER BY is_using DESC LIMIT 1 OFFSET 0";
+								} // 时间倒序输出第一项未被限速账号
 								if ($Result = fetch_assoc($sql)) {
-								    $id = $Result["id"];
-								    $name = $Result["name"];
-								    $add_time = $Result["add_time"];
-								    $is_using = $Result["is_using"];
-								    $state = ($Result["state"] == -1) ? "限速" : "正常";
+									$id = $Result["id"];
+									$name = $Result["name"];
+									$add_time = $Result["add_time"];
+									$is_using = $Result["is_using"];
+									$state = ($Result["state"] == -1) ? "限速" : "正常";
 
-								    $sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE `paccount`=$id"; // 时间倒序输出第一项未被限速账号
-								    // $Result = mysqli_query($conn, $sql);
-								    // if ($Result = mysqli_fetch_assoc($Result)) {
-								    if ($Result = fetch_assoc($sql)) {
-								        $AllCount = $Result["AllCount"];
-								        $AllSize = ($AllCount == "0") ? "无数据" : formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
-								        $ParseCountMsg =  "累计解析次数：$AllCount 个<br />累计解析大小：$AllSize";
-								    }
+									$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE `paccount`=$id"; // 时间倒序输出第一项未被限速账号
+									// $Result = mysqli_query($conn, $sql);
+									// if ($Result = mysqli_fetch_assoc($Result)) {
+									if ($Result = fetch_assoc($sql)) {
+										$AllCount = $Result["AllCount"];
+										$AllSize = ($AllCount == "0") ? "无数据" : formatSize((float) $Result["AllSize"]); // 格式化获取到的文件大小
+										$ParseCountMsg = "累计解析次数：$AllCount 个<br />累计解析大小：$AllSize";
+									}
 
 									echo "<p>ID：$id<br />";
 									echo "名称：$name<br />";
@@ -224,7 +261,8 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									echo "是否使用(最新时间将被用于解析)：$is_using<br />";
 									echo "状态：$state<br />";
 									echo "$ParseCountMsg</p>";
-								} else echo "<p>Error!当前没有可用账户，正使用本地解析。</p>";
+								} else
+									echo "<p>Error!当前没有可用账户，正使用本地解析。</p>";
 								?>
 								<br>
 								<h5 class="card-title">所有账号</h5>
@@ -256,7 +294,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 										Swal.fire("正在加载，请稍等");
 										Swal.showLoading();
 										newpage = Number($("#SvipTable").attr("page")) + 1;
-										$.get(`api.php?m=ADMINAPI&act=SvipGetTable&page=${newpage}`, function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=SvipGetTable&page=${newpage}`, function (data, status) {
 											if (status == "success") {
 												$("#SvipTable").append(data);
 												$("#SvipTable").attr("page", newpage);
@@ -270,7 +308,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									function SettingFirstAccount(id) {
 										Swal.fire("正在设置，请稍等");
 										Swal.showLoading();
-										$.get(`api.php?m=ADMINAPI&act=SvipSettingFirstAccount&id=${id}`, function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=SvipSettingFirstAccount&id=${id}`, function (data, status) {
 											if (status == "success") {
 												Swal.fire(data.msg);
 												if (data.refresh == true) setTimeout("location.reload();", 3000);
@@ -283,7 +321,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									function SettingNormalAccount(id) {
 										Swal.fire("正在设置，请稍等");
 										Swal.showLoading();
-										$.get(`api.php?m=ADMINAPI&act=SvipSettingNormalAccount&id=${id}`, function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=SvipSettingNormalAccount&id=${id}`, function (data, status) {
 											if (status == "success") {
 												Swal.fire(data.msg);
 												if (data.refresh == true) setTimeout("location.reload();", 3000);
@@ -321,7 +359,8 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									</div>
 									<div class="form-group">
 										<label>MULTI BDUSS</label>
-										<textarea type="text" class="form-control" name="MULTI_BDUSS" style="height: 200px;" placeholder="liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号&#13;&#10;liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号"></textarea>
+										<textarea type="text" class="form-control" name="MULTI_BDUSS" style="height: 200px;"
+											placeholder="liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号&#13;&#10;liMlp3bFN1NWpVM0FrVzRYRTkyWH……----0c27e6ebdb50252b……----百度网盘账号"></textarea>
 										<small>每行设置一个账号，每行格式：BDUSS----STOKEN----账号名称<br />如账号名称为空，则将使用上方设置的统一账号名称</small>
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
@@ -369,7 +408,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 										Swal.fire("正在加载，请稍等");
 										Swal.showLoading();
 										newpage = Number($("#IPTable").attr("page")) + 1;
-										$.get(`api.php?m=ADMINAPI&act=IPGetTable&page=${newpage}`, function(data, status) {
+										$.get(`api.php?m=ADMINAPI&act=IPGetTable&page=${newpage}`, function (data, status) {
 											if (status == "success") {
 												$("#IPTable").append(data);
 												$("#IPTable").attr("page", newpage);
@@ -387,7 +426,9 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									<div class="form-group">
 										<label>IP地址</label>
 										<input type="text" class="form-control" name="ip">
-										<small>现在已经支持对 IP 地址进行模糊匹配，您可以使用“%”代替任意个字符，“_”代替单个字符，更多使用方法请自行搜索 <a href="https://cn.bing.com/search?q=SQL+%E9%80%9A%E9%85%8D%E7%AC%A6" target="_blank" title="SQL 通配符 - 国内版 Bing">SQL 通配符</a>。</small>
+										<small>现在已经支持对 IP 地址进行模糊匹配，您可以使用“%”代替任意个字符，“_”代替单个字符，更多使用方法请自行搜索 <a
+												href="https://cn.bing.com/search?q=SQL+%E9%80%9A%E9%85%8D%E7%AC%A6"
+												target="_blank" title="SQL 通配符 - 国内版 Bing">SQL 通配符</a>。</small>
 									</div>
 									<div class="form-group">
 										<label>备注</label>
@@ -486,11 +527,21 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									<div class="form-group">
 										<label>会员账号切换模式</label>
 										<select class="form-control" id="SVIPSwitchMod" name="SVIPSwitchMod">
-											<option value="0" <?php if (SVIPSwitchMod == "0") echo "selected=\"selected\""; ?>>本地模式</option>
-											<option value="1" <?php if (SVIPSwitchMod == "1") echo "selected=\"selected\""; ?>>顺序模式</option>
-											<option value="2" <?php if (SVIPSwitchMod == "2") echo "selected=\"selected\""; ?>>会员账号轮换模式</option>
-											<option value="4" <?php if (SVIPSwitchMod == "4") echo "selected=\"selected\""; ?>>所有账号轮换模式</option>
-											<option value="3" <?php if (SVIPSwitchMod == "3") echo "selected=\"selected\""; ?>>手动模式</option>
+											<option value="0" <?php if (SVIPSwitchMod == "0")
+												echo "selected=\"selected\""; ?>>
+												本地模式</option>
+											<option value="1" <?php if (SVIPSwitchMod == "1")
+												echo "selected=\"selected\""; ?>>
+												顺序模式</option>
+											<option value="2" <?php if (SVIPSwitchMod == "2")
+												echo "selected=\"selected\""; ?>>
+												会员账号轮换模式</option>
+											<option value="4" <?php if (SVIPSwitchMod == "4")
+												echo "selected=\"selected\""; ?>>
+												所有账号轮换模式</option>
+											<option value="3" <?php if (SVIPSwitchMod == "3")
+												echo "selected=\"selected\""; ?>>
+												手动模式</option>
 										</select>
 									</div>
 									<button type="submit" class="btn btn-primary">提交</button>
@@ -528,7 +579,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 									</div>
 								</div>
 								<script>
-									$.get(`api.php?m=ADMINAPI&act=AccountStatus`, function(data, status) {
+									$.get(`api.php?m=ADMINAPI&act=AccountStatus`, function (data, status) {
 										if (data.error == 0) {
 											$("#normal_msg").html(data.normal_msg);
 											$("#svip_msg").html(data.svip_msg);
@@ -558,23 +609,23 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable`";
 											$Result = fetch_assoc($sql);
 											$AllCount = $Result["AllCount"];
-											$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
+											$AllSize = formatSize((float) $Result["AllSize"]); // 格式化获取到的文件大小
 											echo "累计解析 $AllCount 个，共 $AllSize";
 											?>
 											<br />
 											<?php
 											// 获取今天的解析量
 											if ($GLOBALS['dbtype'] === 'mysql') {
-    											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());";
+												$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());";
 											} elseif ($GLOBALS['dbtype'] === 'sqlite') {
-    											$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date('now', 'localtime');";
+												$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date('now', 'localtime');";
 											} else {
-    											exit("Unsupported database type");
+												exit("Unsupported database type");
 											}
 
 											$Result = fetch_assoc($sql);
 											$AllCount = $Result["AllCount"];
-											$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
+											$AllSize = formatSize((float) $Result["AllSize"]); // 格式化获取到的文件大小
 											echo "今日解析 $AllCount 个，共 $AllSize";
 											?>
 										</p>
@@ -615,17 +666,17 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 											$SvipCountMsg = "数据库中共 $AllCount 个ip";
 
 											if ($AllCount != 0) {
-											    $sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=-1";
-											    $Result = fetch_assoc($sql);
-											    $AllCount = $Result["AllCount"];
-											    $SvipFailCountMsg = "有 $AllCount 个黑名单";
+												$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=-1";
+												$Result = fetch_assoc($sql);
+												$AllCount = $Result["AllCount"];
+												$SvipFailCountMsg = "有 $AllCount 个黑名单";
 
-											    $sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=0";
-											    $Result = fetch_assoc($sql);
-											    $AllCount = $Result["AllCount"];
-											    $SvipSuccCountMsg = "有 $AllCount 个白名单";
+												$sql = "SELECT count(`id`) as AllCount FROM `{$dbtable}_ip` WHERE `type`=0";
+												$Result = fetch_assoc($sql);
+												$AllCount = $Result["AllCount"];
+												$SvipSuccCountMsg = "有 $AllCount 个白名单";
 											} else {
-    											$SvipFailCountMsg = $SvipSuccCountMsg = "";
+												$SvipFailCountMsg = $SvipSuccCountMsg = "";
 											}
 
 											echo $SvipCountMsg . "<br />" . $SvipFailCountMsg . "<br />" . $SvipSuccCountMsg;
@@ -679,16 +730,16 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 								</div>
 							</div>
 						</div>
-				</div>
-			<?php } ?>
-		</div>
-	<?php } ?>
+					</div>
+				<?php } ?>
+			</div>
+		<?php } ?>
 	</div>
 	<script>
 		function DeleteById(Type, Id) {
 			Swal.fire("正在提交删除请求，请稍等");
 			Swal.showLoading();
-			$.get(`api.php?m=ADMINAPI&act=DeleteById&id=${Id}&type=${Type}`, function(data, status) {
+			$.get(`api.php?m=ADMINAPI&act=DeleteById&id=${Id}&type=${Type}`, function (data, status) {
 				if (status == "success") {
 					Swal.fire(data.msg);
 					if (data.refresh == true) setTimeout("location.reload();", 3000);
@@ -701,11 +752,11 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 		$('form.ajaxform').ajaxForm({
 			type: 'post',
 			dataType: 'json',
-			beforeSubmit: function() {
+			beforeSubmit: function () {
 				Swal.fire("正在提交数据，请稍等");
 				Swal.showLoading();
 			},
-			success: function(data, success, xhr, $form) {
+			success: function (data, success, xhr, $form) {
 				if (data.error === 0) {
 					Swal.fire(`${data.msg}`, data.detail, 'success');
 					if (data.refresh == true) setTimeout("location.reload();", 3000);
@@ -713,7 +764,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 					Swal.fire(`${data.msg}`, data.detail, 'error');
 				}
 			},
-			error: function(xhr, error, text, $form) {
+			error: function (xhr, error, text, $form) {
 				console.log(xhr);
 				console.log(`${error}: ${text}`);
 				console.log($form);
