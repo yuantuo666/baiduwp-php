@@ -15,36 +15,28 @@ require_once("./common/invalidCheck.php");
 <div class="col-lg-6 col-md-9 mx-auto mb-5 input-card page" id="index" style="display: none;">
 	<div class="card">
 		<div class="card-header bg-dark text-light">
-			<text id="parsingtooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true"
-				data-bs-title="<?php t("Connecting") ?>"><?php t("IndexTitle") ?></text>
-			<span style="float: right;" id="sviptooltip" data-bs-toggle="tooltip" data-bs-placement="top"
-				data-bs-html="true" data-bs-title="<?php t("Connecting") ?>"><span class="point point-lg"
-					id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
+			<text id="parsingtooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="<?php t("Connecting") ?>"><?php t("IndexTitle") ?></text>
+			<span style="float: right;" id="sviptooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="<?php t("Connecting") ?>"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
 		</div>
 		<div class="card-body">
-			<div class="form-group my-2"><input type="text" class="form-control" name="surl"
-					placeholder="<?php t("ShareLink") ?>" oninput="Getpw()"></div>
-			<div class="form-group my-4"><input type="text" class="form-control" name="pwd"
-					placeholder="<?php t("SharePassword") ?>"></div>
-			<div class="form-group my-4" id="password" style="display: none;"><input type="text" class="form-control"
-					name="password" placeholder="<?php t("PassWord") ?>"></div>
+			<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="<?php t("ShareLink") ?>" oninput="Getpw()"></div>
+			<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="<?php t("SharePassword") ?>"></div>
+			<div class="form-group my-4" id="password" style="display: none;"><input type="text" class="form-control" name="password" placeholder="<?php t("PassWord") ?>"></div>
 			<div class="form-group mt-4 mb-3 d-grid">
-				<button onclick="SubmitLink()" class="btn btn-primary">
-					<?php t("Submit") ?>
-				</button>
+				<button onclick="SubmitLink()" class="btn btn-primary"><?php t("Submit") ?></button>
 			</div>
 		</div>
 	</div>
 	<script>
 		// 主页部分脚本
-		$(document).ready(function () {
+		$(document).ready(function() {
 			hash = window.location.hash.replace("#", "")
 			if (hash === "/list") {
 				hash = "/index"
 			}
 			navigate(hash)
 
-			getAPI('LastParse').then(function (response) {
+			getAPI('LastParse').then(function(response) {
 				if (response.success) {
 					const data = response.data;
 					if (data.error == 0) {
@@ -61,14 +53,14 @@ require_once("./common/invalidCheck.php");
 				}
 			});
 
-			getAPI('ParseCount').then(function (response) {
+			getAPI('ParseCount').then(function(response) {
 				if (response.success) {
 					$("#parsingtooltip").attr("data-bs-title", response.data.msg);
 					new bootstrap.Tooltip(document.getElementById('parsingtooltip'));
 				}
 			});
 
-			getAPI('Password').then(function (response) {
+			getAPI('Password').then(function(response) {
 				switch (response.data.status) {
 					case 0:
 						// 无密码
@@ -92,9 +84,7 @@ require_once("./common/invalidCheck.php");
 <div id="list" class="page" style="display: none;">
 	<nav class="breadcrumb my-4" aria-label="breadcrumb">
 		<ol class="breadcrumb my-3" id="dir-list">
-			<li class="breadcrumb-item active">
-				<?php t("Connecting") ?>
-			</li>
+			<li class="breadcrumb-item active"><?php t("Connecting") ?></li>
 		</ol>
 	</nav>
 	<div>
@@ -107,34 +97,22 @@ require_once("./common/invalidCheck.php");
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">
-					<?php t("DownloadLinkSuccess") ?>
-				</h5>
+				<h5 class="modal-title"><?php t("DownloadLinkSuccess") ?></h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<div id="downloadlinkdiv">
 
 				</div>
-				<h5 class="text-danger" id="limit-tip" style="display: none;">
-					<?php t("LimittedDownload") ?>
-				</h5>
+				<h5 class="text-danger" id="limit-tip" style="display: none;"><?php t("LimittedDownload") ?></h5>
 				<p class="card-text">
-					<a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#SendToAria2">
-						<?php t("SendToAria2") ?> / Motrix
-					</a>
-					<a class="btn btn-outline-primary" href="" id="filecxx" style="display: none;">
-						<?php t("SendToFilecxx") ?>
-					</a>
+					<a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#SendToAria2"><?php t("SendToAria2") ?> / Motrix</a>
+					<a class="btn btn-outline-primary" href="" id="filecxx" style="display: none;"><?php t("SendToFilecxx") ?></a>
 				</p>
-				<p class="card-text"><a class="btn btn-outline-secondary" href="./#/help" target="_blank">
-						<?php t("DownloadHelp") ?>
-					</a></p>
+				<p class="card-text"><a class="btn btn-outline-secondary" href="./#/help" target="_blank"><?php t("DownloadHelp") ?></a></p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-					<?php t("Close") ?>
-				</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php t("Close") ?></button>
 			</div>
 		</div>
 	</div>
@@ -144,9 +122,7 @@ require_once("./common/invalidCheck.php");
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">
-					<?php t("SendToAria2") ?> / Motrix Json-RPC
-				</h5>
+				<h5 class="modal-title"><?php t("SendToAria2") ?> / Motrix Json-RPC</h5>
 				<button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#downloadpage"></button>
 			</div>
 			<div class="modal-body">
@@ -164,18 +140,13 @@ require_once("./common/invalidCheck.php");
 				<small>填写的信息在推送成功后将会被自动保存。</small>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" onclick="addUri()" data-bs-toggle="modal"
-					data-bs-target="#downloadpage">
-					<?php t("Send") ?>
-				</button>
-				<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#downloadpage">
-					<?php t("Return") ?>
-				</button>
+				<button type="button" class="btn btn-primary" onclick="addUri()" data-bs-toggle="modal" data-bs-target="#downloadpage"><?php t("Send") ?></button>
+				<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#downloadpage"><?php t("Return") ?></button>
 			</div>
 		</div>
 	</div>
 	<script>
-		$(function () {
+		$(function() {
 			if (localStorage.getItem('aria2wsurl') !== null)
 				$('#wsurl').attr('value', localStorage.getItem('aria2wsurl'));
 			if (localStorage.getItem('aria2token') !== null)
@@ -185,78 +156,42 @@ require_once("./common/invalidCheck.php");
 </div>
 
 <div class="card page" id="usersettings" style="display: none;">
-	<div class="card-header">
-		<?php t("UserSettings") ?>
-	</div>
+	<div class="card-header"><?php t("UserSettings") ?></div>
 	<div class="card-body">
 		<div class="card-item">
-			<h3>
-				<?php t("ColorMode") ?>
-			</h3>
+			<h3><?php t("ColorMode") ?></h3>
 			<div id="ColorMode-Setting-View">
-				<span class="SaveTime">
-					<?php t("SaveForever") ?>
-				</span>
-				<span>
-					<?php t("BrowserSettings") ?>
-				</span><span id="Browser-ColorMode"></span>
-				<span>
-					<?php t("CurrentSetting") ?>
-				</span><span id="Setting-ColorMode"></span>
+				<span class="SaveTime"><?php t("SaveForever") ?></span>
+				<span><?php t("BrowserSettings") ?></span><span id="Browser-ColorMode"></span>
+				<span><?php t("CurrentSetting") ?></span><span id="Setting-ColorMode"></span>
 			</div>
 			<select id="ColorMode-Select" class="form-control">
-				<option value="auto">
-					<?php t("FollowBrowser") ?>
-				</option>
-				<option value="dark">
-					<?php t("DarkMode") ?>
-				</option>
-				<option value="light">
-					<?php t("LightMode") ?>
-				</option>
+				<option value="auto"><?php t("FollowBrowser") ?></option>
+				<option value="dark"><?php t("DarkMode") ?></option>
+				<option value="light"><?php t("LightMode") ?></option>
 			</select>
 		</div>
 		<div class="card-item">
-			<h3>
-				<?php t("LanguageChoose") ?>
-			</h3>
+			<h3><?php t("LanguageChoose") ?></h3>
 			<div id="LanguageChoose">
-				<span class="SaveTime">
-					<?php t("Save365") ?>
-				</span>
-				<span>
-					<?php t("BrowserSettings") ?>
-				</span><span id="Browser-Language">
-					<?php echo BrowserLanguage; ?>
-				</span>
-				<span>
-					<?php t("CurrentDisplayed") ?>
-				</span><span id="Displayed-Language">
-					<?php echo Lang; ?>
-				</span>
+				<span class="SaveTime"><?php t("Save365") ?></span>
+				<span><?php t("BrowserSettings") ?></span><span id="Browser-Language"><?php echo BrowserLanguage; ?></span>
+				<span><?php t("CurrentDisplayed") ?></span><span id="Displayed-Language"><?php echo Lang; ?></span>
 			</div>
 			<select id="Language-Select" class="form-control">
-				<option value="auto">
-					<?php t("FollowBrowser") ?>
-				</option>
+				<option value="auto"><?php t("FollowBrowser") ?></option>
 				<option value="zh-CN">简体中文</option>
 				<option value="en">English</option>
 			</select>
 		</div>
 		<div class="card-item">
-			<h3>
-				<?php t("UpdateTip") ?>
-			</h3>
+			<h3><?php t("UpdateTip") ?></h3>
 			<div id="UpdateTips">
 				<?php t("UpdateTips") ?>
 			</div>
 			<select id="UpdateTips-Select" class="form-control">
-				<option value="true">
-					<?php t("Enable") ?>
-				</option>
-				<option value="false">
-					<?php t("Disable") ?>
-				</option>
+				<option value="true"><?php t("Enable") ?></option>
+				<option value="false"><?php t("Disable") ?></option>
 			</select>
 		</div>
 	</div>
@@ -300,7 +235,7 @@ require_once("./common/invalidCheck.php");
 	light.addEventListener('change', changeColorMode); // 当色彩模式改变为浅色模式
 	changeColorMode(); // 初始化
 
-	$('#ColorMode-Select').on('change', function () {
+	$('#ColorMode-Select').on('change', function() {
 		if (this.value === 'auto') {
 			localStorage.removeItem('colorMode');
 		} else {
@@ -309,7 +244,7 @@ require_once("./common/invalidCheck.php");
 		location.reload();
 	});
 
-	$('#Language-Select').on('change', function () {
+	$('#Language-Select').on('change', function() {
 		const expires = (this.value === 'auto') ? 'Thu, 01 Jan 1970 00:00:00 GMT' : new Date(Date.now() + 31536000000);
 		document.cookie = `Language=${this.value}; expires=${expires}`;
 		location.reload();
@@ -323,7 +258,7 @@ require_once("./common/invalidCheck.php");
 		$('#UpdateTips-Select option[value=false]')[0].selected = true;
 	}
 
-	$('#UpdateTips-Select').on('change', function () {
+	$('#UpdateTips-Select').on('change', function() {
 		if (this.value === 'true') {
 			localStorage.removeItem('UpdateTip');
 		} else {
