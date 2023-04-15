@@ -16,35 +16,35 @@ require('./common/functions.php');
 $method = (!empty($_GET["m"])) ? $_GET["m"] : "";
 
 if ($method === "CheckMySQLConnect") {
-    // 验证管理员是否登录
-    if (file_exists('config.php') && empty($_SESSION["admin_login"])) {
-        EchoInfo(-3, array("msg" => "请刷新页面后重新登录"));
-        exit;
-    }
-    error_reporting(0);
-    // 获取数据库连接信息
-    $dbtype = htmlspecialchars((!empty($_POST["dbtype"])) ? $_POST["dbtype"] : "", ENT_QUOTES);
-    $servername = htmlspecialchars((!empty($_POST["servername"])) ? $_POST["servername"] : "", ENT_QUOTES);
-    $username = htmlspecialchars((!empty($_POST["username"])) ? $_POST["username"] : "", ENT_QUOTES);
-    $DBPassword = htmlspecialchars((!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "", ENT_QUOTES);
-    $dbname = htmlspecialchars((!empty($_POST["dbname"])) ? $_POST["dbname"] : "", ENT_QUOTES);
-    $dbtable = htmlspecialchars((!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "", ENT_QUOTES);
+	// 验证管理员是否登录
+	if (file_exists('config.php') && empty($_SESSION["admin_login"])) {
+		EchoInfo(-3, array("msg" => "请刷新页面后重新登录"));
+		exit;
+	}
+	error_reporting(0);
+	// 获取数据库连接信息
+	$dbtype = htmlspecialchars((!empty($_POST["dbtype"])) ? $_POST["dbtype"] : "", ENT_QUOTES);
+	$servername = htmlspecialchars((!empty($_POST["servername"])) ? $_POST["servername"] : "", ENT_QUOTES);
+	$username = htmlspecialchars((!empty($_POST["username"])) ? $_POST["username"] : "", ENT_QUOTES);
+	$DBPassword = htmlspecialchars((!empty($_POST["DBPassword"])) ? $_POST["DBPassword"] : "", ENT_QUOTES);
+	$dbname = htmlspecialchars((!empty($_POST["dbname"])) ? $_POST["dbname"] : "", ENT_QUOTES);
+	$dbtable = htmlspecialchars((!empty($_POST["dbtable"])) ? $_POST["dbtable"] : "", ENT_QUOTES);
 
-    try {
-        if ($dbtype === "mysql") {
-            $conn = connect_mysql($servername, $username, $DBPassword, $dbname, false, true);
-            EchoInfo(0, array("msg" => "数据库连接成功，创建 {$dbname} 数据库"));
-        } elseif ($dbtype === "sqlite") {
-            $conn = connect_sqlite($servername, false);
-            EchoInfo(0, array("msg" => "成功连接 SQLite 数据库。"));
-        } else {
-            throw new Exception("不支持的数据库类型: {$dbtype}");
-        }
-    } catch (Exception $e) {
-        EchoInfo(-1, array("msg" => $e->getMessage()));
-        exit;
-    }
-    exit;
+	try {
+		if ($dbtype === "mysql") {
+			$conn = connect_mysql($servername, $username, $DBPassword, $dbname, false, true);
+			EchoInfo(0, array("msg" => "数据库连接成功，创建 {$dbname} 数据库"));
+		} elseif ($dbtype === "sqlite") {
+			$conn = connect_sqlite($servername, false);
+			EchoInfo(0, array("msg" => "成功连接 SQLite 数据库。"));
+		} else {
+			throw new Exception("不支持的数据库类型: {$dbtype}");
+		}
+	} catch (Exception $e) {
+		EchoInfo(-1, array("msg" => $e->getMessage()));
+		exit;
+	}
+	exit;
 }
 
 if (!file_exists('./common/invalidCheck.php')) {
@@ -185,12 +185,12 @@ if ($method == "ADMINAPI") {
 			$add_time = date("Y-m-d H:i:s");
 			$sql = "INSERT INTO `{$dbtable}_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$name','$BDUSS','$STOKEN','$add_time',1,'')";
 			$Result = execute_exec($sql);
-		    if (!$Result) {
-		        EchoInfo(-1, array("msg" => "添加失败", "detail" => fetch_error()));
-		        exit;
-		    }
-		    EchoInfo(0, array("msg" => "新增成功", "detail" => "已经成功新增一条会员数据。3s后将刷新该页面。", "refresh" => true));
-		    break;
+			if (!$Result) {
+				EchoInfo(-1, array("msg" => "添加失败", "detail" => fetch_error()));
+				exit;
+			}
+			EchoInfo(0, array("msg" => "新增成功", "detail" => "已经成功新增一条会员数据。3s后将刷新该页面。", "refresh" => true));
+			break;
 		case "multiBDUSS":
 			$BDUSS = (!empty($_POST["MULTI_BDUSS"])) ? trim($_POST["MULTI_BDUSS"]) : "";
 			$name = htmlspecialchars((!empty($_POST["name"])) ? $_POST["name"] : "", ENT_QUOTES);
@@ -216,8 +216,8 @@ if ($method == "ADMINAPI") {
 
 			$success_result = 0;
 			$dbtype = $GLOBALS['dbtype'];
-		    if ($dbtype === "mysql") {
-		        if (mysqli_multi_query($conn, $allsql)) {
+			if ($dbtype === "mysql") {
+				if (mysqli_multi_query($conn, $allsql)) {
 					do {
 						$success_result = $success_result + 1;
 					} while (mysqli_more_results($conn) && mysqli_next_result($conn));
@@ -227,26 +227,26 @@ if ($method == "ADMINAPI") {
 					EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误在" . $success_result . "行"));
 					exit;
 				}
-		    } elseif ($dbtype === "sqlite") {
-		        // 执行多个 SQL 查询语句
+			} elseif ($dbtype === "sqlite") {
+				// 执行多个 SQL 查询语句
 				$result = execute_exec($allsql);
 
 				// 检查查询是否成功执行
 				if (!$result) {
-				    // 查询执行失败
-				    $error_message = fetch_error();
-				    EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误信息为：$error_message"));
-				    exit;
+					// 查询执行失败
+					$error_message = fetch_error();
+					EchoInfo(-1, array("msg" => "导入失败", "detail" => "错误信息为：$error_message"));
+					exit;
 				}
 				// 检查成功语句条数
 				for ($i = 0; $i < count($AllBduss); $i++) {
 					$success_result = $success_result + get_affected_rows();
 				}
-		    }
+			}
 
-		    // 成功执行查询
-		    EchoInfo(0, array("msg" => "导入成功", "detail" => "成功导入" . $success_result . "条数据。3s后将刷新该页面。", "refresh" => true));
-		    break;
+			// 成功执行查询
+			EchoInfo(0, array("msg" => "导入成功", "detail" => "成功导入" . $success_result . "条数据。3s后将刷新该页面。", "refresh" => true));
+			break;
 		case "SvipSettingFirstAccount":
 			$id = htmlspecialchars((!empty($_GET["id"])) ? $_GET["id"] : "", ENT_QUOTES);
 			if ($id == "") {
@@ -259,14 +259,14 @@ if ($method == "ADMINAPI") {
 			$is_using = date("Y-m-d H:i:s");
 			$sql = "UPDATE `{$dbtable}_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
 			$mysql_query = execute_exec($sql);
-		    if (!$mysql_query) {
-		        // 失败
-		        EchoInfo(-1, array("msg" => "修改失败"));
-		        exit;
-		    }
-		    // 成功
-		    EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为首选账号。3s后将刷新该页面。", "refresh" => true));
-		    break;
+			if (!$mysql_query) {
+				// 失败
+				EchoInfo(-1, array("msg" => "修改失败"));
+				exit;
+			}
+			// 成功
+			EchoInfo(0, array("msg" => "ID为 $id 的账号已被设置为首选账号。3s后将刷新该页面。", "refresh" => true));
+			break;
 		case "SvipSettingNormalAccount":
 			$id = htmlspecialchars((!empty($_GET["id"])) ? $_GET["id"] : "", ENT_QUOTES);
 			if ($id == "") {
@@ -360,17 +360,17 @@ if ($method == "ADMINAPI") {
 			$Result = execute_exec($Sql);
 			if (!$Result) {
 				$Error = fetch_error();
-		    	EchoInfo(-1, array("msg" => "删除失败，返回信息:$Error"));
+				EchoInfo(-1, array("msg" => "删除失败，返回信息:$Error"));
 			}
 			EchoInfo(0, array("msg" => "成功删除id为 $Id 的数据。3s后将刷新该页面。", "refresh" => true)); //成功删除
 			break;
 		case "clearAllAnalyseData";
 			$result = clearAllAnalyseData();
 			if ($result) {
-		        echo EchoInfo(0, array('msg' => '清空成功'));
-		    } else {
-		        echo EchoInfo(-1, array('msg' => '清空失败，请稍后重试'));
-		    }
+				echo EchoInfo(0, array('msg' => '清空成功'));
+			} else {
+				echo EchoInfo(-1, array('msg' => '清空失败，请稍后重试'));
+			}
 			break;
 		default:
 			EchoInfo(-1, array("msg" => "没有参数传入"));
@@ -383,9 +383,9 @@ switch ($method) {
 	case 'LastParse':
 		// 返回数据库中上一次解析的时间，及SVIP状态
 		if (!USING_DB) {
-    		// 未开启数据库
-    		EchoInfo(-1, array("msg" => "未开启数据库功能", "sviptips" => "Unknown"));
-    		exit;
+			// 未开启数据库
+			EchoInfo(-1, array("msg" => "未开启数据库功能", "sviptips" => "Unknown"));
+			exit;
 		}
 
 		// 开启了数据库
@@ -393,15 +393,15 @@ switch ($method) {
 		$dbtype = $GLOBALS['dbtype'];
 		if ($dbtype === "mysql") {
 			$sql = "SELECT * FROM `$dbtable` WHERE `size`>=52428800 ORDER BY `ptime` DESC LIMIT 0,1"; // 时间倒序输出第一项
-		}elseif ($dbtype === "sqlite") {
+		} elseif ($dbtype === "sqlite") {
 			$sql = "SELECT * FROM \"$dbtable\" WHERE CAST(\"size\" AS INTEGER) >= 52428800 ORDER BY \"ptime\" DESC LIMIT 1;";
 		}
 
 		$Result = fetch_assoc($sql);
 
 		if (!$Result) {
-    		EchoInfo(-1, array("msg" => "数据库中没有状态数据，请解析一次大于50MB文件以刷新账号状态", "sviptips" => "Unknown")); //防止产生误解，把提示写完全
-    		exit;
+			EchoInfo(-1, array("msg" => "数据库中没有状态数据，请解析一次大于50MB文件以刷新账号状态", "sviptips" => "Unknown")); //防止产生误解，把提示写完全
+			exit;
 		}
 
 		// 存在数据
@@ -411,19 +411,20 @@ switch ($method) {
 		$SvipStateMsg = ($SvipState) ? "状态正常" : "已被限速";
 		$SvipTips = ($SvipState) ? "正常" : "限速";
 		EchoInfo(0, array(
-    		"msg" => "SVIP账号状态<br />上次解析: " . $Time . "<br />账号状态: " . $SvipStateMsg,
-    		"svipstate" => $SvipState,
-    		"sviptips" => $SvipTips
-		));
+			"msg" => "SVIP账号状态<br />上次解析: " . $Time . "<br />账号状态: " . $SvipStateMsg,
+			"svipstate" => $SvipState,
+			"sviptips" => $SvipTips
+		)
+		);
 		break;
 
 	case "ParseCount":
 		// TODO: 增加缓存功能，防止频繁查询数据库 OR 数据库增加统计表格
 		// 返回数据库中所有的解析总数和文件总大小
 		if (!USING_DB) {
-		    // 未开启数据库
-		    EchoInfo(-1, array("msg" => "未开启数据库功能"));
-		    exit;
+			// 未开启数据库
+			EchoInfo(-1, array("msg" => "未开启数据库功能"));
+			exit;
 		}
 		// 开启了数据库
 		connectdb(true);
@@ -432,31 +433,31 @@ switch ($method) {
 		$Result = fetch_assoc($sql);
 
 		if (!$Result) {
-		    EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
-		    exit;
+			EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
+			exit;
 		}
 
 		// 存在数据
 		$AllCount = $Result["AllCount"];
-		$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
-		$ParseCountMsg =  "累计解析: $AllCount ($AllSize)";
+		$AllSize = formatSize((float) $Result["AllSize"]); // 格式化获取到的文件大小
+		$ParseCountMsg = "累计解析: $AllCount ($AllSize)";
 
 		if ($dbtype === "mysql") {
 			$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable` WHERE date(`ptime`)=date(now());";
-		}elseif ($dbtype === "sqlite") {
+		} elseif ($dbtype === "sqlite") {
 			$sql = "SELECT count(`id`) as AllCount, sum(`size`) as AllSize FROM \"$dbtable\" WHERE date(`ptime`) = date('now', 'localtime')";
-		}// 获取今天的解析量
+		} // 获取今天的解析量
 		$Result = fetch_assoc($sql);
 
 		if (!$Result) {
-		    EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
-		    exit;
+			EchoInfo(0, array("msg" => "当前数据库版本不支持此统计操作"));
+			exit;
 		}
 
 		// 存在数据
 		$AllCount = $Result["AllCount"];
-		$AllSize = formatSize((float)$Result["AllSize"]); // 格式化获取到的文件大小
-		$TodayParseCountMsg =  "今日解析: $AllCount ($AllSize)";
+		$AllSize = formatSize((float) $Result["AllSize"]); // 格式化获取到的文件大小
+		$TodayParseCountMsg = "今日解析: $AllCount ($AllSize)";
 		EchoInfo(0, array("msg" => "系统使用统计<br /><div align='left'>$ParseCountMsg<br />$TodayParseCountMsg</div>"));
 		break;
 	case "CheckUpdate":

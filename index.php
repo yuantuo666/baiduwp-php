@@ -70,13 +70,17 @@ if (DEBUG) {
 	<meta name="version" content="<?php echo programVersion; ?>" />
 	<meta name="description" content="PanDownload 网页版，百度网盘分享链接在线解析工具。" />
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
-	<title><?php echo Sitename; ?></title>
+	<title>
+		<?php echo Sitename; ?>
+	</title>
 	<link rel="icon" href="favicon.ico" />
 	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css" />
-	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
-	<link rel="stylesheet" disabled id="Swal2-Light" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Dark"
+		href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
+	<link rel="stylesheet" disabled id="Swal2-Light"
+		href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-default@4.0.2/default.min.css" />
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
@@ -90,14 +94,23 @@ if (DEBUG) {
 <body>
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<div class="container">
-			<a class="navbar-brand" href="./"><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2" alt="LOGO" /> PanDownload</a>
-			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
+			<a class="navbar-brand" href="./"><img src="resource/logo.png" class="img-fluid rounded logo-img mr-2"
+					alt="LOGO" /> PanDownload</a>
+			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+				data-bs-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('index')"><?php t("IndexButton") ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('help')"><?php t("HelpButton") ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('usersettings')"><?php t("UserSettings") ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github</a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('index')">
+							<?php t("IndexButton") ?>
+						</a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('help')">
+							<?php t("HelpButton") ?>
+						</a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('usersettings')">
+							<?php t("UserSettings") ?>
+						</a></li>
+					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php"
+							target="_blank">Github</a></li>
 				</ul>
 			</div>
 		</div>

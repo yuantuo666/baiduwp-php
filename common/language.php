@@ -158,7 +158,8 @@ $lang = [
 		"IndexButton" => "Home",
 		"HelpButton" => "Using Help",
 		"TipTitle" => "Tip",
-		"TimeoutTip" => "It\'s timeout now, please refresh the page!", // 转义！！
+		"TimeoutTip" => "It\'s timeout now, please refresh the page!",
+		// 转义！！
 		"AllFiles" => "All File(s)",
 		"PasswordError" => "Password is error",
 		"AccountError" => "You are banned",
