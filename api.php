@@ -364,6 +364,14 @@ if ($method == "ADMINAPI") {
 			}
 			EchoInfo(0, array("msg" => "成功删除id为 $Id 的数据。3s后将刷新该页面。", "refresh" => true)); //成功删除
 			break;
+		case "clearAllAnalyseData";
+			$result = clearAllAnalyseData();
+			if ($result) {
+		        echo EchoInfo(0, array('msg' => '清空成功'));
+		    } else {
+		        echo EchoInfo(-1, array('msg' => '清空失败，请稍后重试'));
+		    }
+			break;
 		default:
 			EchoInfo(-1, array("msg" => "没有参数传入"));
 			break;

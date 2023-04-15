@@ -162,6 +162,7 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 								</div>
 								<br />
 								<a href="javascript:AnalyseLoadmore();" class="btn btn-primary">加载更多</a>
+								<a href="javascript:clearAll();" class="btn btn-danger">一键清空</a>
 								<script>
 									function AnalyseLoadmore() {
 										Swal.fire("正在加载，请稍等");
@@ -177,6 +178,35 @@ if (!$is_login and !empty($_POST["setting_password"])) {
 											}
 										});
 									}
+									function clearAll() {
+								        Swal.fire({
+								            title: '确认清空?',
+								            text: "此操作将清空所有解析数据，无法撤销！",
+								            icon: 'warning',
+								            showCancelButton: true,
+								            confirmButtonColor: '#3085d6',
+								            cancelButtonColor: '#d33',
+								            confirmButtonText: '确定',
+								            cancelButtonText: '取消'
+								        }).then((result) => {
+								            if (result.isConfirmed) {
+								                Swal.fire("正在清空，请稍等");
+								                Swal.showLoading();
+								                $.post("api.php?m=ADMINAPI&act=clearAllAnalyseData", function(data, status) {
+								                    if (status == "success") {
+								                        if (data.error == 0) {
+								                            Swal.fire("清空成功！", "所有解析数据已被清空。");
+								                            location.reload();
+								                        } else {
+								                            Swal.fire("清空失败！", data.msg);
+								                        }
+								                    } else {
+								                        Swal.fire("请求错误，请检查网络是否正常");
+								                    }
+								                }, "json");
+								            }
+								        });
+								    }
 								</script>
 							</div>
 						</div>
