@@ -28,6 +28,9 @@ function post(string $url, $data, array $header)
 	setCurl($ch, $header);
 	curl_setopt($ch, CURLOPT_POST, true); // POST 方法
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $data); // POST 的数据
+	// Set request timeout (in seconds)
+	$timeout = 10;
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 	$result = curl_exec($ch);
 	curl_close($ch);
 	return $result;
@@ -793,4 +796,13 @@ function decryptMd5($md5)
 	}
 	$md5 = substr($key3, 8, 8) . substr($key3, 0, 8) . substr($key3, 24, 8) . substr($key3, 16, 8);
 	return $md5;
+}
+function clearAllAnalyseData() {
+    $dbtable = $GLOBALS['dbtable'];
+
+    // 执行数据库清空操作（请根据您的数据库类型和表结构进行调整）
+    $sql = "DELETE FROM `$dbtable`";
+    $result = execute_exec($sql);
+
+    return $result;
 }
