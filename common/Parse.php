@@ -12,7 +12,7 @@ class Parse
 	{
 		$message = [];
 		if (!$sign || !$timestamp) {
-			[$status, $sign, $timestamp] = GetSign($surl);
+			list($status, $sign, $timestamp) = GetSign($surl);
 			if ($status !== 0) {
 				$sign = '';
 				$timestamp = '1';
@@ -137,7 +137,7 @@ class Parse
 		// check if the timestamp is valid
 		if (time() - $timestamp > 300) {
 			// try to get the timestamp and sign
-			[$_status, $sign, $timestamp] = getSign("", $share_id, $uk);
+			list($_status, $sign, $timestamp) = getSign("", $share_id, $uk);
 			if ($_status !== 0) {
 				$message[] = "超时，自动获取sign和timestamp失败, $sign";
 			} else {
