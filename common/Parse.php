@@ -220,32 +220,49 @@ class Parse
 			// fail
 			$message[] = "获取真实链接失败 $header";
 		}
-		$getRealLink = strstr($header, "Location");
-		$getRealLink = substr($getRealLink, 10);
-		$realLink = str_replace("https://", "http://", $getRealLink);
-		$realLink = getSubstr($getRealLink, "http://", "\n"); // delete http://
-		$realLink = trim($realLink); // delete space
+		$header = str_replace("https://", "http://", $header);
+		$realLink = getSubstr($header, "Location: http://", "\r\n"); // delete http://
 
 		// 1. 使用 dlink 下载文件   2. dlink 有效期为8小时   3. 必需要设置 User-Agent 字段   4. dlink 存在 HTTP 302 跳转
-		if (!$realLink || strlen($realLink) < 20 || strstr($realLink, "qdall01")) {
-			if ($id != "-1" && (SVIPSwitchMod === 1 || SVIPSwitchMod === 2)) {
-				//限速进行标记 并刷新页面重新解析
-				$sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
-				$result = execute_exec($sql);
-				if ($result != false) {
-					// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
-					return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
-				} else {
-					// SVIP账号自动切换失败
-					return array("error" => -1, "msg" => "SVIP账号自动切换失败", "message" => $message);
-				}
-			}
-
+		if (!$realLink || strlen($realLink) < 20) {
 			$body = get($dlink, $headerArray);
 			$body_decode = json_decode($body, true);
 
-			$message[] = "获取真实下载链接出错：" . json_encode($body_decode);
-			return self::realLinkError($body_decode, $message);
+			$message[] = "获取真实下载链接失败：" . json_encode($body_decode);
+
+			if (SVIPSwitchMod === 1 || SVIPSwitchMod === 2) {
+				if ($id != "-1") {
+					//限速进行标记 并刷新页面重新解析
+					$sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
+					$result = execute_exec($sql);
+					if ($result != false) {
+						// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
+						return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
+					} else {
+						// SVIP账号自动切换失败
+						return array("error" => -1, "msg" => "SVIP账号自动切换失败", "message" => $message);
+					}
+				}
+			}
+			return self::realLinkError($body_decode, $message); // 获取真实链接失败
+		}
+		if (strstr($realLink, "qdall01")){
+			// 账号限速
+			$message[] = "SVIP账号限速";
+			if (SVIPSwitchMod === 1 || SVIPSwitchMod === 2) {
+				if ($id != "-1") {
+					//限速进行标记 并刷新页面重新解析
+					$sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
+					$result = execute_exec($sql);
+					if ($result != false) {
+						// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
+						return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
+					} else {
+						// SVIP账号自动切换失败
+						return array("error" => -1, "msg" => "SVIP账号自动切换失败", "message" => $message);
+					}
+				}
+			}
 		}
 
 		// 记录下使用者ip，下次进入时提示
