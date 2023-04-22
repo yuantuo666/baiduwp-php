@@ -35,6 +35,26 @@ require_once("./common/invalidCheck.php");
 				hash = "/index"
 			}
 			navigate(hash)
+			if (hash.length > 5) {
+				// 检查是否匹配到分享链接
+				var surl = hash.match(/surl=([A-Za-z0-9-_]+)/);
+				if (surl == null) {
+					surl = hash.match(/1[A-Za-z0-9-_]+/);
+					if (surl != null) {
+						surl = surl[0];
+					}
+				} else {
+					surl = "1" + surl[1];
+				}
+				if (surl != null) {
+					var pw = hash.match(/(提取码|pwd=|pwd:|密码)( |:|：)*([a-zA-Z0-9]{4})/i);
+					if (pw != null && pw.length === 4) {
+						$("[name='pwd']").val(pw[3]);
+					}
+					$("input[name='surl']").val(surl)
+					SubmitLink()
+				}
+			}
 
 			getAPI('LastParse').then(function(response) {
 				if (response.success) {

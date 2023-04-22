@@ -273,7 +273,12 @@ function navigate(path) {
 	$("#help").hide();
 	$("#usersettings").hide();
 
-	if (path == "" || $(`div.page#${path}`).length == 0) path = "index";
+	try {
+		if (path == "" || $(`div.page#${path}`).length == 0) path = "index";
+	} catch {
+		path = "index";
+	}
+
 	window.location.hash = "/" + path;
 	$(`#${path}`).show();
 }
