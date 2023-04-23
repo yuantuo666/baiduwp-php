@@ -30,11 +30,11 @@ require_once("./common/invalidCheck.php");
 	<script>
 		// 主页部分脚本
 		$(document).ready(function() {
-			hash = window.location.hash.replace("#", "")
+			hash = window.location.hash.replace("#", "");
 			if (hash === "/list") {
-				hash = "/index"
+				hash = "/index";
 			}
-			navigate(hash)
+			navigate(hash);
 			if (hash.length > 5) {
 				// 检查是否匹配到分享链接
 				var surl = hash.match(/surl=([A-Za-z0-9-_]+)/);
@@ -51,8 +51,8 @@ require_once("./common/invalidCheck.php");
 					if (pw != null && pw.length === 4) {
 						$("[name='pwd']").val(pw[3]);
 					}
-					$("input[name='surl']").val(surl)
-					SubmitLink()
+					$("input[name='surl']").val(surl);
+					SubmitLink();
 				}
 			}
 

@@ -565,6 +565,6 @@ function CopyDownloadlink() {
 			Success();
 		});
 	} else {
-		CopyDownloadlink_old()
+		CopyDownloadlink_old();
 	}
 }
