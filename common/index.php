@@ -30,11 +30,31 @@ require_once("./common/invalidCheck.php");
 	<script>
 		// 主页部分脚本
 		$(document).ready(function() {
-			hash = window.location.hash.replace("#", "")
+			hash = window.location.hash.replace("#", "");
 			if (hash === "/list") {
-				hash = "/index"
+				hash = "/index";
 			}
-			navigate(hash)
+			navigate(hash);
+			if (hash.length > 5) {
+				// 检查是否匹配到分享链接
+				var surl = hash.match(/surl=([A-Za-z0-9-_]+)/);
+				if (surl == null) {
+					surl = hash.match(/1[A-Za-z0-9-_]+/);
+					if (surl != null) {
+						surl = surl[0];
+					}
+				} else {
+					surl = "1" + surl[1];
+				}
+				if (surl != null) {
+					var pw = hash.match(/(提取码|pwd=|pwd:|密码|%E6%8F%90%E5%8F%96%E7%A0%81|%E5%AF%86%E7%A0%81)( |:|：|%EF%BC%9A|%20)*([a-zA-Z0-9]{4})/i);
+					if (pw != null && pw.length === 4) {
+						$("[name='pwd']").val(pw[3]);
+					}
+					$("input[name='surl']").val(surl);
+					SubmitLink();
+				}
+			}
 
 			getAPI('LastParse').then(function(response) {
 				if (response.success) {

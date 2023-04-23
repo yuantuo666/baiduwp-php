@@ -112,7 +112,7 @@ function getIconClass(filename) {
 }
 function Getpw() {
 	var link = $("[name='surl']").val();
-	var pw = link.match(/(提取码|pwd=|pwd:|密码)( |:|：)*([a-zA-Z0-9]{4})/i);
+	var pw = link.match(/(提取码|pwd=|pwd:|密码|%E6%8F%90%E5%8F%96%E7%A0%81|%E5%AF%86%E7%A0%81)( |:|：|%EF%BC%9A|%20)*([a-zA-Z0-9]{4})/i);
 	if (pw != null && pw.length === 4) {
 		$("[name='pwd']").val(pw[3]);
 	}
@@ -273,7 +273,12 @@ function navigate(path) {
 	$("#help").hide();
 	$("#usersettings").hide();
 
-	if (path == "" || $(`div.page#${path}`).length == 0) path = "index";
+	try {
+		if (path == "" || $(`div.page#${path}`).length == 0) path = "index";
+	} catch {
+		path = "index";
+	}
+
 	window.location.hash = "/" + path;
 	$(`#${path}`).show();
 }
@@ -560,6 +565,6 @@ function CopyDownloadlink() {
 			Success();
 		});
 	} else {
-		CopyDownloadlink_old()
+		CopyDownloadlink_old();
 	}
 }
