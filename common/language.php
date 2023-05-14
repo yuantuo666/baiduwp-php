@@ -13,9 +13,6 @@ require_once("./common/invalidCheck.php");
 $lang = [
 	"zh-CN" => [
 		"LanguageName" => "Chinese",
-		"ConfirmTitle" => "继续解析？",
-		"ConfirmText" => "为保证服务稳定，每个IP每天有" . DownloadTimes . "次免费解析次数，是否继续？",
-		"ConfirmmButtonText" => "确定",
 		"Connecting" => "请稍等，正在连接服务器...",
 		"IndexButton" => "首页",
 		"HelpButton" => "使用帮助",
@@ -54,7 +51,7 @@ $lang = [
 		"DarkMode" => "深色模式",
 		"LightMode" => "浅色模式",
 		"LanguageChoose" => "选择语言",
-		"LimittedDownload" => "当前 SVIP 账号已被限速，请更换账号。",
+		"LimitedDownload" => "当前 SVIP 账号已被限速，请更换账号。",
 		"SaveForever" => '将会永久保存。',
 		"Save365" => '将会保存 365 天，每次访问此项目会自动续期。',
 		"CurrentDisplayed" => "当前显示：",
@@ -151,9 +148,6 @@ $lang = [
 	],
 	"en" => [
 		"LanguageName" => "English",
-		"ConfirmTitle" => "Continue?",
-		"ConfirmText" => "You have " . DownloadTimes . " download times, continue?",
-		"ConfirmmButtonText" => "Yes",
 		"Connecting" => "Connecting to server, please wait...",
 		"IndexButton" => "Home",
 		"HelpButton" => "Using Help",
@@ -192,7 +186,7 @@ $lang = [
 		"DarkMode" => "Dark mode",
 		"LightMode" => "Light mode",
 		"LanguageChoose" => "Choose a language",
-		"LimittedDownload" => "Current SVIP account in the system was limmited, wait website owner to fix it.",
+		"LimitedDownload" => "Current SVIP account in the system was limited, wait website owner to fix it.",
 		"SaveForever" => 'Will be saved forever.',
 		"Save365" => 'It will be saved for 365 days and will be automatically renewed every time you visit this item.',
 		"CurrentDisplayed" => "Current displayed: ",
@@ -300,20 +294,20 @@ function setLanguage()
 	$qs = []; // 临时变量
 
 	define('BrowserLanguages', explode(",", BrowserLanguage)); // 浏览器传入的语言列表（Accept-Language）一个 Array
-	foreach (BrowserLanguages as &$value) { // 遍历浏览器语言列表
+	foreach (BrowserLanguages as $value) { // 遍历浏览器语言列表
 		if (preg_match('#([A-Za-z0-9\-]{1,8});q=(\d(.\d{1,3})?)#', $value, $matches)) { // 判断是否有优先级（;q=x.x）
 			$qs[$matches[2]] = $matches[1]; // 如果有，加入临时变量 qs
 		} else {
-			array_push($languages, $value); // 如果没有，直接加入排序后语言列表
+			$languages[] = $value; // 如果没有，直接加入排序后语言列表
 		}
 	}
 	krsort($qs); // 排序 qs
-	foreach (array_values($qs) as &$value) { // 遍历 qs
-		array_push($languages, $value); // 将 qs 的值一个个加入语言列表
+	foreach ($qs as $value) { // 遍历 qs
+		$languages[] = $value; // 将 qs 的值一个个加入语言列表
 	}
 	unset($qs); // 删除 qs
 
-	foreach ($languages as &$value) { // 遍历排序后的浏览器支持语言列表
+	foreach ($languages as $value) { // 遍历排序后的浏览器支持语言列表
 		if (array_key_exists($value, $lang)) { // 当发现第一个支持的
 			define('Lang', $value); // 定义 Lang 为选择的语言
 			break; // 停止遍历
@@ -328,7 +322,7 @@ if (isset($_COOKIE['Language'])) { // 判断用户是否设置语言
 	} else { // 若语言配置错误
 		setcookie('Language', '', time() - 31536000); // 删除 Cookie
 		setLanguage(); // 按照未设置语言来自动决定语言
-		echo "<div>There was a problem with your language configuration and it has been reset for you. <a href=\"?usersettings\" target=\"_blank\">Click here to select language.</div>"; // 输出配置错误提示
+		echo "<div>There was a problem with your language configuration, and it has been reset for you. <a href=\"?usersettings\" target=\"_blank\">Click here to select language.</div>"; // 输出配置错误提示
 	}
 } else { // 若未设置
 	setLanguage(); // 自动决定语言
@@ -352,8 +346,8 @@ if (!defined('Lang')) { // 如果没有支持的语言
 // define("Language", $lang[Lang]); // 定义使用的语言
 header('Content-Language: ' . Lang); // 输出响应头
 
-function t($key)
+function t($key): string
 {
 	global $lang;
-	echo $lang[Lang][$key];
+	return $lang[Lang][$key];
 }

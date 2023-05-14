@@ -5,6 +5,7 @@ update.json
 config/
 cache/
 update/
+.idea/
 
 # 用户文件
 notice.html

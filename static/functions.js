@@ -65,31 +65,29 @@ function formatBytes(a, b = 2) {
 	return parseFloat((a / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
 }
 function formatDate(time, format = 'YY-MM-DD hh:mm:ss') {
-	if (time == undefined) return "--";
+	if (time === undefined) return "--";
 	time = Number(time + "000");
-	var date = new Date(time);
+	let date = new Date(time);
 
-	var year = date.getFullYear(),
+	let year = date.getFullYear(),
 		month = date.getMonth() + 1,
 		day = date.getDate(),
 		hour = date.getHours(),
 		min = date.getMinutes(),
 		sec = date.getSeconds();
-	var preArr = Array.apply(null, Array(10)).map(function (elem, index) {
+	let preArr = Array.apply(null, Array(10)).map(function (elem, index) {
 		return '0' + index;
 	});
 
-	var newTime = format.replace(/YY/g, year)
+	return format.replace(/YY/g, year)
 		.replace(/MM/g, preArr[month] || month)
 		.replace(/DD/g, preArr[day] || day)
 		.replace(/hh/g, preArr[hour] || hour)
 		.replace(/mm/g, preArr[min] || min)
 		.replace(/ss/g, preArr[sec] || sec);
-
-	return newTime;
 }
 function getIconClass(filename) {
-	var filetype = {
+	const filetype = {
 		file_video: ["wmv", "rmvb", "mpeg4", "mpeg2", "flv", "avi", "3gp", "mpga", "qt", "rm", "wmz", "wmd", "wvx", "wmx", "wm", "mpg", "mp4", "mkv", "mpeg", "mov", "asf", "m4v", "m3u8", "swf"],
 		file_audio: ["wma", "wav", "mp3", "aac", "ra", "ram", "mp2", "ogg", "aif", "mpega", "amr", "mid", "midi", "m4a", "flac"],
 		file_image: ["jpg", "jpeg", "gif", "bmp", "png", "jpe", "cur", "svg", "svgz", "ico", "webp", "tif", "tiff"],
@@ -103,31 +101,31 @@ function getIconClass(filename) {
 		file_powerpoint: ["ppt", "pptx", "potx", "pot", "potm", "ppsx", "pps", "ppam", "ppa"],
 		file_pdf: ["pdf"],
 	};
-	var point = filename.lastIndexOf(".");
-	var t = filename.substr(point + 1);
+	let point = filename.lastIndexOf(".");
+	let t = filename.substring(point + 1);
 	if (t === "") return "";
 	t = t.toLowerCase();
-	for (var icon in filetype) for (var type in filetype[icon]) if (t === filetype[icon][type]) return "fa-" + icon.replace('_', '-');
+	for (let icon in filetype) for (let type in filetype[icon]) if (t === filetype[icon][type]) return "fa-" + icon.replace('_', '-');
 	return "";
 }
 function Getpw() {
-	var link = $("[name='surl']").val();
-	var pw = link.match(/(提取码|pwd=|pwd:|密码)( |:|：)*([a-zA-Z0-9]{4})/i);
+	let link = $("[name='surl']").val();
+	let pw = link.match(/(提取码|pwd=|pwd:|密码)([ :：])*([a-zA-Z0-9]{4})/i);
 	if (pw != null && pw.length === 4) {
 		$("[name='pwd']").val(pw[3]);
 	}
 }
 function SubmitLink() {
-	var link = $("[name='surl']").val();
+	let link = $("[name='surl']").val();
 
-	var uk = link.match(/uk=(\d+)/),
+	let uk = link.match(/uk=(\d+)/),
 		shareid = link.match(/shareid=(\d+)/);
 	if (uk != null && shareid != null) {
 		Swal.fire("Tip", "暂不支持老版本分享链接，请保存到网盘后重新分享", "info");
 		return false;
 	}
 
-	var surl = link.match(/surl=([A-Za-z0-9-_]+)/);
+	let surl = link.match(/surl=([A-Za-z0-9-_]+)/);
 	if (surl == null) {
 		surl = link.match(/1[A-Za-z0-9-_]+/);
 		if (surl != null) {
@@ -142,14 +140,14 @@ function SubmitLink() {
 		Swal.fire("Tip", "未检测到有效百度网盘分享链接，请检查输入的链接", "info");
 		return false;
 	}
-	var pw = $("[name='pwd']").val();
-	if (pw.length != 0 && pw.length != 4) {
+	let pw = $("[name='pwd']").val();
+	if (pw.length !== 0 && pw.length !== 4) {
 		$("[name='pwd']").focus();
 		Swal.fire("Tip", "提取码错误，请检查", "info");
 		return false;
 	}
 
-	var password = $("[name='password']").val();
+	let password = $("[name='password']").val();
 
 	OpenRoot(surl, pw, password);
 	navigate('list')
@@ -162,42 +160,40 @@ function addUri() {
 		allowEscapeKey: false,
 		allowEnterKey: false,
 		showConfirmButton: false,
-		onOpen: () => {
-			Swal.showLoading();
-		}
 	});
+	Swal.showLoading();
 	//配置
-	var wsurl = $('#wsurl').val();
-	var uris = [$('input#downloadlink').val()];
-	var token = $('#token').val();
-	var filename = $('b#filename').text();
-	var ua = $('b#ua').text();
+	let wsurl = $('#wsurl').val();
+	let uris = [$('input#downloadlink').val()];
+	let token = $('#token').val();
+	let filename = $('b#filename').text();
+	let ua = $('b#ua').text();
 
-	var options = {
+	let options = {
 		"max-connection-per-server": "16",
 		"user-agent": ua
 	};
-	if (filename != "") {
+	if (filename !== "") {
 		options.out = filename;
 	}
 
-	json = {
+	let json = {
 		"id": "baiduwp-php",
 		"jsonrpc": '2.0',
 		"method": 'aria2.addUri',
 		"params": [uris, options],
 	};
 
-	if (token != "") {
+	if (token !== "") {
 		json.params.unshift("token:" + token); // 坑死了，必须要加在第一个
 	}
 
-	patt = /^wss?\:\/\/(((([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))(\.(([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+)))*(\.[A-Za-z0-9]{2,10}))|(localhost)|((([01]?\d?\d)|(2[0-4]\d)|(25[0-5]))(\.([01]?\d?\d)|(2[0-4]\d)|(25[0-5])){3})|((\[[A-Za-z0-9:]{2,39}\])|([A-Za-z0-9:]{2,39})))(\:\d{1,5})?(\/.*)?$/;
+	let patt = /^wss?:\/\/(((([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+))(\.(([A-Za-z0-9]+[A-Za-z0-9\-]+[A-Za-z0-9]+)|([A-Za-z0-9]+)))*(\.[A-Za-z0-9]{2,10}))|(localhost)|((([01]?\d?\d)|(2[0-4]\d)|(25[0-5]))(\.([01]?\d?\d)|(2[0-4]\d)|(25[0-5])){3})|((\[[A-Za-z0-9:]{2,39}])|([A-Za-z0-9:]{2,39})))(:\d{1,5})?(\/.*)?$/;
 	if (!patt.test(wsurl)) {
 		Swal.fire('地址错误', 'WebSocket 地址不符合验证规则，请检查是否填写正确！', 'error');
 		return;
 	}
-	var ws = new WebSocket(wsurl);
+	let ws = new WebSocket(wsurl);
 
 	ws.onerror = event => {
 		console.log(event);
@@ -207,7 +203,7 @@ function addUri() {
 
 	ws.onmessage = event => {
 		console.log(event);
-		received_msg = JSON.parse(event.data);
+		let received_msg = JSON.parse(event.data);
 		if (received_msg.error !== undefined) {
 			if (received_msg.error.code === 1) Swal.fire('通过RPC连接失败', '请打开控制台查看详细错误信息，返回信息：' + received_msg.error.message, 'error');
 		}
@@ -216,10 +212,10 @@ function addUri() {
 				Swal.fire('Aria2 发送成功', 'Aria2 已经开始下载！' + filename, 'success');
 
 				localStorage.setItem('aria2wsurl', wsurl);// add aria2 config to SessionStorage
-				if (token != "" && token != null) localStorage.setItem('aria2token', token);
+				if (token !== "" && token != null) localStorage.setItem('aria2token', token);
 				break;
 
-			case "aria2.onDownloadError": ;
+			case "aria2.onDownloadError":
 				Swal.fire('下载错误', 'Aria2 下载错误！', 'error');
 				break;
 
@@ -273,7 +269,7 @@ function navigate(path) {
 	$("#help").hide();
 	$("#usersettings").hide();
 
-	if (path == "" || $(`div.page#${path}`).length == 0) path = "index";
+	if (path === "" || $(`div.page#${path}`).length === 0) path = "index";
 	window.location.hash = "/" + path;
 	$(`#${path}`).show();
 }
@@ -286,6 +282,7 @@ async function OpenRoot(surl, pwd, password = "") {
 		allowEscapeKey: false,
 	});
 	Swal.showLoading();
+	let data;
 	try {
 		data = {
 			surl,
@@ -304,7 +301,7 @@ async function OpenRoot(surl, pwd, password = "") {
 		})
 			.then(function (json) {
 				console.log(json);
-				if (json.error == 0) {
+				if (json.error === 0) {
 					// success
 					LoadList(json);
 					Swal.close();
@@ -331,6 +328,7 @@ async function OpenDir(path) {
 		allowEscapeKey: false,
 	});
 	Swal.showLoading();
+	let data;
 	try {
 		data = {
 			dir: path,
@@ -348,7 +346,7 @@ async function OpenDir(path) {
 		})
 			.then(function (json) {
 				console.log(json);
-				if (json.error == 0) {
+				if (json.error === 0) {
 					// success
 					LoadList(json);
 					Swal.close();
@@ -366,32 +364,41 @@ async function OpenDir(path) {
 
 
 function LoadList(json) {
+	let i, files;
 	if (typeof (json) == "string") files = JSON.parse(json);
 	else files = json;
-	if (files.error != 0) {
+	if (files.error !== 0) {
 		Swal.fire("无法加载列表", "请刷新页面重试，错误代码：" + files.error, "error");
 		return;
 	}
 	window.files = files;
-	var Src = `<li class="breadcrumb-item"><a class="filename" href="javascript:OpenRoot('${files.dirdata.surl}','${files.dirdata.pwd}');">全部文件</a></li>`;
-	for (var i = 0; i < files.dirdata.src.length; i++) {
+	let Src = `<li class="breadcrumb-item"><a class="filename" href="javascript:OpenRoot('${files.dirdata.surl}','${files.dirdata.pwd}');">全部文件</a></li>`;
+	let Dir;
+	let Active;
+	let fullsrc;
+	for (i = 0; i < files.dirdata.src.length; i++) {
 		Dir = files.dirdata.src[i];
 		Active = (Dir.isactive) ? "active" : "";
-		fullsrc = Dir.fullsrc.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/\'/g, "\\\'"); // use &amp; to replace & to avoid error
+		fullsrc = Dir.fullsrc.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/'/g, "\\\'"); // use &amp; to replace & to avoid error
 		Src = Src + `<li class="breadcrumb-item ${Active}"><a class="filename" href="javascript:OpenDir('${fullsrc}');">${Dir.dirname}</a></li>`;
 	}
 	Src = Src + `<span class="mx-2">(${files.filenum} 个文件)<span>`;
 
 	$("#dir-list").html(Src);
 
-	var List = "";
-	for (var i = 0; i < files.filedata.length; i++) {
+	let List = "";
+	let Files;
+	let Time;
+	let Num;
+	let path;
+	let Size;
+	for (i = 0; i < files.filedata.length; i++) {
 		Files = files.filedata[i];
 		Time = formatDate(Files.uploadtime, 'YY/MM/DD hh:mm:ss');
 		Num = (Array(3).join(0) + (i + 1)).slice(-3);
 		if (files.filedata[i].isdir) {
 			// dir
-			path = Files.path.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/\'/g, "\\\'"); // use &amp; to replace & to avoid error
+			path = Files.path.replace(/\\/g, "\\\\").replace(/&/g, '&amp;').replace(/'/g, "\\\'"); // use &amp; to replace & to avoid error
 			List = List + `<li class="list-group-item border-muted text-muted py-2" id="item${i}"><i class="far fa-folder mr-2"></i>
 <a onclick="OpenDir('${path}');" class="filename">${Files.name}</a>
 <br><span>${Num} | ${Time}</span>
@@ -400,7 +407,7 @@ function LoadList(json) {
 			// file
 			Size = formatBytes(Files.size);
 			List = List + `<li class="list-group-item border-muted text-muted py-2" id="item${i}"><i class="far fa-file mr-2"></i>
-<a onclick="Download('${i}');" class="filename">${Files.name}</a>
+<a onclick="Download(${i});" class="filename">${Files.name}</a>
 <br><span>${Num} | ${Time} | ${Size}</span>
 </li>`;
 		}
@@ -409,7 +416,7 @@ function LoadList(json) {
 
 	// load file icon
 	$(".fa-file").each(function () {
-		var icon = getIconClass($(this).next().text());
+		let icon = getIconClass($(this).next().text());
 		if (icon !== "") {
 			if ($.inArray(icon, ['fa-windows', 'fa-android', 'fa-apple']) >= 0) $(this).removeClass("far").addClass("fab");
 			$(this).removeClass("fa-file").addClass(icon);
@@ -425,10 +432,10 @@ async function Download(index = 0) {
 		allowEscapeKey: false,
 	});
 	Swal.showLoading();
-	files = window.files;
-	downloadfile = files.filedata[index];
+	let files = window.files;
+	let downloadfile = files.filedata[index];
 
-	data = {
+	let data = {
 		fs_id: downloadfile.fs_id,
 		...files.dirdata
 	}
@@ -445,7 +452,10 @@ async function Download(index = 0) {
 			return response.json();
 		}).then(function (json) {
 			console.log(json);
-			if (json.error == 0) {
+			let Size;
+			let Time;
+			let html;
+			if (json.error === 0) {
 				Swal.close();
 				// success
 				Size = formatBytes(json.filedata.size);
@@ -498,13 +508,13 @@ async function Download(index = 0) {
                 <label class="col-sm-3 col-form-label">下载地址</label>
                 <div class="col-sm-9 input-group">
                     <input class="form-control" id="downloadlink" aria-describedby="copy" value="${json.directlink}"/>
-                    <button type="button" class="btn btn-outline-secondary" id="copy" onclick="CopyDownloadlink()"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="btn btn-outline-secondary" id="copy" onclick="CopyDownloadLink()"><i class="fas fa-copy"></i></button>
                 </div>
             </div>
         </div>`;
 				}
 				$("#downloadlinkdiv").html(html);
-				if (json.directlink.indexOf("//qdall01") != -1) {
+				if (json.directlink.indexOf("//qdall01") !== -1) {
 					$("#limit-tip").show();
 				} else {
 					$("#limit-tip").hide();
@@ -533,7 +543,7 @@ async function Download(index = 0) {
 	}
 
 }
-function CopyDownloadlink() {
+function CopyDownloadLink() {
 	function Success() {
 		Swal.fire({
 			title: "成功复制下载链接",
@@ -543,7 +553,7 @@ function CopyDownloadlink() {
 			icon: "success"
 		});
 	}
-	function CopyDownloadlink_old() {
+	function CopyDownloadLink_old() {
 		$("input#downloadlink").select();
 		document.execCommand("copy");
 		Success();
@@ -555,11 +565,11 @@ function CopyDownloadlink() {
 			console.log('Copying to clipboard was successful!');
 		}, function (err) {
 			console.error('Could not copy text: ', err);
-			CopyDownloadlink_old()
+			CopyDownloadLink_old()
 		}).then(function () {
 			Success();
 		});
 	} else {
-		CopyDownloadlink_old()
+		CopyDownloadLink_old()
 	}
 }

@@ -68,7 +68,7 @@ if (CheckUpdate === "true")
 				div.innerHTML = `Baiduwp-PHP 项目有新的版本：${data.version}（${data.isPreRelease ? '此版本为预发行版本，' : ''}当前版本为${data.now_version}）！请联系站长更新！
 					&nbsp; <a href="${data.page_url}" target="_blank">发行/下载页面</a><div style="float: right;"><a href="javascript:SetUpdateTip(false);">不再提示</a></div>`;
 				document.body.insertAdjacentElement('beforeBegin', div);
-				if (localStorage.getItem('UpdateTip') != "false")
+				if (localStorage.getItem('UpdateTip') !== "false")
 					$('#CheckUpdate').show(1500);
 			}
 		} else if (data.code === 2) {

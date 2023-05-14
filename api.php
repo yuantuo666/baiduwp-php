@@ -11,7 +11,7 @@ require_once('./common/Parse.php');
  *
  */
 session_start();
-define('init', true);
+const init = true;
 require('./common/functions.php');
 $method = (!empty($_GET["m"])) ? $_GET["m"] : "";
 
@@ -33,12 +33,12 @@ if ($method === "CheckMySQLConnect") {
 	try {
 		if ($dbtype === "mysql") {
 			$conn = connect_mysql($servername, $username, $DBPassword, $dbname, false, true);
-			EchoInfo(0, array("msg" => "数据库连接成功，创建 {$dbname} 数据库"));
+			EchoInfo(0, array("msg" => "数据库连接成功，创建 $dbname 数据库"));
 		} elseif ($dbtype === "sqlite") {
 			$conn = connect_sqlite($servername, false);
 			EchoInfo(0, array("msg" => "成功连接 SQLite 数据库。"));
 		} else {
-			throw new Exception("不支持的数据库类型: {$dbtype}");
+			throw new Exception("不支持的数据库类型: $dbtype");
 		}
 	} catch (Exception $e) {
 		EchoInfo(-1, array("msg" => $e->getMessage()));
@@ -59,6 +59,52 @@ require('./config.php');
 error_reporting(0); // 关闭错误报告
 
 $is_login = (empty($_SESSION["admin_login"])) ? false : $_SESSION["admin_login"];
+/**
+ * @param string $BDUSS
+ * @param string $STOKEN
+ * @return array
+ */
+function checkStatusCache(string $BDUSS, string $STOKEN): array
+{
+	$cache_key = md5($BDUSS);
+	if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
+		$Status = $_SESSION['cache'][$cache_key]['data'];
+	} else {
+		$Status = AccountStatus($BDUSS, $STOKEN);
+		$_SESSION['cache'][$cache_key] = [
+			'time' => time(),
+			'data' => $Status
+		];
+	}
+	return array($cache_key, $Status);
+}
+
+/**
+ * @param $Status
+ * @return string
+ */
+function getAccountStatus($Status): string
+{
+	$return = "";
+	$AccountName = $Status[2];
+	$return .= "账号名称：$AccountName<br />";
+	if ($Status[3] == 1)
+		$return .= "登录状态：<span class=\"text-success\">正常</span><br />";
+	else
+		$return .= "登录状态：<span class=\"text-danger\">异常</span><br />";
+
+	$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
+	$return .= "会员状态：$AccountVIP<br />";
+	if ($Status[4] != 0) {
+		$AccountTime = time2Units($Status[4]);
+		if ($Status[4] <= 60480)
+			$return .= "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
+		else
+			$return .= "剩余时间：$AccountTime<br />";
+	}
+	return $return;
+}
+
 if ($method == "ADMINAPI") {
 	if (!$is_login) {
 		//没有登录管理员账号
@@ -69,7 +115,12 @@ if ($method == "ADMINAPI") {
 		EchoInfo(-1, array("msg" => "未启用数据库功能"));
 		exit;
 	}
-	connectdb();
+	try {
+		connectdb();
+	} catch (Exception $e) {
+		EchoInfo(-1, array("msg" => "数据库连接错误"));
+		exit;
+	}
 
 	$action = (!empty($_GET["act"])) ? $_GET["act"] : "";
 	switch ($action) {
@@ -78,36 +129,11 @@ if ($method == "ADMINAPI") {
 			$return = "";
 			$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
 			$STOKEN = getSubstr(Cookie, 'STOKEN=', ';');
-			$cache_key = md5($BDUSS);
-			if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
-				$Status = $_SESSION['cache'][$cache_key]['data'];
-			} else {
-				$Status = AccountStatus($BDUSS, $STOKEN);
-				$_SESSION['cache'][$cache_key] = [
-					'time' => time(),
-					'data' => $Status
-				];
-			}
+			list($cache_key, $Status) = checkStatusCache($BDUSS, $STOKEN);
 			if ($Status[0] == 0) {
-				//正常
-				$AccountName = $Status[2];
-				$return .= "账号名称：$AccountName<br />";
-				if ($Status[3] == 1)
-					$return .= "登录状态：<span class=\"text-success\">正常</span><br />";
-				else
-					$return .= "登录状态：<span class=\"text-danger\">异常</span><br />";
-
-				$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
-				$return .= "会员状态：$AccountVIP<br />";
-				if ($Status[4] != 0) {
-					$AccountTime = time2Units($Status[4]);
-					if ($Status[4] <= 60480)
-						$return .= "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
-					else
-						$return .= "剩余时间：$AccountTime<br />";
-				}
+				$return .= getAccountStatus($Status);
 			} elseif ($Status[0] == -6) {
-				$return .= "id为 $id 的SVIP账号已经失效<br />";
+				$return .= "普通账号已经失效<br />";
 			} else {
 				$return .= "出现位置错误代码：" . $Status[0] . "<br />";
 			}
@@ -123,33 +149,9 @@ if ($method == "ADMINAPI") {
 			if ($SVIP_STOKEN == "") {
 				$return .= "id为 $id 的SVIP账号没有设置对应STOKEN，无法检测<br />";
 			} else {
-				$cache_key = md5($SVIP_BDUSS);
-				if (isset($_SESSION['cache'][$cache_key]) && $_SESSION['cache'][$cache_key]['time'] > time() - 3600) {
-					$Status = $_SESSION['cache'][$cache_key]['data'];
-				} else {
-					$Status = AccountStatus($SVIP_BDUSS, $SVIP_STOKEN);
-					$_SESSION['cache'][$cache_key] = [
-						'time' => time(),
-						'data' => $Status
-					];
-				}
+				list($cache_key, $Status) = checkStatusCache($SVIP_BDUSS, $SVIP_STOKEN);
 				if ($Status[0] == 0) {
-					$AccountName = $Status[2];
-					$return .= "账号名称：$AccountName<br />";
-					if ($Status[3] == 1)
-						$return .= "登录状态：<span class=\"text-success\">正常</span><br />";
-					else
-						$return .= "登录状态：<span class=\"text-danger\">异常</span><br />";
-
-					$AccountVIP = ["普通账号", "普通会员", "超级会员"][$Status[1]];
-					$return .= "会员状态：$AccountVIP<br />";
-					if ($Status[4] != 0) {
-						$AccountTime = time2Units($Status[4]);
-						if ($Status[4] <= 60480)
-							$return .= "剩余时间：<span class=\"text-danger\">$AccountTime</span><br />";
-						else
-							$return .= "剩余时间：$AccountTime<br />";
-					}
+					$return .= getAccountStatus($Status);
 				} elseif ($Status[0] == -6) {
 					$return .= "id为 $id 的SVIP账号已经失效<br />";
 				} else {
@@ -183,6 +185,7 @@ if ($method == "ADMINAPI") {
 			}
 			// 开始录入
 			$add_time = date("Y-m-d H:i:s");
+			$dbtable = $GLOBALS['dbtable'];
 			$sql = "INSERT INTO `{$dbtable}_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$name','$BDUSS','$STOKEN','$add_time',1,'')";
 			$Result = execute_exec($sql);
 			if (!$Result) {
@@ -210,12 +213,14 @@ if ($method == "ADMINAPI") {
 				$STOKEN = ($Num >= 2) ? $EachBDUSS[1] : "";
 				$EachName = ($Num >= 3) ? $EachBDUSS[2] : "";
 				$AccountName = ($EachName == "") ? $name . "-" . ($i + 1) : $EachName;
+				$dbtable = $GLOBALS['dbtable'];
 				$sql = "INSERT INTO `{$dbtable}_svip`( `name`, `svip_bduss`, `svip_stoken`, `add_time`, `state`, `is_using`) VALUES ('$AccountName','$BDUSS','$STOKEN','$add_time',1,'');";
 				$allsql .= $sql;
 			}
 
 			$success_result = 0;
 			$dbtype = $GLOBALS['dbtype'];
+			$conn = $GLOBALS['conn'];
 			if ($dbtype === "mysql") {
 				if (mysqli_multi_query($conn, $allsql)) {
 					do {
@@ -257,6 +262,7 @@ if ($method == "ADMINAPI") {
 			// 开始处理
 			// 这里最新的时间表示可用账号，按顺序排序
 			$is_using = date("Y-m-d H:i:s");
+			$dbtable = $GLOBALS['dbtable'];
 			$sql = "UPDATE `{$dbtable}_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
 			$mysql_query = execute_exec($sql);
 			if (!$mysql_query) {
@@ -275,6 +281,7 @@ if ($method == "ADMINAPI") {
 				exit;
 			}
 			// 开始处理
+			$dbtable = $GLOBALS['dbtable'];
 			$sql = "UPDATE `{$dbtable}_svip` SET `state`= 1 WHERE `id`=$id";
 			$mysql_query = execute_exec($sql);
 			if (!$mysql_query) {
@@ -287,7 +294,11 @@ if ($method == "ADMINAPI") {
 		case "IPGetTable":
 			$page = (!empty($_GET["page"])) ? $_GET["page"] : "";
 			header('Content-Type: text/html; charset=utf-8');
-			echo GetIPTablePage($page);
+			try {
+				echo GetIPTablePage($page);
+			} catch (Exception $e) {
+				echo "数据库错误";
+			}
 			break;
 		case "NewIp":
 			$ip = htmlspecialchars((!empty($_POST["ip"])) ? trim($_POST["ip"]) : "", ENT_QUOTES);
@@ -299,6 +310,7 @@ if ($method == "ADMINAPI") {
 			}
 			// 开始录入
 			$add_time = date("Y-m-d H:i:s");
+			$dbtable = $GLOBALS['dbtable'];
 			$sql = "INSERT INTO `{$dbtable}_ip`( `ip`, `remark`, `type`, `add_time`) VALUES ('$ip','$remark',$type,'$add_time')";
 			$Result = execute_exec($sql);
 			if (!$Result) {
@@ -338,6 +350,7 @@ if ($method == "ADMINAPI") {
 			}
 			// 开始执行
 			// 生成SQL
+			$dbtable = $GLOBALS['dbtable'];
 			switch ($Type) {
 				case 'AnalyseTable':
 					// 使用统计 分析表格 $dbtable
@@ -367,9 +380,9 @@ if ($method == "ADMINAPI") {
 		case "clearAllAnalyseData";
 			$result = clearAllAnalyseData();
 			if ($result) {
-		        echo EchoInfo(0, array('msg' => '清空成功'));
+		        EchoInfo(0, array('msg' => '清空成功'));
 		    } else {
-		        echo EchoInfo(-1, array('msg' => '清空失败，请稍后重试'));
+		        EchoInfo(-1, array('msg' => '清空失败，请稍后重试'));
 		    }
 			break;
 		default:
@@ -389,12 +402,21 @@ switch ($method) {
 		}
 
 		// 开启了数据库
-		connectdb(true);
+		try {
+			connectdb(true);
+		} catch (Exception $e) {
+			EchoInfo(-1, array("msg" => "数据库连接失败", "sviptips" => "Unknown"));
+			exit;
+		}
 		$dbtype = $GLOBALS['dbtype'];
+		$dbtable = $GLOBALS['dbtable'];
 		if ($dbtype === "mysql") {
 			$sql = "SELECT * FROM `$dbtable` WHERE `size`>=52428800 ORDER BY `ptime` DESC LIMIT 0,1"; // 时间倒序输出第一项
 		} elseif ($dbtype === "sqlite") {
 			$sql = "SELECT * FROM \"$dbtable\" WHERE CAST(\"size\" AS INTEGER) >= 52428800 ORDER BY \"ptime\" DESC LIMIT 1;";
+		} else {
+			EchoInfo(-1, array("msg" => "数据库类型错误", "sviptips" => "Unknown"));
+			exit;
 		}
 
 		$Result = fetch_assoc($sql);
@@ -426,8 +448,14 @@ switch ($method) {
 			exit;
 		}
 		// 开启了数据库
-		connectdb(true);
+		try {
+			connectdb(true);
+		} catch (Exception $e) {
+			EchoInfo(-1, array("msg" => "数据库连接失败"));
+			exit;
+		}
 		$dbtype = $GLOBALS['dbtype'];
+		$dbtable = $GLOBALS['dbtable'];
 		$sql = "SELECT count(`id`) as AllCount,sum(`size`) as AllSize FROM `$dbtable`";
 		$Result = fetch_assoc($sql);
 
