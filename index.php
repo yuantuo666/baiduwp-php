@@ -11,7 +11,7 @@
  */
 $programVersion_Index = "3.0.2";
 session_start();
-define('init', true);
+const init = true;
 if (!file_exists('./common/invalidCheck.php')) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
@@ -27,7 +27,7 @@ if ($programVersion_Index !== programVersion) {
 	die("HTTP 503 服务不可用！\r\n配置文件版本异常！\r\n将在五秒内跳转到安装程序！\r\n若重新安装无法解决问题，请重新 Clone 项目并配置！");
 }
 // 确认会员账号模式是否正常
-if (USING_DB == false and SVIPSwitchMod != 0) {
+if (!USING_DB and SVIPSwitchMod != 0) {
 	http_response_code(503);
 	header('Content-Type: text/plain; charset=utf-8');
 	header('Refresh: 5;url=https://github.com/yuantuo666/baiduwp-php');
@@ -67,12 +67,12 @@ if (DEBUG) {
 	<meta name="referrer" content="same-origin" />
 	<meta name="author" content="Yuan_Tuo" />
 	<meta name="author" content="LC" />
-	<meta name="version" content="<?php echo programVersion; ?>" />
+	<meta name="version" content="<?= programVersion ?>" />
 	<meta name="description" content="PanDownload 网页版，百度网盘分享链接在线解析工具。" />
 	<meta name="keywords" content="PanDownload,百度网盘,分享链接,下载,不限速" />
-	<title><?php echo Sitename; ?></title>
+	<title><?= Sitename ?></title>
 	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" href="static/index.css?v=<?php echo programVersion; ?>" />
+	<link rel="stylesheet" href="static/index.css?v=<?= programVersion ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
@@ -82,9 +82,9 @@ if (DEBUG) {
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/@keeex/qrcodejs-kx"></script>
 	<script src="https://filecxx.com/script/create_filec_address.js"></script>
-	<script src="static/color.js?v=<?php echo programVersion; ?>"></script>
-	<script src="static/functions.js?v=<?php echo programVersion; ?>"></script>
-	<script async="false" src="static/ready.js?v=<?php echo programVersion; ?>"></script>
+	<script src="static/color.js?v=<?= programVersion ?>"></script>
+	<script src="static/functions.js?v=<?= programVersion ?>"></script>
+	<script async="false" src="static/ready.js?v=<?= programVersion ?>"></script>
 </head>
 
 <body>
@@ -94,9 +94,9 @@ if (DEBUG) {
 			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collpase-bar"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="collpase-bar">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('index')"><?php t("IndexButton") ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('help')"><?php t("HelpButton") ?></a></li>
-					<li class="nav-item"><a class="nav-link" href="javascript:navigate('usersettings')"><?php t("UserSettings") ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('index')"><?= t("IndexButton") ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('help')"><?= t("HelpButton") ?></a></li>
+					<li class="nav-item"><a class="nav-link" href="javascript:navigate('usersettings')"><?= t("UserSettings") ?></a></li>
 					<li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php" target="_blank">Github</a></li>
 				</ul>
 			</div>
@@ -105,8 +105,8 @@ if (DEBUG) {
 	<div class="container main">
 		<?php
 		if (DEBUG) {
-			echo '<script>console.log("$_GET",' . json_encode($_GET) . ')</script>';
-			echo '<script>console.log("$_POST",' . json_encode($_POST) . ')</script>';
+			$debugInfo = json_encode(["\$_GET" => $_GET, "\$_POST" => $_POST]);
+			echo "<script>console.log($debugInfo)</script>";
 		}
 
 		require("./common/index.php"); // 首页

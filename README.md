@@ -2,7 +2,7 @@
 
 [ENGLISH](README.md) | [中文](README_ZH.md)
 
-## ⚠️ Disclaminer
+## ⚠️ Disclaimer
 Please note that this project is only for learning and research purposes, and the author is not responsible for any legal consequences caused by the use of this project.
 
 This project will not store any files on the server, completely relying on the Baidu Netdisk API interface. If you have question about copyright, please contact Baidu: [https://newcopyright.baidu.com/](https://newcopyright.baidu.com/)
