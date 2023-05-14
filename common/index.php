@@ -15,15 +15,15 @@ require_once("./common/invalidCheck.php");
 <div class="col-lg-6 col-md-9 mx-auto mb-5 input-card page" id="index" style="display: none;">
 	<div class="card">
 		<div class="card-header bg-dark text-light">
-			<text id="parsingtooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="<?php t("Connecting") ?>"><?php t("IndexTitle") ?></text>
-			<span style="float: right;" id="sviptooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="<?php t("Connecting") ?>"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
+			<text id="parsingtooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="<?= t("Connecting") ?>"><?= t("IndexTitle") ?></text>
+			<span style="float: right;" id="sviptooltip" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="<?= t("Connecting") ?>"><span class="point point-lg" id="svipstate-point"></span><span id="svipstate">Loading...</span></span>
 		</div>
 		<div class="card-body">
-			<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="<?php t("ShareLink") ?>" oninput="Getpw()"></div>
-			<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="<?php t("SharePassword") ?>"></div>
-			<div class="form-group my-4" id="password" style="display: none;"><input type="text" class="form-control" name="password" placeholder="<?php t("PassWord") ?>"></div>
+			<div class="form-group my-2"><input type="text" class="form-control" name="surl" placeholder="<?= t("ShareLink") ?>" oninput="Getpw()"></div>
+			<div class="form-group my-4"><input type="text" class="form-control" name="pwd" placeholder="<?= t("SharePassword") ?>"></div>
+			<div class="form-group my-4" id="password" style="display: none;"><input type="text" class="form-control" name="password" placeholder="<?= t("PassWord") ?>"></div>
 			<div class="form-group mt-4 mb-3 d-grid">
-				<button onclick="SubmitLink()" class="btn btn-primary"><?php t("Submit") ?></button>
+				<button onclick="SubmitLink()" class="btn btn-primary"><?= t("Submit") ?></button>
 			</div>
 		</div>
 	</div>
@@ -72,7 +72,7 @@ require_once("./common/invalidCheck.php");
 						break;
 					case 2:
 						// 密码正确
-						$("#password").html("<?php t("PassWordVerified") ?>");
+						$("#password").html("<?= t("PassWordVerified") ?>");
 						$("#password").show();
 						break;
 				}
@@ -84,7 +84,7 @@ require_once("./common/invalidCheck.php");
 <div id="list" class="page" style="display: none;">
 	<nav class="breadcrumb my-4" aria-label="breadcrumb">
 		<ol class="breadcrumb my-3" id="dir-list">
-			<li class="breadcrumb-item active"><?php t("Connecting") ?></li>
+			<li class="breadcrumb-item active"><?= t("Connecting") ?></li>
 		</ol>
 	</nav>
 	<div>
@@ -97,22 +97,22 @@ require_once("./common/invalidCheck.php");
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title"><?php t("DownloadLinkSuccess") ?></h5>
+				<h5 class="modal-title"><?= t("DownloadLinkSuccess") ?></h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				<div id="downloadlinkdiv">
 
 				</div>
-				<h5 class="text-danger" id="limit-tip" style="display: none;"><?php t("LimittedDownload") ?></h5>
+				<h5 class="text-danger" id="limit-tip" style="display: none;"><?= t("LimittedDownload") ?></h5>
 				<p class="card-text">
-					<a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#SendToAria2"><?php t("SendToAria2") ?> / Motrix</a>
-					<a class="btn btn-outline-primary" href="" id="filecxx" style="display: none;"><?php t("SendToFilecxx") ?></a>
+					<a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#SendToAria2"><?= t("SendToAria2") ?> / Motrix</a>
+					<a class="btn btn-outline-primary" href="" id="filecxx" style="display: none;"><?= t("SendToFilecxx") ?></a>
 				</p>
-				<p class="card-text"><a class="btn btn-outline-secondary" href="./#/help" target="_blank"><?php t("DownloadHelp") ?></a></p>
+				<p class="card-text"><a class="btn btn-outline-secondary" href="./#/help" target="_blank"><?= t("DownloadHelp") ?></a></p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php t("Close") ?></button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= t("Close") ?></button>
 			</div>
 		</div>
 	</div>
@@ -122,7 +122,7 @@ require_once("./common/invalidCheck.php");
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title"><?php t("SendToAria2") ?> / Motrix Json-RPC</h5>
+				<h5 class="modal-title"><?= t("SendToAria2") ?> / Motrix Json-RPC</h5>
 				<button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#downloadpage"></button>
 			</div>
 			<div class="modal-body">
@@ -140,8 +140,8 @@ require_once("./common/invalidCheck.php");
 				<small>填写的信息在推送成功后将会被自动保存。</small>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" onclick="addUri()" data-bs-toggle="modal" data-bs-target="#downloadpage"><?php t("Send") ?></button>
-				<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#downloadpage"><?php t("Return") ?></button>
+				<button type="button" class="btn btn-primary" onclick="addUri()" data-bs-toggle="modal" data-bs-target="#downloadpage"><?= t("Send") ?></button>
+				<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#downloadpage"><?= t("Return") ?></button>
 			</div>
 		</div>
 	</div>
@@ -156,42 +156,42 @@ require_once("./common/invalidCheck.php");
 </div>
 
 <div class="card page" id="usersettings" style="display: none;">
-	<div class="card-header"><?php t("UserSettings") ?></div>
+	<div class="card-header"><?= t("UserSettings") ?></div>
 	<div class="card-body">
 		<div class="card-item">
-			<h3><?php t("ColorMode") ?></h3>
+			<h3><?= t("ColorMode") ?></h3>
 			<div id="ColorMode-Setting-View">
-				<span class="SaveTime"><?php t("SaveForever") ?></span>
-				<span><?php t("BrowserSettings") ?></span><span id="Browser-ColorMode"></span>
-				<span><?php t("CurrentSetting") ?></span><span id="Setting-ColorMode"></span>
+				<span class="SaveTime"><?= t("SaveForever") ?></span>
+				<span><?= t("BrowserSettings") ?></span><span id="Browser-ColorMode"></span>
+				<span><?= t("CurrentSetting") ?></span><span id="Setting-ColorMode"></span>
 			</div>
 			<select id="ColorMode-Select" class="form-control">
-				<option value="auto"><?php t("FollowBrowser") ?></option>
-				<option value="dark"><?php t("DarkMode") ?></option>
-				<option value="light"><?php t("LightMode") ?></option>
+				<option value="auto"><?= t("FollowBrowser") ?></option>
+				<option value="dark"><?= t("DarkMode") ?></option>
+				<option value="light"><?= t("LightMode") ?></option>
 			</select>
 		</div>
 		<div class="card-item">
-			<h3><?php t("LanguageChoose") ?></h3>
+			<h3><?= t("LanguageChoose") ?></h3>
 			<div id="LanguageChoose">
-				<span class="SaveTime"><?php t("Save365") ?></span>
-				<span><?php t("BrowserSettings") ?></span><span id="Browser-Language"><?php echo BrowserLanguage; ?></span>
-				<span><?php t("CurrentDisplayed") ?></span><span id="Displayed-Language"><?php echo Lang; ?></span>
+				<span class="SaveTime"><?= t("Save365") ?></span>
+				<span><?= t("BrowserSettings") ?></span><span id="Browser-Language"><?php echo BrowserLanguage; ?></span>
+				<span><?= t("CurrentDisplayed") ?></span><span id="Displayed-Language"><?php echo Lang; ?></span>
 			</div>
 			<select id="Language-Select" class="form-control">
-				<option value="auto"><?php t("FollowBrowser") ?></option>
+				<option value="auto"><?= t("FollowBrowser") ?></option>
 				<option value="zh-CN">简体中文</option>
 				<option value="en">English</option>
 			</select>
 		</div>
 		<div class="card-item">
-			<h3><?php t("UpdateTip") ?></h3>
+			<h3><?= t("UpdateTip") ?></h3>
 			<div id="UpdateTips">
-				<?php t("UpdateTips") ?>
+				<?= t("UpdateTips") ?>
 			</div>
 			<select id="UpdateTips-Select" class="form-control">
-				<option value="true"><?php t("Enable") ?></option>
-				<option value="false"><?php t("Disable") ?></option>
+				<option value="true"><?= t("Enable") ?></option>
+				<option value="false"><?= t("Disable") ?></option>
 			</select>
 		</div>
 	</div>
@@ -199,24 +199,24 @@ require_once("./common/invalidCheck.php");
 
 <script>
 	if (localStorage.getItem('colorMode') === null) { // 判断用户设置的颜色
-		$('#Setting-ColorMode').text('<?php t("FollowBrowser") ?>'); // 跟随浏览器
+		$('#Setting-ColorMode').text('<?= t("FollowBrowser") ?>'); // 跟随浏览器
 		$('#ColorMode-Select option[value=auto]')[0].selected = true;
 	} else if (localStorage.getItem('colorMode') === 'dark') { // 深色模式
-		$('#Setting-ColorMode').text('<?php t("DarkMode") ?>');
+		$('#Setting-ColorMode').text('<?= t("DarkMode") ?>');
 		$('#ColorMode-Select option[value=dark]')[0].selected = true;
 	} else if (localStorage.getItem('colorMode') === 'light') { // 浅色模式
-		$('#Setting-ColorMode').text('<?php t("LightMode") ?>');
+		$('#Setting-ColorMode').text('<?= t("LightMode") ?>');
 		$('#ColorMode-Select option[value=light]')[0].selected = true;
 	}
 	const LanguageSetting = '<?php echo $_COOKIE['Language'] ?? ''; ?>';
 	if (LanguageSetting === '') { // 判断用户设置的语言
-		$('#Language-Select option[value=auto]').text('<?php t("CurrentSetting") ?>' + $('#Language-Select option[value=auto]').text());
+		$('#Language-Select option[value=auto]').text('<?= t("CurrentSetting") ?>' + $('#Language-Select option[value=auto]').text());
 		$('#Language-Select option[value=auto]')[0].selected = true;
 	} else if (LanguageSetting === 'zh-CN') { // zh-CN
-		$('#Language-Select option[value="zh-CN"]').text('<?php t("CurrentSetting") ?>' + $('#Language-Select option[value="zh-CN"]').text());
+		$('#Language-Select option[value="zh-CN"]').text('<?= t("CurrentSetting") ?>' + $('#Language-Select option[value="zh-CN"]').text());
 		$('#Language-Select option[value="zh-CN"]')[0].selected = true;
 	} else if (LanguageSetting === 'en') { // en
-		$('#Language-Select option[value="en"]').text('<?php t("CurrentSetting") ?>' + $('#Language-Select option[value="en"]').text());
+		$('#Language-Select option[value="en"]').text('<?= t("CurrentSetting") ?>' + $('#Language-Select option[value="en"]').text());
 		$('#Language-Select option[value="en"]')[0].selected = true;
 	}
 
@@ -225,9 +225,9 @@ require_once("./common/invalidCheck.php");
 
 	function changeColorMode() { // 更改颜色模式显示
 		if (dark.matches) { // 获取浏览器设置
-			$('#Browser-ColorMode').text('<?php t("DarkMode") ?>'); // 深色模式
+			$('#Browser-ColorMode').text('<?= t("DarkMode") ?>'); // 深色模式
 		} else if (light.matches) { // 获取浏览器设置
-			$('#Browser-ColorMode').text('<?php t("LightMode") ?>'); // 浅色模式
+			$('#Browser-ColorMode').text('<?= t("LightMode") ?>'); // 浅色模式
 		}
 	}
 
@@ -269,5 +269,5 @@ require_once("./common/invalidCheck.php");
 </script>
 
 <div id="help" class="page" style="display: none;">
-	<?php t("HelpPage") ?>
+	<?= t("HelpPage") ?>
 </div>
