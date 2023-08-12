@@ -514,7 +514,7 @@ async function Download(index = 0) {
 				} else {
 					$("#limit-tip").hide();
 				}
-				downloadpage.show();
+				$('#downloadpage').modal('show')
 				try {
 					let filec_address = create_fileu_address({
 						uri: json.directlink,
