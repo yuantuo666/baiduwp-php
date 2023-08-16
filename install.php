@@ -9,7 +9,8 @@
  * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
-define('init', true);
+const init = true;
+$is_login = false;
 if (file_exists('config.php')) {
 	// 如果已经安装过一次，必须管理员登录
 	session_start();
@@ -28,6 +29,12 @@ if (file_exists('config.php')) {
 		}
 	}
 }
+try {
+	$random_int = random_int(1000, 9999);
+} catch (Exception $e) {
+	$random_int = 1145;
+}
+
 // 通用响应头
 header('Content-Type: text/html; charset=utf-8');
 header('X-UA-Compatible: IE=edge,chrome=1');
@@ -42,7 +49,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<meta name="author" content="LC" />
 	<title>PanDownload 复刻版 - 安装程序</title>
 	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" href="static/index.css?r=<?php echo random_int(1000, 9999); ?>" />
+	<link rel="stylesheet" href="static/index.css?r=<?= $random_int ?>" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css" />
 	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css" />
 	<link rel="stylesheet" disabled id="Swal2-Dark" href="https://fastly.jsdelivr.net/npm/@sweetalert2/theme-dark@4.0.2/dark.min.css" />
@@ -50,7 +57,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
-	<script src="static/color.js?r=<?php echo random_int(1000, 9999); ?>"></script>
+	<script src="static/color.js?r=<?= $random_int ?>"></script>
 	<script>
 		async function getAPI(method) { // 获取 API 数据
 			try {
@@ -76,7 +83,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			}
 		}
 	</script>
-	<script src="static/ready.js?r=<?php echo random_int(1000, 9999); ?>"></script>
+	<script src="static/ready.js?r=<?= $random_int ?>"></script>
 </head>
 
 <body>
@@ -125,7 +132,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			{
 				$var = defined($name) ? constant($name) : $default;
 			}
-			getConfig($Sitename, 'Sitename');
+			getConfig($Sitename, 'Sitename', 'Pandownload复刻版');
 			getConfig($IsCheckPassword, 'IsCheckPassword', true);
 			getConfig($Password, 'Password');
 			getConfig($ADMIN_PASSWORD, 'ADMIN_PASSWORD');
@@ -144,7 +151,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 			if (defined('DbConfig')) {
 				function getDbConfig(&$var, string $key)
 				{
-					$var = isset(DbConfig[$key]) ? DbConfig[$key] : '';
+					$var = DbConfig[$key] ?? '';
 				}
 				getDbConfig($dbtype, 'dbtype');
 				getDbConfig($servername, 'servername');
@@ -206,7 +213,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">站点名称</label>
 							<div class="col-sm-10">
-								<input class="form-control" value="Pandownload 复刻版" name="Sitename" value="<?php echo $Sitename; ?>">
+								<input class="form-control" name="Sitename" value="<?= $Sitename ?>">
 								<small class="form-text">设置你的站点名称，将在首页标题处显示。</small>
 							</div>
 						</div>
@@ -249,35 +256,35 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group row" id="Password" <?php if (!$IsCheckPassword) echo "style=\"display: none;\""; ?>>
 							<label class="col-sm-2 col-form-label">解析密码设置</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="Password" value="<?php echo $Password; ?>">
+								<input class="form-control" name="Password" value="<?= $Password ?>">
 								<small class="form-text">在首页需要输入的密码，至少需要6位字符。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">管理员密码设置</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="ADMIN_PASSWORD" value="<?php echo $ADMIN_PASSWORD; ?>">
+								<input class="form-control" name="ADMIN_PASSWORD" value="<?= $ADMIN_PASSWORD ?>">
 								<small class="form-text">用于登录管理后台(/settings.php)的密码。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">下载次数限制修改</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="DownloadTimes" value="<?php echo $DownloadTimes; ?>">
+								<input class="form-control" name="DownloadTimes" value="<?= $DownloadTimes ?>">
 								<small class="form-text">设置每一个IP的下载次数。（仅开启数据库有效）</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">下载链接有效时间</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="DownloadLinkAvailableTime" value="<?php echo $DownloadLinkAvailableTime; ?>">
+								<input class="form-control" name="DownloadLinkAvailableTime" value="<?= $DownloadLinkAvailableTime ?>">
 								<small class="form-text">设置解析出来的下载链接有效时间，超出对应时间则重新获取。（仅开启数据库有效，默认及最大为8小时，单位小时）</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">页脚设置</label>
 							<div class="col-sm-10">
-								<textarea class="form-control" name="Footer" rows="3"><?php echo $Footer; ?></textarea>
+								<textarea class="form-control" name="Footer" rows="3"><?= $Footer ?></textarea>
 								<small class="form-text">通常用于设置隐藏的统计代码。</small>
 							</div>
 						</div>
@@ -286,7 +293,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label" style="color: red;">普通账号完整 Cookie</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="Cookie" placeholder="例：PANWEB=1; newlogin=1; BIDUPSID=326C4AD1E1521*********7151;……" value="<?php echo $Cookie; ?>">
+								<input class="form-control" name="Cookie" placeholder="例：PANWEB=1; newlogin=1; BIDUPSID=326C4AD1E1521*********7151;……" value="<?= $Cookie ?>">
 								<small class="form-text">该参数也可以使用 SVIP 账号 Cookie</small>
 								<small class="form-text">获取方法：使用 Edge/Chorme 浏览器 的 <b>无痕模式</b> 打开百度网盘网页版，按下 F12 打开开发者工具，选择 网络 选项卡，刷新页面，找到一个 请求 URL 为 pan.baidu.com 开头的请求，在请求的详细信息页面往下滑找到 Cookie 参数，右键复制值后粘贴到此处即可。</small>
 								<small><a href="https://blog.imwcr.cn/2022/11/24/%e5%a6%82%e4%bd%95%e6%8a%93%e5%8c%85%e8%8e%b7%e5%8f%96%e7%99%be%e5%ba%a6%e7%bd%91%e7%9b%98%e7%bd%91%e9%a1%b5%e7%89%88%e5%ae%8c%e6%95%b4-cookie/">图文教程</a></small>
@@ -300,15 +307,15 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">超级会员账号BDUSS</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="SVIP_BDUSS" placeholder="例：W4tanVHelU2VGpxb**********0ZTZlUm1saEVtYnpTWjByfmxheWwxRFRtNlphQVFBQUFBJCQAAAAAAAAAAA……" value="<?php echo $SVIP_BDUSS; ?>">
+								<input class="form-control" name="SVIP_BDUSS" placeholder="例：W4tanVHelU2VGpxb**********0ZTZlUm1saEVtYnpTWjByfmxheWwxRFRtNlphQVFBQUFBJCQAAAAAAAAAAA……" value="<?= $SVIP_BDUSS ?>">
 								<small class="form-text">用来获取文件高速下载地址，必须为SVIP账号，否则将获取到限速地址。</small>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label">超级会员账号STOKEN</label>
 							<div class="col-sm-10">
-								<input class="form-control" name="SVIP_STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613" value="<?php echo $SVIP_STOKEN; ?>">
-								<small class="form-text">此信息必须与上一信息使用同一账号数据。可以留空，仅为检测账号状态使用。</small>
+								<input class="form-control" name="SVIP_STOKEN" placeholder="例：0c27e6ebdb50252b**********a8b44f4ba448d0d62bc0527eead328d491a613" value="<?= $SVIP_STOKEN ?>">
+								<small class="form-text">此项必须与上一项使用同一账号数据。可以留空，仅为检测账号状态使用。</small>
 							</div>
 						</div>
 						<hr />
@@ -344,33 +351,33 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库地址或路径</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_servername" value="<?php echo $servername; ?>">
+									<input class="form-control" name="DbConfig_servername" value="<?= $servername ?>">
 									<small class="form-text">填入MySQL数据库的地址或Sqlite数据库路径。</small>
 								</div>
 							</div>
 							<div class="form-group row" id="username-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库用户名</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_username" value="<?php echo $username; ?>">
+									<input class="form-control" name="DbConfig_username" value="<?= $username ?>">
 								</div>
 							</div>
 							<div class="form-group row" id="password-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库密码</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_DBPassword" value="<?php echo $DBPassword; ?>">
+									<input class="form-control" name="DbConfig_DBPassword" value="<?= $DBPassword ?>">
 								</div>
 							</div>
 							<div class="form-group row" id="dbname-field" <?php if ($dbtype === "sqlite") echo "style=\"display: none;\""; ?>>
 								<label class="col-sm-2 col-form-label">数据库名</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_dbname" value="<?php echo $dbname; ?>">
+									<input class="form-control" name="DbConfig_dbname" value="<?= $dbname ?>">
 									<small class="form-text">如果此数据库不存在将会在检查连接时自动创建。</small>
 								</div>
 							</div>
 							<div class="form-group row">
 								<label class="col-sm-2 col-form-label">数据库表名前缀</label>
 								<div class="col-sm-10">
-									<input class="form-control" name="DbConfig_dbtable" value="<?php echo $dbtable; ?>">
+									<input class="form-control" name="DbConfig_dbtable" value="<?= $dbtable ?>">
 									<small class="form-text">一般情况无需修改</small>
 								</div>
 							</div>
@@ -445,26 +452,26 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							function generateRandomString(length) {
-								var result = '';
-								var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-								var charactersLength = characters.length;
-								for (var i = 0; i < length; i++) {
+                                let result = '';
+                                let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+								let charactersLength = characters.length;
+								for (let i = 0; i < length; i++) {
 									result += characters.charAt(Math.floor(Math.random() * charactersLength));
 								}
 								return result;
 							}
 
 							$("input[name='IsCheckPassword']").on('click', function() {
-								item = $(this).val(); // 这里获取的是你点击的那个radio的值，而不是设置的值。（虽然效果是一样的
-								if (item == "false") {
+                                const item = $(this).val(); // 这里获取的是你点击的那个radio的值，而不是设置的值。（虽然效果是一样的
+								if (item === "false") {
 									$("div#Password").slideUp();
 								} else {
 									$("div#Password").slideDown();
 								}
 							});
 							$("input[name='USING_DB']").on('click', function() {
-								item = $(this).val();
-								if (item == "false") {
+								let item = $(this).val();
+								if (item === "false") {
 									$("div#DbConfig").slideUp();
 									$("select#SVIPSwitchMod").val("0");
 								} else {
@@ -473,8 +480,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							});
 
 							$("input[name='USING_DB']").on('click', function() {
-								item = $(this).val();
-								if (item == "false") {
+								let item = $(this).val();
+								if (item === "false") {
 									$("div#DbConfig").slideUp();
 									$("select#SVIPSwitchMod").val("0");
 								} else {
@@ -488,9 +495,9 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									$('#password-field').hide();
 									$('#dbname-field').hide();
 									<?php if ($dbtype === "sqlite") { ?>
-										$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为sqlite，直接获取路径
+										$('input[name="DbConfig_servername"]').val('<?= $servername ?>'); //之前为sqlite，直接获取路径
 									<?php } else { ?>
-										var randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
+										let randomString = generateRandomString(8); // 调用之前生成的随机字符串函数
 										$('input[name="DbConfig_servername"]').val('bdwp_' + randomString + '.db'); // 将随机字符串设置为数据库地址的值
 									<?php } ?>
 								} else {
@@ -498,15 +505,15 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									$('#password-field').show();
 									$('#dbname-field').show();
 									<?php if ($dbtype === "mysql") { ?>
-										$('input[name="DbConfig_servername"]').val('<?php echo $servername; ?>'); //之前为Mysql，直接获取地址
+										$('input[name="DbConfig_servername"]').val('<?= $servername ?>'); //之前为Mysql，直接获取地址
 									<?php } else { ?>
 										$('input[name="DbConfig_servername"]').val('127.0.0.1'); //否则给127.0.0.1
 									<?php } ?>
 								}
 							});
 							$("#AgreeCheck").on('click', function() {
-								item = $(this).prop("checked");
-								if (item == true) {
+								let item = $(this).prop("checked");
+								if (item === true) {
 									// 提示
 									Swal.fire({
 										title: "同意保留版权",
@@ -525,8 +532,8 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								}
 							});
 							$("#ReserveDBData").on('click', function() {
-								item = $(this).prop("checked");
-								if (item == true) {
+								let item = $(this).prop("checked");
+								if (item === true) {
 									// 提示
 									Swal.fire({
 										title: "保留数据库数据",
@@ -544,29 +551,29 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 								}
 							});
 
-							var SQLConnect = false;
+                            let SQLConnect = false;
 
-							function CheckMySQLConnect() {
+                            function CheckMySQLConnect() {
 								Swal.fire("正在连接数据库，请稍等");
 								Swal.showLoading();
-								dbtype = $("select[name='DbConfig_dbtype']").val()
-								servername = $("input[name='DbConfig_servername']").val();
-								username = $("input[name='DbConfig_username']").val();
-								DBPassword = $("input[name='DbConfig_DBPassword']").val();
-								dbname = $("input[name='DbConfig_dbname']").val();
-								dbtable = $("input[name='DbConfig_dbtable']").val();
+								let dbtype = $("select[name='DbConfig_dbtype']").val()
+								let servername = $("input[name='DbConfig_servername']").val();
+								let username = $("input[name='DbConfig_username']").val();
+								let DBPassword = $("input[name='DbConfig_DBPassword']").val();
+								let dbname = $("input[name='DbConfig_dbname']").val();
+								let dbtable = $("input[name='DbConfig_dbtable']").val();
 
-								if (dbtable == "") {
+								if (dbtable === "") {
 									Swal.fire("数据库表名前缀设置错误", "请检查你的数据库设置，数据库表名前缀不能为空！<br />你可以设置为bdwp或其他有效字符串。", "error");
 									return;
 								}
 
-								body = `dbtype=${dbtype}&servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
+								let body = `dbtype=${dbtype}&servername=${servername}&username=${username}&DBPassword=${DBPassword}&dbname=${dbname}&dbtable=${dbtable}`;
 
 								postAPI('CheckMySQLConnect', body).then(function(response) {
 									if (response.success) {
 										const data = response.data;
-										if (data.error == 0) {
+										if (data.error === 0) {
 											// 连接成功
 											Swal.fire("数据库连接成功", "请完成其他信息填写并提交。<br />详细信息：" + data.msg, "success");
 											$("input[name='DbConfig_servername']").attr("readonly", true); // 禁用修改，防止提交后出错
@@ -588,11 +595,11 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							function CheckForm() {
 								Swal.fire("正在安装，请稍等……");
 								Swal.showLoading();
-								USING_DB = $("input[name='USING_DB']:checked").val();
-								ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
-								Cookie = $("input[name='Cookie']").val();
-								SVIP_BDUSS = $("input[name='SVIP_BDUSS']").val();
-								SVIP_STOKEN = $("input[name='SVIP_STOKEN']").val();
+								let USING_DB = $("input[name='USING_DB']:checked").val();
+								let ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
+								let Cookie = $("input[name='Cookie']").val();
+								let SVIP_BDUSS = $("input[name='SVIP_BDUSS']").val();
+								let SVIP_STOKEN = $("input[name='SVIP_STOKEN']").val();
 
 
 								if (Cookie.length < 6) {
@@ -608,15 +615,15 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 									Swal.fire("密码过短", "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。", "warning");
 									return 0;
 								}
-								if (USING_DB == "true") {
+								if (USING_DB === "true") {
 									if (!SQLConnect) {
 										// 暂未连接数据库
 										Swal.fire("暂未连接数据库", "请先点击检查数据库连接按钮，再提交数据。", "warning");
 										return 0;
 									}
 								}
-								AgreeCheck = $("#AgreeCheck").prop("checked");
-								if (AgreeCheck == false) {
+								let AgreeCheck = $("#AgreeCheck").prop("checked");
+								if (AgreeCheck === false) {
 									Swal.fire("请同意保留版权信息", "请同意保留版权信息，再点击提交。", "warning");
 									return 0;
 								}
@@ -624,11 +631,11 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 							}
 
 							// 检查是否为 docker 环境
-							body = `dbtype=mysql&servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
+							let body = `dbtype=mysql&servername=172.28.0.2&username=root&DBPassword=root&dbname=bdwp&dbtable=bdwp`;
 							postAPI('CheckMySQLConnect', body).then(function(response) {
 								if (response.success) {
 									const data = response.data;
-									if (data.error == 0) {
+									if (data.error === 0) {
 										// 连接成功
 										Swal.fire("检测到 Docker 环境", "已自动配置数据库并连接，请完成其他信息填写并提交。<br />详细信息：" + data.msg, "success");
 										$("input[name='DbConfig_servername']").val("172.28.0.2");
@@ -689,7 +696,10 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 				$DefaultLanguage = (!empty($_POST["DefaultLanguage"])) ? $_POST["DefaultLanguage"] : "en";
 
-				function connect_mysql($servername, $username, $DBPassword, $dbname)
+				/**
+				 * @throws Exception
+				 */
+				function connect_mysql($servername, $username, $DBPassword, $dbname): mysqli
 				{
 					$conn = mysqli_connect($servername, $username, $DBPassword, $dbname);
 					if (!$conn) {
@@ -698,31 +708,32 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 					return $conn;
 				}
 
-				function connect_sqlite($servername)
+				function connect_sqlite($servername): SQLite3
 				{
-					$db = new SQLite3($servername);
-					return $db;
+					return new SQLite3($servername);
 				}
 
+				/**
+				 * @throws Exception
+				 */
 				function import_data($conn, $dbtype, $dbtable, $sql_filename)
 				{
 					$SQLfile = file_get_contents($sql_filename);
 					if ($SQLfile === false) {
-						throw new Exception("无法打开 {$sql_filename} 文件");
+						throw new Exception("无法打开 $sql_filename 文件");
 					}
 
 					$SQLfile = str_replace("<dbtable>", $dbtable, $SQLfile);
-
 					if ($dbtype === "mysql") {
+						$success_result = 0;
 						if (mysqli_multi_query($conn, $SQLfile)) {
-							$success_result = 0;
 							do {
 								$success_result += 1;
 							} while (mysqli_more_results($conn) && mysqli_next_result($conn));
 						}
 						$affected_rows = mysqli_affected_rows($conn);
 						if ($affected_rows == -1) {
-							throw new Exception("数据库导入出错，错误在 {$success_result} 行");
+							throw new Exception("数据库导入出错，错误在 $success_result 行");
 						}
 						return $affected_rows;
 					} elseif ($dbtype === "sqlite") {
@@ -742,7 +753,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						} elseif ($dbtype === "sqlite") {
 							$conn = connect_sqlite($servername);
 						} else {
-							throw new Exception("不支持的数据库类型: {$dbtype}");
+							throw new Exception("不支持的数据库类型: $dbtype");
 						}
 
 						if ($ReserveDBData === "true") {
@@ -750,7 +761,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 						} else {
 							$sql_filename = ($dbtype === "mysql") ? "./install/bdwp.sql" : "./install/bdwp_sqlite.sql";
 							$affected_rows = import_data($conn, $dbtype, $dbtable, $sql_filename);
-							echo "数据库导入成功，成功导入 {$affected_rows} 条数据<br />";
+							echo "数据库导入成功，成功导入 $affected_rows 条数据<br />";
 						}
 					} catch (Exception $e) {
 						die($e->getMessage());
@@ -759,7 +770,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 				// 修改文件
 				$raw_config = file_get_contents("./install/config_raw");
-				if ($raw_config == false) die("无法打开config_raw文件");
+				if (!$raw_config) die("无法打开config_raw文件");
 
 
 				$update_config = $raw_config;
@@ -789,7 +800,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 
 				$len = file_put_contents('config.php', $update_config);
 
-				if ($len != false) {
+				if ($len) {
 					echo "成功！成功写入 config.php 共 $len 个字符。<br />";
 				} else {
 					die("写入 config.php 文件失败，请检查 config.php 文件状态及当前用户权限。");

@@ -14,7 +14,7 @@
 if (!init) require_once("./common/invalidCheck.php");
 
 // main
-function setCurl(&$ch, array $header)
+function setCurl(&$ch, array $header): bool
 { // 批处理 curl
 	$a = curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 忽略证书
 	$b = curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); // 不检查证书与域名是否匹配（2为检查）
@@ -43,7 +43,7 @@ function get(string $url, array $header)
 	curl_close($ch);
 	return $result;
 }
-function head(string $url, array $header)
+function head(string $url, array $header): string
 { // 获取响应头
 	$ch = curl_init($url);
 	setCurl($ch, $header);
@@ -64,7 +64,7 @@ function head(string $url, array $header)
 	curl_close($ch);
 	return $result;
 }
-function getSubstr(string $str, string $leftStr, string $rightStr)
+function getSubstr(string $str, string $leftStr, string $rightStr): string
 {
 	$left = strpos($str, $leftStr);
 	if ($left === false) return "";
@@ -73,7 +73,7 @@ function getSubstr(string $str, string $leftStr, string $rightStr)
 	if ($right === false) return "";
 	return substr($str, $left, $right - $left);
 }
-function formatSize(float $size, int $times = 0)
+function formatSize(float $size, int $times = 0): string
 {
 	$unit = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	if ($size >= 1024) {
@@ -84,7 +84,7 @@ function formatSize(float $size, int $times = 0)
 		return round($size, 2) . $unit[$times];
 	}
 }
-function CheckPassword()
+function CheckPassword(): bool
 {
 	if (!IsCheckPassword) {
 		return true;
@@ -98,14 +98,14 @@ function CheckPassword()
 	}
 	return false;
 }
-function GetSign(string $surl = "", string $share_id = "", string $uk = "")
+function GetSign(string $surl = "", string $share_id = "", string $uk = ""): array
 {
 	// construct url
-	$parmas = "";
-	if ($surl) $parmas .= "&surl=$surl";
-	if ($share_id) $parmas .= "&shareid=$share_id";
-	if ($uk) $parmas .= "&uk=$uk";
-	$url = "https://pan.baidu.com/share/tplconfig?$parmas&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
+	$params = "";
+	if ($surl) $params .= "&surl=$surl";
+	if ($share_id) $params .= "&shareid=$share_id";
+	if ($uk) $params .= "&uk=$uk";
+	$url = "https://pan.baidu.com/share/tplconfig?$params&fields=sign,timestamp&channel=chunlei&web=1&app_id=250528&clienttype=0";
 	$header = [
 		"User-Agent: netdisk;pan.baidu.com",
 		"Cookie: " . Cookie,
@@ -131,6 +131,9 @@ function dl_error(string $title, string $content, bool $jumptip = false)
 	die();
 }
 
+/**
+ * @throws Exception
+ */
 function connect_mysql($servername, $username, $DBPassword, $dbname, $isAPI = false, $createIfNotExist = false)
 {
 	if (!function_exists('mysqli_connect')) {
@@ -154,12 +157,12 @@ function connect_mysql($servername, $username, $DBPassword, $dbname, $isAPI = fa
 	if ($createIfNotExist) {
 		$sql = "CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8;";
 		if (!mysqli_query($conn, $sql)) {
-			throw new Exception("数据库连接成功，但创建数据库失败。请手动创建 {$dbname} 数据库后再次检查连接。");
+			throw new Exception("数据库连接成功，但创建数据库失败。请手动创建 $dbname 数据库后再次检查连接。");
 		}
 	}
 
 	if (!mysqli_select_db($conn, $dbname)) {
-		throw new Exception("无法选择数据库 {$dbname}");
+		throw new Exception("无法选择数据库 $dbname");
 	}
 
 	mysqli_query($conn, "set sql_mode = ''");
@@ -174,6 +177,14 @@ function connect_sqlite($servername, $isAPI = false)
 {
 	try {
 		$conn = new SQLite3($servername);
+
+		// 设置 SQLite 参数
+		$conn->exec("PRAGMA encoding = 'UTF-8'");
+		$conn->exec("PRAGMA journal_mode = WAL");
+		$conn->exec("PRAGMA foreign_keys = ON");
+		$conn->exec("PRAGMA synchronous = NORMAL");
+
+		return $conn;
 	} catch (Exception $e) {
 		$errorMessage = "数据库连接失败：" . $e->getMessage();
 		if ($isAPI) {
@@ -183,17 +194,13 @@ function connect_sqlite($servername, $isAPI = false)
 			dl_error("服务器错误", $errorMessage);
 		}
 	}
-
-	// 设置 SQLite 参数
-	$conn->exec("PRAGMA encoding = 'UTF-8'");
-	$conn->exec("PRAGMA journal_mode = WAL");
-	$conn->exec("PRAGMA foreign_keys = ON");
-	$conn->exec("PRAGMA synchronous = NORMAL");
-
-	return $conn;
+	return null;
 }
 
 // 连接数据库的主函数，支持 MySQL 和 SQLite
+/**
+ * @throws Exception
+ */
 function connectdb(bool $isAPI = false)
 {
 	$GLOBALS['dbtype'] = DbConfig["dbtype"];
@@ -240,7 +247,7 @@ function fetch_row($query)
 	}
 }
 
-function fetch_error()
+function fetch_error(): string
 {
 	$dbtype = $GLOBALS['dbtype'];
 	$conn = $GLOBALS['conn'];
@@ -276,12 +283,12 @@ function execute_query($sql)
 	return false;
 }
 
-function get_affected_rows()
+function get_affected_rows(): int
 {
 	$dbtype = $GLOBALS['dbtype'];
 	$conn = $GLOBALS['conn'];
 	if ($dbtype === "mysql") {
-		return mysqli_affected_rows($conn);
+		return (int)mysqli_affected_rows($conn);
 	} elseif ($dbtype === "sqlite") {
 		return $conn->changes();
 	}
@@ -312,8 +319,7 @@ function GetAnalyseTablePage(string $page)
 	$StartNum = ($page - 1) * $EachPageNum;
 	$sql = "SELECT * FROM `$dbtable` ORDER BY `ptime` DESC LIMIT $StartNum,$EachPageNum";
 	$query = execute_query($sql);
-	$Result = fetch_row($query);
-	while ($Result) {
+	while ($Result = fetch_row($query)) {
 		// 存在数据
 		$EachRow = "<tr>" .
 			"<th>{$Result["id"]}</th>" .
@@ -329,7 +335,6 @@ function GetAnalyseTablePage(string $page)
 			"</tr>";
 
 		$AllRow .= $EachRow;
-		$Result = fetch_row($query); // 获取下一行结果
 	}
 	return $AllRow;
 }
@@ -342,8 +347,7 @@ function GetSvipTablePage(string $page)
 	$StartNum = ((int)$page - 1) * $EachPageNum;
 	$sql = "SELECT * FROM `{$dbtable}_svip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
 	$query = execute_query($sql);
-	$Result = fetch_row($query);
-	while ($Result) {
+	while ($Result = fetch_row($query)) {
 		// 存在数据
 		$is_using = ($Result["is_using"] != "0000-00-00 00:00:00") ? $Result["is_using"] : "";
 		$state = ($Result["state"] == -1) ? "限速" : "正常";
@@ -354,31 +358,32 @@ function GetSvipTablePage(string $page)
 			"<a class=\"btn btn-secondary\" href=\"javascript:SettingNormalAccount({$Result["id"]});\">重置状态</a>" .
 			"<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('SvipTable',{$Result["id"]});\">删除</a>" .
 			"</div></td>" .
-			"<td>{$is_using}</td>" .
+			"<td>$is_using</td>" .
 			"<td>{$Result["name"]}</td>" .
-			"<td>{$state}</td>" .
+			"<td>$state</td>" .
 			"<td>{$Result["add_time"]}</td>" .
 			"<td><a href=\"javascript:Swal.fire('{$Result["svip_bduss"]}');\">" . substr($Result["svip_bduss"], 0, 20) . "……</a></td>" .
 			"<td><a href=\"javascript:Swal.fire('{$Result["svip_stoken"]}');\">" . substr($Result["svip_stoken"], 0, 20) . "……</a></td>" .
 			"</tr>";
 		$AllRow .= $EachRow;
-		$Result = fetch_row($query);
 	}
 	return $AllRow;
 } // name 账号名称	svip_bduss 会员bduss	svip_stoken 会员stoken	add_time 会员账号加入时间	state 会员状态(0:正常,-1:限速)	is_using 是否正在使用(非零表示真)
-function GetIPTablePage(string $page)
+/**
+ * @throws Exception
+ */
+function GetIPTablePage(string $page): string
 {
+	global $dbtable;
 	if (!is_numeric($page) || $page <= 0) {
 		throw new Exception("Invalid page number: $page");
 	}
 	$EachPageNum = 10;
-	$dbtable = $GLOBALS['dbtable'];
 	$AllRow = "";
 	$StartNum = ((int)$page - 1) * $EachPageNum;
 	$sql = "SELECT * FROM `{$dbtable}_ip` ORDER BY `id` DESC LIMIT $StartNum,$EachPageNum";
 	$query = execute_query($sql);
-	$Result = fetch_row($query);
-	while ($Result) {
+	while ($Result = fetch_row($query)) {
 		// 存在数据
 		$type = ($Result["type"] == -1) ? "黑名单" : "白名单";
 		$EachRow = "<tr>" .
@@ -387,12 +392,11 @@ function GetIPTablePage(string $page)
 			"<a class=\"btn btn-secondary\" href=\"javascript:DeleteById('IPTable',{$Result["id"]});\">删除</a>" .
 			"</div></td>" .
 			"<td>{$Result["ip"]}</td>" .
-			"<td>{$type}</td>" .
+			"<td>$type</td>" .
 			"<td>{$Result["remark"]}</td>" .
 			"<td>{$Result["add_time"]}</td>" .
 			"</tr>";
 		$AllRow .= $EachRow;
-		$Result = fetch_row($query);
 	}
 	return $AllRow;
 }
@@ -401,10 +405,11 @@ function GetIPTablePage(string $page)
  *
  * @return array 返回BDUSS和对应id id=-1表示本地解析
  */
-function GetDBBDUSS()
+function GetDBBDUSS(): array
 {
 	global $dbtable;
 	// 获取SVIP BDUSS
+	$Result = null;
 	switch (SVIPSwitchMod) {
 		case 1:
 			//模式1：用到废为止
@@ -426,7 +431,7 @@ function GetDBBDUSS()
 				$is_using = date("Y-m-d H:i:s");
 				$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
 				$result = execute_exec($sql);
-				if ($result == false) {
+				if (!$result) {
 					// 失败 但可继续解析
 					dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
 				}
@@ -452,7 +457,7 @@ function GetDBBDUSS()
 				$is_using = date("Y-m-d H:i:s");
 				$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
 				$result = execute_exec($sql);
-				if ($result == false) {
+				if (!$result) {
 					// 失败 但可继续解析
 					dl_error("数据库错误", "请联系站长修复无法自动切换账号问题！");
 				}
@@ -461,9 +466,6 @@ function GetDBBDUSS()
 		case 0:
 			//模式0：使用本地解析
 		default:
-			$SVIP_BDUSS = SVIP_BDUSS;
-			$SVIP_STOKEN = SVIP_STOKEN;
-			$id = "-1";
 			break;
 	}
 	if ($Result) {
@@ -484,7 +486,7 @@ function GetDBBDUSS()
  *
  * @return array [errno,会员状态,用户名,登录状态,会员剩余时间]
  */
-function AccountStatus(string $BDUSS, string $STOKEN)
+function AccountStatus(string $BDUSS, string $STOKEN): array
 {
 	$Url = "https://pan.baidu.com/api/gettemplatevariable?channel=chunlei&web=1&app_id=250528&clienttype=0";
 	$Header = [
@@ -495,7 +497,7 @@ function AccountStatus(string $BDUSS, string $STOKEN)
 	$Result = post($Url, $Data, $Header);
 	$Result = json_decode($Result, true);
 	if (DEBUG) {
-		echo '<script>console.log("账号状态:");console.log(' . json_encode($Result) . ');</script>';
+		echo '<script>console.log("账号状态:");console.log(' . json_encode($Result) . ')</script>';
 	}
 	if ($Result["errno"] == 0) {
 		// 正常
@@ -511,21 +513,18 @@ function AccountStatus(string $BDUSS, string $STOKEN)
 		}
 
 		$Url = "https://pan.baidu.com/rest/2.0/membership/user?channel=chunlei&web=1&app_id=250528&clienttype=0";
-		$Header = [
-			"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.514.1919.810 Safari/537.36",
-			"Cookie: BDUSS=$BDUSS;STOKEN=$STOKEN;"
-		];
 		$Data = "method=query";
 		$Result = post($Url, $Data, $Header);
 		$Result = json_decode($Result, true);
 		if (DEBUG) {
-			echo '<script>console.log("会员状态:");console.log(' . json_encode($Result) . ');</script>';
+			echo '<script>console.log("会员状态:");console.log(' . json_encode($Result) . ')</script>';
 		}
 		if (isset($Result["reminder"]["svip"])) {
 			//存在会员信息
 			$LeftSeconds = $Result["reminder"]["svip"]["leftseconds"];
 			return array(0, $SVIP, $Username, $LoginStatus, $LeftSeconds);
 		}
+		return array(-1);
 	} elseif ($Result["errno"] == -6) {
 		// 账号失效
 		return array(-6);
@@ -537,14 +536,13 @@ function AccountStatus(string $BDUSS, string $STOKEN)
 /**
  * 时间差计算
  *
- * @param Timestamp $time
+ * @param int $time
  * @return String Time Elapsed
  * @author Shelley Shyan
  * @copyright http://phparch.cn (Professional PHP Architecture)
  */
-function time2Units($time)
+function time2Units(int $time): string
 {
-	$time = (int)$time;
 	$year   = floor($time / 60 / 60 / 24 / 365);
 	$time  -= $year * 60 * 60 * 24 * 365;
 	$month  = floor($time / 60 / 60 / 24 / 30);
@@ -556,16 +554,17 @@ function time2Units($time)
 	$minute = floor($time / 60);
 	$time  -= $minute * 60;
 	$second = $time;
+
 	$elapse = '';
 
 	$unitArr = array(
-		'年'  => 'year', '个月' => 'month',  '天' => 'day',
-		'小时' => 'hour', '分钟' => 'minute', '秒' => 'second'
+		'年'  => $year, '个月' => $month,  '天' => $day,
+		'小时' => $hour, '分钟' => $minute, '秒' => $second
 	);
 
 	foreach ($unitArr as $cn => $u) {
-		if ($$u > 0) {
-			$elapse = $$u . $cn;
+		if ($u > 0) {
+			$elapse = $u . $cn;
 			break;
 		}
 	}
@@ -574,7 +573,7 @@ function time2Units($time)
 }
 
 
-function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, array $info = []) // 检查更新程序
+function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, array $info = []): array // 检查更新程序
 {
 
 	$filePath = "update.json"; // 缓存文件路径
@@ -585,27 +584,26 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 				"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67"
 			);
 			if ($includePreRelease) { // 若包括 Pre-Release
-				array_push($info, "Include-PreRelease");
+				$info[] = "Include-PreRelease";
 				$result = getAPI('https://api.github.com/repos/yuantuo666/baiduwp-php/releases', $header);
 				if ($result) {
 					return json_decode($result, true)[0]; // 返回首个结果
 				}
-				array_push($info, "API-Download-Newest-Error");
-				return false;
+				$info[] = "API-Download-Newest-Error";
 			} else { // 若不包括
 				$result = getAPI('https://api.github.com/repos/yuantuo666/baiduwp-php/releases/latest', $header);
 				if ($result) {
 					return json_decode($result, true);
 				}
-				array_push($info, "API-Download-Latest-Error");
-				return false;
+				$info[] = "API-Download-Latest-Error";
 			}
+			return false;
 		}
 	}
 	if (!function_exists('downloadError')) {
-		function downloadError(array &$info) // 下载失败
+		function downloadError(array &$info): array // 下载失败
 		{
-			array_push($info, "Download-Error");
+			$info[] = "Download-Error";
 			return array("code" => 1, "info" => $info);
 		}
 	}
@@ -621,7 +619,7 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 		}
 	}
 	if ($enforce) { // 是否强制检查更新
-		array_push($info, "Enforce-Check");
+		$info[] = "Enforce-Check";
 		$result = download($includePreRelease, $info); // 下载
 		if (!$result) { // 若出错则直接 return
 			return downloadError($info);
@@ -631,9 +629,9 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 			$lastm = filemtime($filePath); // 获取文件最后修改时间
 			if ((!$lastm) || ($lastm + 3600 < time())) { // 获取失败或超时（一小时）则重新获取
 				if (!$lastm) {
-					array_push($info, "CacheFile-Get-LastM-Error"); // 获取失败
+					$info[] = "CacheFile-Get-LastM-Error"; // 获取失败
 				} else {
-					array_push($info, "CacheFile-Expired"); // 超时
+					$info[] = "CacheFile-Expired"; // 超时
 				}
 				$result = download($includePreRelease, $info); // 下载并检查是否出错
 				if (!$result) {
@@ -644,7 +642,7 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 				if ($file) { // 若打开成功
 					$result = fread($file, filesize($filePath)); // 读取文件
 					if (!$result) { // 若读取失败
-						array_push($info, "Read-CacheFile-Error");
+						$info[] = "Read-CacheFile-Error";
 						$result = download($includePreRelease, $info); // 下载并检查是否出错
 						if (!$result) {
 							return downloadError($info);
@@ -653,25 +651,25 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 						$result = json_decode($result, true); // 解码
 						if (isset($result['prerelease'])) { // 测试是否包含 PreRelease（检查缓存文件是否存在问题）
 							if ($result['prerelease'] && !$includePreRelease) { // 若不检查预发行版本但缓存为预发行
-								array_push($info, "CacheFile-Is-PreRelease-But-Exclude-It");
+								$info[] = "CacheFile-Is-PreRelease-But-Exclude-It";
 								$result = download($includePreRelease, $info); // 下载并检查是否出错
 								if (!$result) {
 									return downloadError($info);
 								}
 							} else if (!$result['prerelease'] && $includePreRelease) { // 若检查预发行但缓存非预发行（这个只是用来防止万一，所以下载失败了不终止）
-								array_push($info, "CacheFile-Isnot-PreRelease-But-Include-It--Try-To-Get");
+								$info[] = "CacheFile-Isnot-PreRelease-But-Include-It--Try-To-Get";
 								$download_result = download($includePreRelease, $info); // 下载并检查是否出错
 								if (!$download_result) { // 下载失败的话还使用缓存
-									array_push($info, "Download-Error");
-									array_push($info, "Use-Cache");
+									$info[] = "Download-Error";
+									$info[] = "Use-Cache";
 								} else { // 若下载成功则用新的
 									$result = $download_result;
 								}
 							} else { // 没有问题，使用缓存
-								array_push($info, "Use-Cache");
+								$info[] = "Use-Cache";
 							}
 						} else { // 缓存文件存在问题
-							array_push($info, "Invalid-CacheFile");
+							$info[] = "Invalid-CacheFile";
 							$result = download($includePreRelease, $info); // 下载并检查是否出错
 							if (!$result) {
 								return downloadError($info);
@@ -680,7 +678,7 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 					}
 					fclose($file); // 关闭文件
 				} else { // 打开失败
-					array_push($info, "Open-CacheFile-Error");
+					$info[] = "Open-CacheFile-Error";
 					$result = download($includePreRelease, $info); // 下载并检查是否出错
 					if (!$result) {
 						return downloadError($info);
@@ -688,7 +686,7 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 				}
 			}
 		} else { // 文件不存在
-			array_push($info, "No-CacheFile");
+			$info[] = "No-CacheFile";
 			$result = download($includePreRelease, $info); // 下载并检查是否出错
 			if (!$result) {
 				return downloadError($info);
@@ -697,7 +695,7 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 	}
 
 	if (!(isset($result['tag_name']) && isset($result['assets']) && isset($result['html_url']))) { // 若缓存文件存在问题
-		array_push($info, "Invalid-CacheFile");
+		$info[] = "Invalid-CacheFile";
 		$result = download($includePreRelease, $info); // 下载并检查是否出错
 		if (!$result) {
 			return downloadError($info);
@@ -708,7 +706,7 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 	$isPreRelease = $result['prerelease'];
 	$url = "";
 	$page_url = $result['html_url'];
-	foreach ($result['assets'] as &$asset) {
+	foreach ($result['assets'] as $asset) {
 		if ($asset['name'] === 'ProgramFiles.zip') {
 			$url = $asset['browser_download_url'];
 			break;
@@ -719,11 +717,11 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 	if ($file) { // 若打开成功
 		fwrite($file, json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); // 写入文件
 		if (!$result) { // 若写入失败
-			array_push($info, "Write-NewFile-Error");
+			$info[] = "Write-NewFile-Error";
 		}
 		fclose($file); // 关闭文件
 	} else { // 打开失败
-		array_push($info, "Open-NewFile-Error");
+		$info[] = "Open-NewFile-Error";
 	}
 
 
@@ -733,22 +731,22 @@ function CheckUpdate(bool $includePreRelease = false, bool $enforce = false, arr
 	);
 	$compare = version_compare(programVersion, $version); // 比较版本
 	if ($compare === -1 || $compare === 0) { // 更新或相同
-		$commonReturn['have_update'] = ($compare === -1) ? true : false; // 更新则为 true
+		$commonReturn['have_update'] = $compare === -1; // 更新则为 true
 		return $commonReturn;
 	} else { // 版本存在问题（比最新版还高？）
 		if (in_array('Try-Get-Version-Include-PreRelease', $info)) { // 若已尝试获取预发行，则直接返回版本有误提示
-			array_push($info, "Invalid-Version");
+			$info[] = "Invalid-Version";
 			$commonReturn['code'] = 2;
 			$commonReturn['info'] = $info;
 			return $commonReturn;
 		} else { // 试图强制检查预发行版更新
-			array_push($info, "Try-Get-Version-Include-PreRelease");
+			$info[] = "Try-Get-Version-Include-PreRelease";
 			array_splice($info, array_search('Use-Cache', $info), 1);
 			return CheckUpdate(true, true, $info);
 		}
 	}
 }
-function getip()
+function getip(): string
 {
 	if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) {
 		$ip = getenv("HTTP_CLIENT_IP");
@@ -761,14 +759,13 @@ function getip()
 	}
 	return htmlspecialchars($ip, ENT_QUOTES); // 防注入 #193
 }
-function sanitizeContent($content, $type = "mixed")
+function sanitizeContent($content, $type = "mixed"): string
 {
 	switch ($type) {
 		case 'number':
 			$pattern = "([0-9])";
 			preg_match_all($pattern, $content, $matches);
-			$content =  join("", $matches[0]);
-			return $content;
+			return join("", $matches[0]);
 		case 'mixed':
 		default:
 			$chars = [
@@ -789,8 +786,7 @@ function decodeSceKey($seckey)
 {
 	$seckey = str_replace("-", "+", $seckey);
 	$seckey = str_replace("~", "=", $seckey);
-	$seckey = str_replace("_", "/", $seckey);
-	return $seckey;
+	return str_replace("_", "/", $seckey);
 }
 function decryptMd5($md5)
 {
@@ -803,15 +799,13 @@ function decryptMd5($md5)
 	for ($a = 0; $a < strlen($key2); $a++) {
 		$key3 .= dechex(hexdec($key2[$a]) ^ (15 & $a));
 	}
-	$md5 = substr($key3, 8, 8) . substr($key3, 0, 8) . substr($key3, 24, 8) . substr($key3, 16, 8);
-	return $md5;
+	return substr($key3, 8, 8) . substr($key3, 0, 8) . substr($key3, 24, 8) . substr($key3, 16, 8);
 }
-function clearAllAnalyseData() {
+function clearAllAnalyseData()
+{
     $dbtable = $GLOBALS['dbtable'];
 
     // 执行数据库清空操作（请根据您的数据库类型和表结构进行调整）
     $sql = "DELETE FROM `$dbtable`";
-    $result = execute_exec($sql);
-
-    return $result;
+	return execute_exec($sql);
 }

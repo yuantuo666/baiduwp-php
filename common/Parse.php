@@ -8,7 +8,7 @@
  */
 class Parse
 {
-	public static function getList($surl, $pwd, $dir, $sign = "", $timestamp = "")
+	public static function getList($surl, $pwd, $dir, $sign = "", $timestamp = ""): array
 	{
 		$message = [];
 		if (!$sign || !$timestamp) {
@@ -22,13 +22,12 @@ class Parse
 			}
 		}
 
-		$IsRoot = ($dir == "") ? true : false;
-		$Filejson = [];
+		$IsRoot = $dir == "";
 		$file_list = [];
 		$Page = 1;
 		// 获取所有文件 fix #86
 		while (true) {
-			$Filejson = self::getListApi($surl, $dir, $IsRoot, $pwd, $Page, $sign, $timestamp);
+			$Filejson = self::getListApi($surl, $dir, $IsRoot, $pwd, $Page);
 			if (DEBUG) $message[] = json_encode($Filejson);
 			if ($Filejson["errno"] ?? 999 !== 0) {
 				return self::listError($Filejson, $message);
@@ -104,6 +103,7 @@ class Parse
 
 	public static function download($fs_id, $timestamp, $sign, $randsk, $share_id, $uk)
 	{
+		global $dbtype, $dbtable;
 		if (!$fs_id || !$timestamp || !$sign || !$randsk || !$share_id || !$uk) {
 			EchoInfo(-1, array("msg" => "参数错误"));
 			exit;
@@ -113,8 +113,12 @@ class Parse
 		$ip = sanitizeContent(getip());
 		$isipwhite = FALSE;
 		if (USING_DB) {
-			global $conn, $dbtable, $dbtype;
-			connectdb();
+			try {
+				connectdb();
+			} catch (Exception $e) {
+				// 数据库连接失败
+				return array("error" => -1, "msg" => "数据库连接失败，请检查配置" . $e->getMessage());
+			}
 
 			// 查询数据库中是否存在已经保存的数据
 			$sql = "SELECT * FROM `{$dbtable}_ip` WHERE `ip` LIKE '$ip';";
@@ -160,7 +164,7 @@ class Parse
 		$filename = $json4["list"][0]["server_filename"] ?? "";
 		$size = sanitizeContent($json4["list"][0]["size"] ?? "0", "number");
 		$path = $json4["list"][0]["path"] ?? "";
-		$server_ctime = (int)$json4["list"][0]["server_ctime"] ?? 0 + 28800; // 服务器创建时间 +8:00
+		$server_ctime = (int)$json4["list"][0]["server_ctime"] ?? 28800; // 服务器创建时间 +8:00
 
 		$FileData = array(
 			"filename" => $filename,
@@ -181,6 +185,8 @@ class Parse
 				$sql = "SELECT * FROM `$dbtable` WHERE `md5`='$md5' AND `ptime` > DATE_SUB(NOW(),INTERVAL $DownloadLinkAvailableTime HOUR);";
 			} elseif ($dbtype === "sqlite") {
 				$sql = "SELECT * FROM \"$dbtable\" WHERE \"md5\"='$md5' AND \"ptime\"> datetime('now', 'localtime', '-$DownloadLinkAvailableTime hour')";
+			} else {
+				return array("error" => -1, "msg" => "数据库类型错误");
 			}
 
 			$result = fetch_assoc($sql);
@@ -235,7 +241,7 @@ class Parse
 					//限速进行标记 并刷新页面重新解析
 					$sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
 					$result = execute_exec($sql);
-					if ($result != false) {
+					if ($result) {
 						// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
 						return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
 					} else {
@@ -254,7 +260,7 @@ class Parse
 					//限速进行标记 并刷新页面重新解析
 					$sql = "UPDATE `{$dbtable}_svip` SET `state`= -1 WHERE `id`=$id";
 					$result = execute_exec($sql);
-					if ($result != false) {
+					if ($result) {
 						// SVIP账号自动切换成功，对用户界面进行刷新进行重新获取
 						return array("error" => -1, "msg" => "SVIP账号自动切换成功，请重新请求获取下载地址", "message" => $message);
 					} else {
@@ -273,10 +279,13 @@ class Parse
 				$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',NOW(),'$id')";
 			} elseif ($dbtype === "sqlite") {
 				$sql = "INSERT INTO `$dbtable`(`userip`, `filename`, `size`, `md5`, `path`, `server_ctime`, `realLink` , `ptime`,`paccount`) VALUES ('$ip','$Sqlfilename','$size','$md5','$Sqlpath','$server_ctime','$realLink',datetime('now', 'localtime'),'$id')";
+			} else {
+				// 未知数据库类型
+				return array("error" => -1, "msg" => "未知数据库类型", "message" => $message);
 			}
 
 			$result = execute_exec($sql);
-			if ($result == false) {
+			if (!$result) {
 				// 保存错误
 				return array("error" => -1, "msg" => "数据库保存错误", "message" => $message);
 			}
@@ -294,27 +303,25 @@ class Parse
 		$Data = "shorturl=$Shorturl&dir=$Dir&root=$Root&pwd=$Password&page=$Page&num=1000&order=time";
 		$BDUSS = getSubstr(Cookie, 'BDUSS=', ';');
 		$header = ["User-Agent: netdisk", "Cookie: BDUSS=$BDUSS", "Referer: https://pan.baidu.com/disk/home"];
-		$result = json_decode(post($Url, $Data, $header), true);
-		return $result;
+		return json_decode(post($Url, $Data, $header), true);
 	}
 
 	private static function getDlink(string $fs_id, string $timestamp, string $sign, string $randsk, string $share_id, string $uk, int $app_id = 250528)
 	{ // 获取下载链接
 		$url = 'https://pan.baidu.com/api/sharedownload?app_id=' . $app_id . '&channel=chunlei&clienttype=12&sign=' . $sign . '&timestamp=' . $timestamp . '&web=1'; // 获取下载链接
 
-		if (strstr($randsk, "%") != false) $randsk = urldecode($randsk);
+		if (strstr($randsk, "%")) $randsk = urldecode($randsk);
 		$data = "encrypt=0" . "&extra=" . urlencode('{"sekey":"' . $randsk . '"}') . "&fid_list=[$fs_id]" . "&primaryid=$share_id" . "&uk=$uk" . "&product=share&type=nolimit";
 		$header = array(
 			"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69",
 			"Cookie: " . Cookie,
 			"Referer: https://pan.baidu.com/disk/home"
 		);
-		$result = json_decode(post($url, $data, $header), true);
-		return $result;
+		return json_decode(post($url, $data, $header), true);
 		// 没有 sekey 参数就 118, -20出现验证码
 	}
 
-	private static function listError($Filejson, $message)
+	private static function listError($Filejson, $message): array
 	{
 		// 解析异常
 		$ErrorCode = $Filejson["errtype"] ?? ($Filejson["errno"] ?? 999);
@@ -341,7 +348,7 @@ class Parse
 		];
 	}
 
-	private static function downloadError($json4, $message)
+	private static function downloadError($json4, $message): array
 	{
 		$errno = $json4["errno"] ?? 999;
 		$error = [
@@ -376,7 +383,7 @@ class Parse
 		];
 	}
 
-	private static function realLinkError($body_decode, $message)
+	private static function realLinkError($body_decode, $message): array
 	{
 		$ErrorCode = $body_decode["errno"] ?? 999;
 		$ErrorMessage = [
