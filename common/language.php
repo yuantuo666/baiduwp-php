@@ -349,5 +349,5 @@ header('Content-Language: ' . Lang); // 输出响应头
 function t($key): string
 {
 	global $lang;
-	return $lang[Lang][$key];
+	return $lang[Lang][$key] ?? "?";
 }

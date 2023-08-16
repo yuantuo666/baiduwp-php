@@ -104,7 +104,7 @@ require_once("./common/invalidCheck.php");
 				<div id="downloadlinkdiv">
 
 				</div>
-				<h5 class="text-danger" id="limit-tip" style="display: none;"><?= t("LimittedDownload") ?></h5>
+				<h5 class="text-danger" id="limit-tip" style="display: none;"><?= t("LimitedDownload") ?></h5>
 				<p class="card-text">
 					<a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#SendToAria2"><?= t("SendToAria2") ?> / Motrix</a>
 					<a class="btn btn-outline-primary" href="" id="filecxx" style="display: none;"><?= t("SendToFilecxx") ?></a>
