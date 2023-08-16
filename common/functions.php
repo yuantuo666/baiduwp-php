@@ -410,17 +410,32 @@ function GetDBBDUSS(): array
 	global $dbtable;
 	// 获取SVIP BDUSS
 	$Result = null;
+	$dbtype = $GLOBALS['dbtype'];
 	switch (SVIPSwitchMod) {
 		case 1:
 			//模式1：用到废为止
 			// 时间倒序输出第一项未被限速账号
-			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
+			if ($dbtype === "mysql") {
+				$sql = "SELECT `id`, `svip_bduss`, `svip_stoken` FROM `{$dbtable}_svip` WHERE `state` != -1 ORDER BY `is_using` DESC, `id` DESC LIMIT 1";
+			} elseif ($dbtype === "sqlite") {
+				$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
+			} else {
+				EchoInfo(-1, array("msg" => "数据库类型错误", "sviptips" => "Unknown"));
+				exit;
+			}
 			$Result = fetch_assoc($sql);
 			break;
 		case 2:
 			//模式2：轮番上
 			// 时间顺序输出第一项未被限速账号
-			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
+			if ($dbtype === "mysql") {
+				$sql = "SELECT `id`, `svip_bduss`, `svip_stoken` FROM `{$dbtable}_svip` WHERE `state` != -1 ORDER BY `is_using` ASC, `id` DESC LIMIT 1";
+			} elseif ($dbtype === "sqlite") {
+				$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" WHERE \"state\" != -1 ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
+			} else {
+				EchoInfo(-1, array("msg" => "数据库类型错误", "sviptips" => "Unknown"));
+				exit;
+			}
 			$Result = fetch_assoc($sql);
 
 			if ($Result) {
@@ -429,7 +444,14 @@ function GetDBBDUSS(): array
 				// 开始处理
 				// 这里最新的时间表示可用账号，按顺序排序
 				$is_using = date("Y-m-d H:i:s");
-				$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
+				if ($dbtype === "mysql") {
+					$sql = "UPDATE `{$dbtable}_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+				} elseif ($dbtype === "sqlite") {
+					$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
+				} else {
+					EchoInfo(-1, array("msg" => "数据库类型错误", "sviptips" => "Unknown"));
+					exit;
+				}
 				$result = execute_exec($sql);
 				if (!$result) {
 					// 失败 但可继续解析
@@ -440,13 +462,27 @@ function GetDBBDUSS(): array
 		case 3:
 			//模式3：手动切换，不管限速
 			// 时间倒序输出第一项账号，不管限速
-			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
+			if ($dbtype === "mysql") {
+				$sql = "SELECT `id`, `svip_bduss`, `svip_stoken` FROM `{$dbtable}_svip` ORDER BY `is_using` DESC, `id` DESC LIMIT 1";
+			} elseif ($dbtype === "sqlite") {
+				$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" DESC, \"id\" DESC LIMIT 1";
+			} else {
+				EchoInfo(-1, array("msg" => "数据库类型错误", "sviptips" => "Unknown"));
+				exit;
+			}
 			$Result = fetch_assoc($sql);
 			break;
 		case 4:
 			//模式4：轮番上(无视限速)
 			// 时间顺序输出第一项限速账号
-			$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
+			if ($dbtype === "mysql") {
+				$sql = "SELECT `id`, `svip_bduss`, `svip_stoken` FROM `{$dbtable}_svip` ORDER BY `is_using` ASC, `id` DESC LIMIT 1";
+			} elseif ($dbtype === "sqlite") {
+				$sql = "SELECT \"id\", \"svip_bduss\", \"svip_stoken\" FROM \"{$dbtable}_svip\" ORDER BY \"is_using\" ASC, \"id\" DESC LIMIT 1";
+			} else {
+				EchoInfo(-1, array("msg" => "数据库类型错误", "sviptips" => "Unknown"));
+				exit;
+			}
 			$Result = fetch_assoc($sql);
 
 			if ($Result) {
@@ -455,7 +491,14 @@ function GetDBBDUSS(): array
 				// 开始处理
 				// 这里最新的时间表示可用账号，按顺序排序
 				$is_using = date("Y-m-d H:i:s");
-				$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
+				if ($dbtype === "mysql") {
+					$sql = "UPDATE `{$dbtable}_svip` SET `is_using`= '$is_using' WHERE `id`=$id";
+				} elseif ($dbtype === "sqlite") {
+					$sql = "UPDATE \"{$dbtable}_svip\" SET \"is_using\"= '$is_using' WHERE \"id\"=$id";
+				} else {
+					EchoInfo(-1, array("msg" => "数据库类型错误", "sviptips" => "Unknown"));
+					exit;
+				}
 				$result = execute_exec($sql);
 				if (!$result) {
 					// 失败 但可继续解析
@@ -803,9 +846,9 @@ function decryptMd5($md5)
 }
 function clearAllAnalyseData()
 {
-    $dbtable = $GLOBALS['dbtable'];
+	$dbtable = $GLOBALS['dbtable'];
 
-    // 执行数据库清空操作（请根据您的数据库类型和表结构进行调整）
-    $sql = "DELETE FROM `$dbtable`";
+	// 执行数据库清空操作（请根据您的数据库类型和表结构进行调整）
+	$sql = "DELETE FROM `$dbtable`";
 	return execute_exec($sql);
 }
