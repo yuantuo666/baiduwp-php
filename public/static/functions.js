@@ -570,23 +570,22 @@ function CopyDownloadLink() {
 			icon: "success"
 		});
 	}
-	const CopyDownloadLink_old = () => {
-		$("input#downloadlink").select();
-		document.execCommand("copy");
-		Success();
-	}
-
+	
 	// In unsecure site will not work, add check
 	if (navigator.clipboard && window.isSecureContext) {
 		navigator.clipboard.writeText($("input#downloadlink").val()).then(function () {
 			console.log('Copying to clipboard was successful!');
 		}, function (err) {
 			console.error('Could not copy text: ', err);
-			CopyDownloadLink_old()
+			$("input#downloadlink").select();
+			document.execCommand("copy");
+			Success();
 		}).then(function () {
 			Success();
 		});
 	} else {
-		CopyDownloadlink_old();
+		$("input#downloadlink").select();
+		document.execCommand("copy");
+		Success();
 	}
 }
