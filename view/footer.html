@@ -1,0 +1,43 @@
+    </div>
+</div>
+<script>
+    function DeleteById(Type, Id) {
+        Swal.fire("正在提交删除请求，请稍等");
+        Swal.showLoading();
+        $.get(`api.php?m=ADMINAPI&act=DeleteById&id=${Id}&type=${Type}`, function (data, status) {
+            if (status === "success") {
+                Swal.fire(data.msg);
+                if (data.refresh === true) setTimeout("location.reload();", 3000);
+            } else {
+                Swal.fire("请求错误，请检查网络是否正常");
+            }
+        });
+
+    }
+
+    $('form.ajaxform').ajaxForm({
+        type: 'post',
+        dataType: 'json',
+        beforeSubmit: function () {
+            Swal.fire("正在提交数据，请稍等");
+            Swal.showLoading();
+        },
+        success: function (data) {
+            if (data.error === 0) {
+                Swal.fire(`${data.msg}`, data.detail, 'success');
+                if (data.refresh === true) setTimeout("location.reload();", 3000);
+            } else {
+                Swal.fire(`${data.msg}`, data.detail, 'error');
+            }
+        },
+        error: function (xhr, error, text, $form) {
+            console.log(xhr);
+            console.log(`${error}: ${text}`);
+            console.log($form);
+            Swal.fire('添加失败', '发生错误，添加失败！<br />详细信息请见控制台！', 'error');
+        }
+    });
+</script>
+</body>
+
+</html>

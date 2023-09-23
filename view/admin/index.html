@@ -1,0 +1,676 @@
+<?php include_once root_path("view") . "header.html"; ?>
+<div class="col-md-12 col-sm-12 col-12">
+    <nav>
+        <ol class="breadcrumb my-4">
+            <li class="breadcrumb-item"><a href="/">baiduwp-php</a></li>
+            <li class="breadcrumb-item"><a href="javascript:navigate('index')">后台管理</a></li>
+            <li class="breadcrumb-item" id="current_path">概览</li>
+        </ol>
+    </nav>
+    <!-- 概览 -->
+    <div id="index" style="display: none;">
+        <div class="card my-4">
+
+            <div class="card-header">账号状态检测</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 card-item">
+                        <h5>普通账号状态</h5>
+                        <p class="card-text" id="normal_msg">
+                            正在获取账号状态...
+                        </p>
+                        <br />
+                    </div>
+                    <div class="col-md-6 col-sm-12 card-item">
+                        <h5>会员账号状态</h5>
+                        <p class="card-text" id="svip_msg">
+                            正在获取账号状态...
+                        </p>
+                        <br />
+                    </div>
+                </div>
+                <script>
+                    const secondsToText = (seconds) => {
+                        if (seconds <= 0) {
+                            return "已过期";
+                        }
+                        const days = Math.floor(seconds / 86400);
+                        const hours = Math.floor((seconds % 86400) / 3600);
+                        const mins = Math.floor((seconds % 3600) / 60);
+                        if (seconds <= 3600) {
+                            return `${mins}分钟`;
+                        }
+                        return `${days}天${hours}小时`;
+                    }
+
+                    const getAccountMsg = (data) => {
+                        if (data.status === 0) {
+                            return `账号名称：${data.username}<br />` +
+                                `账号状态：${data.login_status === 1 ? "已登录" : "未登录"} <br />` +
+                                `账号类型：${data.svip === 2 ? "超级会员" : (data.svip === 1 ? "普通会员" : "普通账号")} <br />` +
+                                `账号到期时间：${secondsToText(data.expire_time)}`;
+                        } else if (data.status === -6) {
+                            return "账号失效";
+                        } else if (data.status === -1) {
+                            return "获取失败";
+                        } else {
+                            return "账号状态未知: " + data.status;
+                        }
+                    }
+                    const initAccountInfo = () => {
+                        // 获取本地账号相关信息
+                        $.get(`/admin/account_info`, function (data, status) {
+                            if (data.error === 0) {
+                                $("#normal_msg").html(getAccountMsg(data.data.local_account));
+                                $("#svip_msg").html(getAccountMsg(data.data.svip_account));
+                            }
+                        });
+                    }
+                </script>
+            </div>
+        </div>
+
+        <div class="card my-4">
+            <div class="card-header">
+                概览
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 col-sm-12">
+                        <h5 class="card-title">使用统计</h5>
+                        <p class="card-text">
+                            累计解析：<span id="all_count"></span> <br />
+                            今日解析：<span id="today_count"></span> <br />
+                        </p>
+                        <button onclick="navigate('record')" class="btn btn-primary">查看详细情况</button>
+                        <br><br>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <h5 class="card-title">SVIP账号</h5>
+                        <p class="card-text">
+                            总共账号：<span id="svip_count"></span> <br />
+                            限速账号：<span id="limit_count"></span> <br />
+                        </p>
+                        <button onclick="navigate('account')" class="btn btn-primary">查看详细情况</button>
+                        <br><br>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <h5 class="card-title">黑/白名单</h5>
+                        <p class="card-text">
+                            黑名单：<span id="black_count"></span> <br />
+                            白名单：<span id="white_count"></span> <br />
+                        </p>
+                        <button onclick="navigate('ip')" class="btn btn-primary">查看详细情况</button>
+                        <br><br>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <h5 class="card-title">网站设置</h5>
+                        <p class="card-text">
+                            站点名称：<span id="site_name"></span> <br />
+                            允许下载次数：<span id="download_times"></span> <br />
+                            允许下载流量：<span id="download_flow"></span> <br />
+                            检查账号限速：<span id="check_limit"></span> <br />
+                            随机使用账号：<span id="random_account"></span> <br />
+                        </p>
+                        <button onclick="navigate('setting')" class="btn btn-primary">查看详细情况</button>
+                        <br><br>
+                    </div>
+                </div>
+                <script>
+                    // https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+                    const formatBytes = (a, b = 2) => {
+                        if (0 === a) return "0 Bytes";
+                        const c = 0 > b ? 0 : b,
+                            d = Math.floor(Math.log(a) / Math.log(1024));
+                        return parseFloat((a / Math.pow(1024, d)).toFixed(c)) + " " + ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
+                    }
+
+                    const initIndexInfo = () => {
+                        fetch('/admin/info',
+                            {
+                                headers: {
+                                    'Accept': 'application/json',
+                                }
+                            })
+                            .then((r) => {
+                                return r.json();
+                            }).then((json) => {
+                                if (json.error === 0) {
+                                    const data = json.data;
+                                    $("#all_count").html(`${data.records.all_times} (${formatBytes(data.records.all_flow)})`);
+                                    $("#today_count").html(`${data.records.today_times} (${formatBytes(data.records.today_flow)})`);
+                                    $("#svip_count").html(data.account.all_count);
+                                    $("#limit_count").html(data.account.limit_count);
+                                    $("#black_count").html(data.ip.black_count);
+                                    $("#white_count").html(data.ip.white_count);
+                                    const setting = data.setting;
+                                    $("#site_name").html(setting.site_name);
+                                    $("#download_times").html(setting.download_times);
+                                    $("#download_flow").html(setting.download_flow + " GB");
+                                    $("#check_limit").html(setting.check_speed_limit ? "是" : "否");
+                                    $("#random_account").html(setting.random_account ? "是" : "否");
+                                } else {
+                                    Swal.fire("获取数据失败", json.msg, "error");
+                                }
+                            });
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <div id="record" class="card my-4" style="display: none;">
+        <div class="card-header">
+            数据分析
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">最近解析</h5>
+            <div style="overflow:scroll;">
+                <table id="record_table" class="table table-striped" style="min-width:1400px;">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">操作</th>
+                            <th scope="col">用户ip</th>
+                            <th scope="col">文件名</th>
+                            <th scope="col">文件大小</th>
+                            <th scope="col">文件效验码</th>
+                            <!-- <th scope="col">文件创建时间</th> -->
+                            <th scope="col">文件下载地址</th>
+                            <th scope="col">解析时间</th>
+                            <th scope="col">解析账号</th>
+                            <!-- 新增解析账号：ALTER TABLE `bdwp` ADD `paccount` INT NOT NULL COMMENT '解析账号id' AFTER `ptime`; -->
+                        </tr>
+                    </thead>
+                    <tbody data-page=0 data-fields="id,action:record,ip,name,size,md5,link,time,account">
+
+                    </tbody>
+                </table>
+            </div>
+            <br />
+            <a href="javascript:loadmore('record');" class="btn btn-primary">加载更多</a>
+            <a href="javascript:clearAll();" class="btn btn-danger">一键清空</a>
+            <script>
+                function clearAll() {
+                    Swal.fire({
+                        title: '确认清空?',
+                        text: "此操作将清空所有解析数据，无法撤销！",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire("正在清空，请稍等");
+                            Swal.showLoading();
+                            $.post("/admin/record/clear_all", function (data, status) {
+                                if (status === "success") {
+                                    if (data.error === 0) {
+                                        Swal.fire("清空成功！", "所有解析数据已被清空。");
+                                        location.reload();
+                                    } else {
+                                        Swal.fire("清空失败！", data.msg);
+                                    }
+                                } else {
+                                    Swal.fire("请求错误，请检查网络是否正常");
+                                }
+                            }, "json");
+                        }
+                    });
+                }
+            </script>
+        </div>
+    </div>
+
+    <div id="account" class="card" style="display: none;">
+        <div class="card-header">
+            SVIP账号管理
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">默认账号</h5>
+
+            <br>
+            <h5 class="card-title">所有账号</h5>
+            <div style="overflow:scroll;">
+                <table id="account_table" class="table table-striped" style="min-width:800px;">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">操作</th>
+                            <th scope="col">是否正在使用</th>
+                            <th scope="col">账号名称</th>
+                            <th scope="col">会员状态</th>
+                            <th scope="col">添加时间</th>
+                            <th scope="col">备注</th>
+                    </thead>
+                    <tbody data-page=0 data-fields="id,action:account,last_used_at,name,status,created_at,remarks">
+
+                    </tbody>
+                </table>
+            </div>
+            <br />
+            <a href="javascript:loadmore('account');" class="btn btn-primary">加载更多</a>
+            <script>
+                function resetAccount(id) {
+                    Swal.fire("正在设置，请稍等");
+                    Swal.showLoading();
+                    $.post(`/admin/account/reset/${id}`, function (data, status) {
+                        if (status === "success") {
+                            Swal.fire(data.msg);
+                            // 对应行的数据，需要更新
+                            updateTableRow('account', id, (row) => {
+                                row.status = 0;
+                            });
+                        } else {
+                            Swal.fire("请求错误，请检查网络是否正常");
+                        }
+                    });
+                }
+            </script>
+            <br><br><br>
+            <!-- 新增会员数据 -->
+            <h5 class="card-title">新增SVIP账号</h5>
+            <form id="form_account">
+                <input type="hidden" name="type" value="single">
+                <div class="form-group">
+                    <label>账号名称</label>
+                    <input type="text" class="form-control" name="name">
+                </div>
+                <div class="form-group">
+                    <label>Cookie</label>
+                    <input type="text" class="form-control" name="cookie">
+                    <small>请搜索 “百度网盘如何抓包Cookie” 寻找相关教程。必须填写完整正确的 Cookie。获取完成后不要退出登录和修改密码，否则 Cookie 将会失效。</small>
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" class="form-control" name="remarks">
+                </div>
+                <button onclick="add('account', $('#form_account')[0].urldata)" type="button"
+                    class="btn btn-primary">提交</button>
+            </form>
+            <!-- 新增会员数据 -->
+            <br><br>
+            <h5 class="card-title">批量导入SVIP账号
+            </h5>
+            <form id="form_multi_account">
+                <input type="hidden" name="type" value="multi">
+                <div class="form-group">
+                    <label>账号名称</label>
+                    <input type="text" class="form-control" name="multi_name">
+                </div>
+                <div class="form-group">
+                    <label>批量导入</label>
+                    <textarea type="text" class="form-control" name="multi_cookie" style="height: 200px;"
+                        placeholder="百度网盘账号----账号1----BDUSS=liMlp3bFN1NWpVM0FrVzRYRTkyWH……&#13;&#10;百度网盘账号2----备注1----备注2----备注3----BDUSS=liMlp3bFN1NWpVM0FrVzRYRTkyWH……"></textarea>
+                    <small>每行设置一个账号，每行格式：账号名称----备注----Cookie<br />如账号名称为空，则将使用上方设置的统一账号名称，会自动检测备注内容是否存在</small>
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" class="form-control" name="multi_remarks">
+                </div>
+                <button onclick="add('account', $('#form_multi_account')[0].urldata)" type="button"
+                    class="btn btn-primary">提交</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="ip" class="card" style="display: none;">
+        <div class="card-header">
+            黑/白名单管理
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">所有IP</h5>
+            <div style="overflow:scroll;">
+                <table id="ip_table" class="table table-striped" style="min-width:600px;" page=1>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">操作</th>
+                            <th scope="col">IP</th>
+                            <th scope="col">状态</th>
+                            <th scope="col">备注</th>
+                            <th scope="col">添加时间</th>
+                    </thead>
+                    <tbody data-page=0 data-fields="id,action:ip,ip,type,remarks,created_at">
+
+                    </tbody>
+                </table>
+            </div>
+            <br />
+            <a href="javascript:loadmore('ip');" class="btn btn-primary">加载更多</a>
+            <br><br><br>
+            <!-- 新增IP -->
+            <h5 class="card-title">新增IP</h5>
+            <form id="form_ip">
+                <div class="form-group">
+                    <label>IP地址</label>
+                    <input type="text" class="form-control" name="ip">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" class="form-control" name="remarks">
+                </div>
+                <div class="form-group">
+                    <label>账号种类</label>
+                    <select class="form-control" name="type">
+                        <option value="0">白名单</option>
+                        <option value="-1">黑名单</option>
+                    </select>
+                </div>
+                <button onclick="add('ip', $('#form_ip')[0].urldata)" type="button" class="btn btn-primary">提交</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="setting" class="card" style="display: none;">
+        <div class="card-header">
+            网站设置
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">网站配置</h5>
+            <div style="overflow:scroll;">
+                <form id="form_setting">
+                    <table id="setting_table" class="table table-striped" style="min-width:600px;" page=1>
+                        <thead>
+                            <tr>
+                                <th scope="col">配置名称</th>
+                                <th scope="col">配置内容</th>
+                                <th scope="col" style="width: 40%;">描述</th>
+                            </tr>
+                        </thead>
+                        <tbody data-fields="name,value:[type],description">
+
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <br />
+            <button onclick="update('setting', $('#form_setting')[0].urldata);" class="btn btn-primary">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // 路由判断
+        let hash = window.location.hash.replace("#", "");
+        navigate(hash)
+    });
+    // https://zhuanlan.zhihu.com/p/342758498
+    Object.defineProperty(HTMLFormElement.prototype, 'jsondata', {
+        get() {
+            const jsondata = {}
+            const formdata = new FormData(this);
+            formdata.forEach((value, key) => {
+                if (!jsondata[key]) {
+                    jsondata[key] = formdata.getAll(key).length > 1 ? formdata.getAll(key) : formdata.get(key);
+                }
+            });
+            return jsondata;
+        }
+    })
+    Object.defineProperty(HTMLFormElement.prototype, 'urldata', {
+        get() {
+            const parmas = new URLSearchParams();
+            Object.entries(this.jsondata).forEach(([key, value]) => {
+                parmas.append(key, value.join ? value.join() : value);
+            })
+            return parmas.toString();
+        }
+    })
+    const paths = [
+        { id: "index", name: "概览", path: "/admin" },
+        { id: "record", name: "解析记录", path: "/admin/record" },
+        { id: "account", name: "账号管理", path: "/admin/account" },
+        { id: "ip", name: "IP管理", path: "/admin/ip" },
+        { id: "setting", name: "网站设置", path: "/admin/setting" },
+    ];
+    const isValidPath = (path) => {
+        for (let i = 0; i < paths.length; i++) {
+            if (paths[i].id === path) {
+                return true;
+            }
+        }
+        return false;
+    }
+    function navigate(path) {
+        if (path && path.substring(0, 1) === "/") path = path.substring(1);
+        paths.forEach(element => {
+            $(`#${element.id}`).hide();
+        });
+
+        try {
+            if (path === "" || $(`#${path}`).length === 0) path = "index";
+        } catch {
+            path = "index";
+        }
+        $("#current_path").html(paths.find(element => element.id === path).name ?? '未知');
+
+        if (path === "index") {
+            initIndexInfo();
+            initAccountInfo();
+        } else if (path === "record") {
+            loadmore('record', true);
+        } else if (path === "account") {
+            loadmore('account', true);
+        } else if (path === "ip") {
+            loadmore('ip', true);
+        } else if (path === "setting") {
+            loadmore('setting', true);
+        }
+
+        window.location.hash = "/" + path;
+        $(`#${path}`).show();
+    }
+    const calculateTableValue = (col, row) => {
+        let key = col;
+        let suffix = '';
+        if (key.indexOf(':') !== -1) {
+            suffix = key.split(':')[1];
+            key = key.split(':')[0]; // key 会被修改
+        }
+        const value = row[key] ?? row['id'] ?? '';
+        if (key === 'value' && suffix === '[type]') {
+            key = row['key'];
+            suffix = row['type']
+        }
+        if (key === 'action') {
+            const actions = [];
+            if (suffix === 'account') {
+                actions.push(`<a class="btn btn-sm btn-primary" href="javascript:resetAccount(${row['id']});">重置限速</a>`);
+            }
+            actions.push(`<a class="btn btn-sm btn-danger" href="javascript:deleteRow('${suffix}', ${row['id']});">删除</a>`);
+            return actions.join('&nbsp;');
+        }
+        if (key === 'size') {
+            return formatBytes(value);
+        }
+        if (key === 'account') {
+            return value == -1 ? '本地账号' : value;
+        }
+        if (key === 'link') {
+            return `<a href="${value}">${value.substring(0, 35)}...</a>`;
+        }
+        if (key === 'status') {
+            return value == 0 ? '正常' : '限速';
+        }
+        if (key === 'type') {
+            return value == 0 ? '白名单' : '黑名单';
+        }
+        if (suffix === 'number') {
+            return `<input type="number" class="form-control" name="${key}" value="${value}">`;
+        }
+        if (suffix === 'text') {
+            return `<input type="text" class="form-control" name="${key}" value="${value}">`;
+        }
+        if (suffix === 'textarea') {
+            return `<textarea type="text" class="form-control" name="${key}" style="height: 200px;">${value}</textarea>`;
+        }
+        if (suffix === 'radio') {
+            // radio: true/false
+            const radios = [];
+            radios.push(`<div class="form-check form-check-inline">`);
+            radios.push(`<input class="form-check-input" type="radio" name="${key}" id="${key}_true" value="true" ${value === true ? 'checked' : ''}>`);
+            radios.push(`<label class="form-check-label" for="${key}_true">是</label>`);
+            radios.push(`</div>`);
+            radios.push(`<div class="form-check form-check-inline">`);
+            radios.push(`<input class="form-check-input" type="radio" name="${key}" id="${key}_false" value="false" ${value === false ? 'checked' : ''}>`);
+            radios.push(`<label class="form-check-label" for="${key}_false">否</label>`);
+            radios.push(`</div>`);
+            return radios.join('');
+        }
+        return value ?? '';
+    }
+    const calculateTableRow = (fields, row) => {
+        const tr = fields.map(col => {
+            return `<td>${calculateTableValue(col, row)}</td>`;
+        });
+        return `<tr data-id="${row.id}">${tr.join('')}</tr>`;
+    }
+    const updateTableRow = (path, id, callback = (row) => { }) => {
+        if (!isValidPath(path)) return
+        const $tbody = $(`#${path}_table tbody`);
+        const fields = $tbody.data('fields').split(',');
+
+        const $tr = $(`#${path}_table tbody tr[data-id=${id}]`);
+        const row = window[`${path}_table_data`].find(row => row.id === id);
+        callback(row);
+        const tr = calculateTableRow(fields, row);
+        $tr.replaceWith(tr);
+    }
+    function loadmore(path, reset = false) {
+        if (!isValidPath(path)) return
+        Swal.fire("正在加载，请稍等");
+        Swal.showLoading();
+        const $tbody = $(`#${path}_table tbody`);
+        if (reset) {
+            $tbody.data('page', 0);
+            $tbody.html('');
+            window[`${path}_table_data`] = [];
+        }
+        let newPage = Number($tbody.data('page')) + 1;
+        if (isNaN(newPage)) {
+            newPage = 1;
+        }
+        fetch(`/admin/${path}/list/${newPage}`, {
+            headers: {
+                'Accept': 'application/json',
+            }
+        }).then((r) => {
+            return r.json();
+        }).then((json) => {
+            if (json.error !== 0) {
+                Swal.fire("加载失败", json.msg, "error");
+                return;
+            }
+            $tbody.data('page', newPage);
+            const fields = $tbody.data('fields').split(',');
+            const table = json.data.map(row => {
+                return calculateTableRow(fields, row);
+            });
+            if (!window[`${path}_table_data`]) {
+                window[`${path}_table_data`] = [];
+            }
+            window[`${path}_table_data`] = [...window[`${path}_table_data`], ...json.data];
+            $tbody.append(table.join(''));
+            Swal.close();
+        }).catch((err) => {
+            console.log(err);
+            Swal.fire("加载失败", err.message, "error");
+        });
+    }
+    function add(path, data) {
+        if (!isValidPath(path)) return
+        Swal.fire("正在添加，请稍等");
+        Swal.showLoading();
+        fetch(`/admin/${path}/add`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: data
+        }).then((r) => {
+            return r.json();
+        }).then((json) => {
+            console.log(json);
+            if (json.error !== 0) {
+                Swal.fire("添加失败", json.msg, "error");
+                return;
+            }
+            Swal.fire("添加成功", json.msg, "success");
+            location.reload();
+        }).catch((err) => {
+            console.log(err);
+            Swal.fire("添加失败", err.message, "error");
+        });
+    }
+    function update(path, data) {
+        if (!isValidPath(path)) return
+        Swal.fire("正在更新，请稍等");
+        Swal.showLoading();
+        fetch(`/admin/${path}/update`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: data
+        }).then((r) => {
+            return r.json();
+        }).then((json) => {
+            console.log(json);
+            if (json.error !== 0) {
+                Swal.fire("更新失败", json.msg, "error");
+                return;
+            }
+            Swal.fire("更新成功", json.msg, "success");
+            location.reload();
+        }).catch((err) => {
+            console.log(err);
+            Swal.fire("更新失败", err.message, "error");
+        });
+    }
+    function deleteRow(path, id) {
+        if (!isValidPath(path)) return
+        Swal.fire({
+            title: '确认删除?',
+            text: "此操作将删除该条记录，无法撤销！",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire("正在删除，请稍等");
+                Swal.showLoading();
+                fetch(`/admin/${path}/delete/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                }).then((r) => {
+                    return r.json();
+                }).then((json) => {
+                    console.log(json);
+                    if (json.error !== 0) {
+                        Swal.fire("删除失败", json.msg, "error");
+                        return;
+                    }
+                    Swal.fire("删除成功", json.msg, "success");
+                    $(`#${path}_table tbody tr[data-id=${id}]`).remove();
+                }).catch((err) => {
+                    console.log(err);
+                    Swal.fire("删除失败", err.message, "error");
+                });
+            }
+        });
+    }
+</script>
+
+<?php include_once root_path("view") . "footer.html"; ?>

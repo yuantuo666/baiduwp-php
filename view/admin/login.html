@@ -1,0 +1,53 @@
+<?php include_once root_path("view") . "header.html"; ?>
+<!-- 登录 -->
+<div class="col-lg-6 col-md-9 mx-auto my-5 input-card">
+    <div class="card">
+        <div class="card-header bg-dark text-light">Pandownload复刻版 - 后台登录</div>
+        <div class="card-body">
+            <form id="form1">
+                <div class="form-group my-2">
+                    <input type="text" class="form-control" name="setting_password" placeholder="管理员密码">
+                </div>
+                <div class="form-group my-2">
+                    <button type="button" onclick="submitForm()" class="form-control btn btn-success btn-block">
+                        登录
+                    </button>
+                </div>
+            </form>
+            <script>
+                function submitForm() {
+                    Swal.fire("正在登录，请稍等");
+                    Swal.showLoading();
+                    fetch("/admin/login", {
+                        method: "POST",
+                        credentials: "same-origin",
+                        body: `password=${$("input[name='setting_password']").val()}`,
+                        headers: new Headers({
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        })
+                    }).then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            return {
+                                success: false,
+                                msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+                            };
+                        }
+                    }).then(data => {
+                        if (data.error === 0) {
+                            Swal.fire(data.msg, data.detail, 'success');
+                            window.location.href = "/admin";
+                        } else {
+                            Swal.fire(data.msg, data.detail, 'error');
+                        }
+                    }).catch(reason => {
+                        Swal.fire("连接服务器过程中出现异常，消息：" + reason.message);
+                    });
+                }
+            </script>
+        </div>
+    </div>
+</div>
+<?php include_once root_path("view") . "footer.html"; ?>

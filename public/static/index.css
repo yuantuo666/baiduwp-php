@@ -1,0 +1,136 @@
+a.filename {
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a.filename:hover {
+	text-decoration: underline;
+}
+
+.logo-img {
+	width: 1.1em;
+	position: relative;
+	top: -1px;
+}
+
+.card-header {
+	font-size: 20px;
+	line-height: 2.5em;
+}
+
+.input-card {
+	margin-top: 7.0em;
+}
+
+input.form-control,
+.form-group button {
+	height: 3em !important;
+}
+
+.card-text {
+	word-wrap: break-word;
+}
+
+.alert {
+	margin-top: 5em;
+}
+
+.alert-heading {
+	height: 0.8em;
+}
+
+.anchor {
+	vertical-align: top;
+}
+
+.anchor+h4 {
+	display: inline-block;
+	margin-left: 0.4rem;
+}
+
+.point {
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	border-radius: 500px;
+	margin: 0 5px;
+	/*调整圆点的位置*/
+	background-color: #ddd;
+	vertical-align: baseline;
+}
+
+.point-lg {
+	width: 12px;
+	height: 12px;
+}
+
+.point-success {
+	background-color: #28a745;
+}
+
+.point-danger {
+	background-color: #dc3545;
+}
+
+.qrcode {
+	position: absolute;
+	transform: translate(2rem, -50%);
+	display: none;
+	opacity: 0;
+	transition: opacity .4s ease-in-out;
+}
+
+@media screen and (min-width: 768px) {
+
+	[data-qrcode-attr]:hover+.qrcode,
+	[data-qrcode-text]:hover+.qrcode {
+		display: inline;
+		opacity: 1;
+	}
+}
+
+.qrcode img {
+	width: 150px;
+	height: 150px;
+}
+
+.container.main {
+	margin-bottom: 5em;
+}
+
+nav.breadcrumb {
+	padding-left: 1rem;
+	padding-right: 1rem;
+	margin-bottom: 1rem;
+	border-radius: .25rem;
+}
+
+[data-bs-theme="dark"] nav.breadcrumb {
+	background-color: #30363c;
+}
+
+[data-bs-theme="light"] nav.breadcrumb {
+	background-color: #e9ecef;
+}
+
+.form-group.row {
+	margin-block: 10px;
+}
+
+.card {
+	margin-top: 3rem;
+}
+
+#Browser-ColorMode,
+#Browser-Language {
+	margin-right: 2rem;
+
+}
+
+.SaveTime {
+	margin-right: 0.8rem;
+}
+
+select {
+	margin-top: 0.5rem;
+}

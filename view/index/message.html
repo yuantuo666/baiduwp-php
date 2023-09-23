@@ -1,0 +1,19 @@
+<?php include_once root_path("view") . "header.html"; ?>
+
+<!-- 消息 -->
+<div class="row justify-content-center">
+    <div class="col-md-7 col-sm-8 col-11">
+        <div class="alert alert-danger" role="alert">
+            <h5 class="alert-heading">
+                <?= $title ?>
+            </h5>
+            <hr />
+            <p class="card-text">
+                <?= $content ?>
+            </p>
+            <a href="/" class="btn btn-primary">返回首页</a>
+        </div>
+    </div>
+</div>
+
+<?php include_once root_path("view") . "footer.html"; ?>
