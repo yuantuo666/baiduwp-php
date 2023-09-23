@@ -25,8 +25,8 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 
 ## 宝塔面板 / 虚拟主机安装
 [AFF] 市面上虚拟主机参数参差不齐，经测试 [雨云](https://www.rainyun.cc/?ref=MjQyNDk=) 可完美运行本程序(香港EP二代 入门版, 7元/月)。
-1. 进入 [Releases](https://github.com/yuantuo666/baiduwp-php/releases) 下载项目文件 解压到对应目录
-2. 在配置域名页面中，绑定域名到 `/public` 目录下。
+1. 进入 [Releases](https://github.com/yuantuo666/baiduwp-php/releases) 下载项目文件 `baiduwp-php-v?.?.?.zip`，解压到对应目录
+2. 在配置域名页面中，绑定域名到 `/wwwroot/public` 目录下。
 3. 进入网站，按照流程安装，再进入 `/admin` 的系统设置设置账号 Cookie。
 
 ## Docker 安装
@@ -73,6 +73,17 @@ docker run --network mysql-network --ip 172.28.0.3 -p 8080:8000 yuantuo666/baidu
 
 == 设置页面（需启用数据库功能） ==
 http://服务器IP:8080/admin
+```
+
+### 自行构建
+```
+docker build -t baiduwp-php .
+docker run -d -p 80:8000 baiduwp-php
+
+docker exec -it <容器ID> /bin/bash
+tar -cvf /app.tar /app
+cp /app.tar /app/public/app.tar
+wget http://<HOST>/app.tar
 ```
 
 ## 📌 使用提示
