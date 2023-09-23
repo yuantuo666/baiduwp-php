@@ -561,7 +561,7 @@ async function Download(index = 0) {
 
 }
 function CopyDownloadLink() {
-	function Success() {
+	const Success = () => {
 		Swal.fire({
 			title: "成功复制下载链接",
 			html: "请设置下载器的 User-Agent 为 <b id='ua'>" + $("#ua").text() + "</b> 后下载，参考使用帮助",
@@ -570,7 +570,7 @@ function CopyDownloadLink() {
 			icon: "success"
 		});
 	}
-	function CopyDownloadLink_old() {
+	const CopyDownloadLink_old = () => {
 		$("input#downloadlink").select();
 		document.execCommand("copy");
 		Success();
