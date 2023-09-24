@@ -15,8 +15,8 @@ class Index extends BaseController
         ]);
     }
 
-    public function hello($name = 'ThinkPHP8')
+    public function api()
     {
-        return 'hello,' . $name;
+        
     }
 }
