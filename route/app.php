@@ -14,6 +14,8 @@ use think\facade\Route;
 
 Route::get('/', 'Index/index');
 
+Route::get('api', 'Index/api');
+
 Route::get('auth/status', 'Auth/status');
 
 Route::get('message', 'Message/index');
