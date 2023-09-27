@@ -32,10 +32,9 @@ The essence is to use the premium account (SVIP account) to get the download lin
 - Site: https://imwcr.cn/
 - Email: yuantuo666@gmail.com
 
-If you have questions, you can watch the [video tutorial](https://www.bilibili.com/video/BV1N5411A77n) first.
-
 
 ## 🔔Thanks
 - [baiduwp JavaScript 版](https://github.com/TkzcM/baiduwp "baiduwp 项目")
 - [PanDownload 网站](https://pandownload.com/ "PanDownload 网站")
 - [Bootstrap 深色模式](https://github.com/vinorodrigues/bootstrap-dark "bootstrap-dark 项目")
+- [ThinkPHP](https://github.com/top-think/think)
