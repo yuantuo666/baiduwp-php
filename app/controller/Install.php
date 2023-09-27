@@ -144,8 +144,10 @@ EOF;
 
         Setting::updateConfig([
             'program_version' => Index::$version,
+            'admin_password' => $ADMIN_PASSWORD,
+            'db' => $USING_DB == 'true',
         ], true);
-        
+
         return json([
             'error' => 0,
             'msg' => 'success',

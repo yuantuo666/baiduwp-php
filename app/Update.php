@@ -2,6 +2,8 @@
 
 namespace app;
 
+use app\controller\Index;
+
 class Update
 {
     private static function fetch(bool $includePreRelease, array &$info) // 下载
@@ -151,9 +153,9 @@ class Update
         $commonReturn = array(
             "code" => 0, "version" => $version, "PreRelease" => $isPreRelease,
             "file_url" => $url, "page_url" => $page_url, "info" => $info,
-            "now_version" => config('baiduwp.program_version')
+            "now_version" => config('baiduwp.program_version') ?? Index::$version
         );
-        $compare = version_compare(config('baiduwp.program_version'), $version); // 比较版本
+        $compare = version_compare(config('baiduwp.program_version') ?? Index::$version, $version); // 比较版本
         if ($compare === -1 || $compare === 0) { // 更新或相同
             $commonReturn['have_update'] = $compare === -1; // 更新则为 true
             return $commonReturn;

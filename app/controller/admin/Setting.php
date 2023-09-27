@@ -71,7 +71,10 @@ class Setting extends BaseController
             'footer' => '',
         ];
 
-        $config = config('baiduwp', $default);
+        $config = config('baiduwp');
+        if (!$config) {
+            $config = $default;
+        }
         foreach ($data as $key => $value) {
             if (array_key_exists($key, self::$setting)) {
                 if (self::$setting[$key][1] == 'number') {
