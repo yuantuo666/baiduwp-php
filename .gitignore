@@ -12,3 +12,4 @@ Thumbs.db
 /.project
 public/update.json
 bdwp.db
+config/baiduwp.php

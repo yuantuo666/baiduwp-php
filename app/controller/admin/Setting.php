@@ -55,7 +55,23 @@ class Setting extends BaseController
     }
     public static function updateConfig($data, $force = false)
     {
-        $config = config('baiduwp');
+        $default = [
+            'site_name' => 'PanDownload',
+            'program_version' => \app\controller\Index::$version,
+            'password' => '',
+            'admin_password' => env('ADMIN_PASSWORD'),
+            'db' => env('DB', false),
+            'link_expired_time' => 8,
+            'times' => 20,
+            'flow' => 10,
+            'check_speed_limit' => true,
+            'random_account' => false,
+            'cookie' => '',
+            'svip_cookie' => '',
+            'footer' => '',
+        ];
+
+        $config = config('baiduwp', $default);
         foreach ($data as $key => $value) {
             if (array_key_exists($key, self::$setting)) {
                 if (self::$setting[$key][1] == 'number') {

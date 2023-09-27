@@ -141,6 +141,11 @@ EOF;
                 ]);
             }
         }
+
+        Setting::updateConfig([
+            'program_version' => Index::$version,
+        ], true);
+        
         return json([
             'error' => 0,
             'msg' => 'success',
