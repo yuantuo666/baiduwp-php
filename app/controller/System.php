@@ -33,9 +33,13 @@ class System extends BaseController
                 "limit" => null
             ];
             if (count($data)) {
+                $limit = false;
+                if (str_contains($data[0]['link'], "//qdall") || !str_contains($data[0]['link'], "tsl=0")) {
+                    $limit = true;
+                }
                 $account = [
                     "last_time" => $data[0]['time'] ?? "",
-                    "limit" => (strstr($data[0]['link'] ?? "", "//qdall")) ? false : true
+                    "limit" => $limit
                 ];
             }
 
