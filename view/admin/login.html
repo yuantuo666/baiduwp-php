@@ -4,16 +4,14 @@
     <div class="card">
         <div class="card-header bg-dark text-light">Pandownload复刻版 - 后台登录</div>
         <div class="card-body">
-            <form id="form1">
-                <div class="form-group my-2">
-                    <input type="text" class="form-control" name="setting_password" placeholder="管理员密码">
-                </div>
-                <div class="form-group my-2">
-                    <button type="button" onclick="submitForm()" class="form-control btn btn-success btn-block">
-                        登录
-                    </button>
-                </div>
-            </form>
+            <div class="form-group my-2">
+                <input type="text" class="form-control" name="setting_password" placeholder="管理员密码">
+            </div>
+            <div class="form-group my-2">
+                <button type="button" onclick="submitForm()" class="form-control btn btn-success btn-block">
+                    登录
+                </button>
+            </div>
             <script>
                 function submitForm() {
                     Swal.fire("正在登录，请稍等");

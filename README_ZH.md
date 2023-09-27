@@ -55,10 +55,10 @@ http://服务器IP:8080/admin
 ```
 docker pull mysql
 docker network create --subnet 172.28.0.0/16 mysql-network
-docker run -e MYSQL_ROOT_PASSWORD="root" --network mysql-network --ip 172.28.0.2 mysql
+docker run -d -e MYSQL_ROOT_PASSWORD="root" --network mysql-network --ip 172.28.0.2 mysql
 
 docker pull yuantuo666/baiduwp-php
-docker run --network mysql-network --ip 172.28.0.3 -p 8080:8000 yuantuo666/baiduwp-php
+docker run -d --network mysql-network --ip 172.28.0.3 -p 8080:8000 yuantuo666/baiduwp-php
 ```
 ```
 == 相关信息 ==

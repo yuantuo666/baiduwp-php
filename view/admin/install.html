@@ -311,14 +311,14 @@
                 }
 
                 // 检查是否为 docker 环境
-                let body = `driver=mysql&host=127.28.0.2&user=root&pass=root&name=bdwp`;
+                let body = `driver=mysql&host=172.28.0.2&user=root&pass=root&name=bdwp`;
                 postAPI('test_db_connect', body).then(function(response) {
                     if (response.success) {
                         const data = response.data;
                         if (data.error === 0) {
                             // 连接成功
                             Swal.fire("检测到 Docker 环境", "已自动配置数据库并连接，请完成其他信息填写并提交。<br />详细信息：" + data.msg, "success");
-                            $("input[name='DB_HOST']").val("127.28.0.2");
+                            $("input[name='DB_HOST']").val("172.28.0.2");
                             $("input[name='DB_USER']").val("root");
                             $("input[name='DB_PASS']").val("root");
                             $("input[name='DB_NAME']").val("bdwp");

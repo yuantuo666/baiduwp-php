@@ -26,13 +26,17 @@ class Install extends BaseController
         $pass = $request->post('pass');
 
         if ($driver == 'mysql') {
-            $dsn = "mysql:host=$host;dbname=$name;charset=utf8mb4";
+            $dsn = "mysql:host=$host;charset=utf8mb4";
         } else {
             $name = './../' . $name;
             $dsn = "sqlite:$name";
         }
         try {
             $db = new \PDO($dsn, $user, $pass, [\PDO::ATTR_TIMEOUT => 5]);
+            // 如果不存在则创建数据库
+            if ($driver == 'mysql') {
+                $db->exec("CREATE DATABASE IF NOT EXISTS `$name` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+            }
             return json([
                 'error' => 0,
                 'msg' => 'success',
