@@ -6,6 +6,8 @@ use app\BaseController;
 
 class Index extends BaseController
 {
+    static $version = '4.0.1';
+
     public function index()
     {
         return view('index/index', [
@@ -13,10 +15,5 @@ class Index extends BaseController
             'program_version' => config('baiduwp.program_version'),
             'footer' => config('baiduwp.footer'),
         ]);
-    }
-
-    public function hello($name = 'ThinkPHP8')
-    {
-        return 'hello,' . $name;
     }
 }

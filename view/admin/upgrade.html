@@ -1,0 +1,161 @@
+<?php include_once root_path("view") . "header.html"; ?>
+<!-- 升级 -->
+<nav>
+    <ol class="breadcrumb my-4">
+        <li class="breadcrumb-item"><a href="./">baiduwp-php</a></li>
+        <li class="breadcrumb-item"><a href="/install/upgrade">升级程序</a></li>
+    </ol>
+</nav>
+<div class="alert alert-primary" role="alert">
+    <h4 class="alert-heading">升级提示</h4>
+    <hr>
+    <p>为减少一些不必要的错误，请仔细阅读此升级提示。</p>
+    <p style="color: red;">因百度对 API 进行修改，更新版本后需要设置完整的 Cookie 参数，可通过 抓包 获取。</p>
+
+    <h5>软件更新时请检查：</h5>
+    <ol>
+        <li>（若启用数据库）数据库已完成备份。</li>
+        <li>请确认当前页面正确加载了 JavaScript 文件。如点击按钮无反映说明为正常加载，检查文件是否完整 并 刷新浏览器 一般能解决此问题。</li>
+    </ol>
+    <h5>软件更新完成后请：</h5>
+    <ol>
+        <li>（如有 CDN 加速）清除 CDN 的缓存。</li>
+        <li>浏览器存在缓存，请按下Ctrl+F5强制刷新，或进入设置页面删除缓存。</li>
+    </ol>
+    <hr>
+    <h5>使用提示：</h5>
+    <ol>
+        <li>因使用的是分享接口，存在客户端未限速，本项目显示限速的情况。</li>
+        <li>获取账号的 Cookie 之后不要「退出登录」和「修改密码」，这两种操作会使 Cookie 失效。请使用浏览器的隐身模式获取 Cookie，获取之后直接关闭浏览器。</li>
+    </ol>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        升级程序
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">身份验证</h5>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">管理员密码</label>
+            <div class="col-sm-10">
+                <input class="form-control" name="ADMIN_PASSWORD" value="">
+                <small class="form-text">请输入管理员密码验证你的身份。</small>
+            </div>
+        </div>
+        <hr />
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="AgreeCheck">
+            <label class="form-check-label" for="AgreeCheck">
+                <p>我同意在首页及其他页面<strong>保留作者版权信息</strong></p>
+            </label>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="DisclaimerCheck">
+            <label class="form-check-label" for="DisclaimerCheck">
+                <p class="text-danger"><strong>我知悉并同意</strong> 我使用本程序仅出于学习研究目的，绝不用于商业用途，产生的任何后果与开源项目开发者无关</p>
+            </label>
+        </div>
+        <!-- 已经读取了配置，没必要确认 -->
+        <a href="javascript:CheckForm();" class="btn btn-primary">提交</a>
+        <br><br>
+
+
+        <script>
+            async function postAPI(method, body) { // 获取 API 数据
+                try {
+                    const response = await fetch(`/install/${method}`, { // fetch API
+                        credentials: 'same-origin', // 发送验证信息 (cookies)
+                        method: 'POST',
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        },
+                        body: body,
+                    });
+                    if (response.ok) { // 判断是否出现 HTTP 异常
+                        return {
+                            success: true,
+                            data: await response.json() // 如果正常，则获取 JSON 数据
+                        }
+                    } else { // 若不正常，返回异常信息
+                        return {
+                            success: false,
+                            msg: `服务器返回异常 HTTP 状态码：HTTP ${response.status} ${response.statusText}.`
+                        };
+                    }
+                } catch (reason) { // 若与服务器连接异常
+                    return {
+                        success: false,
+                        msg: '连接服务器过程中出现异常，消息：' + reason.message
+                    };
+                }
+            }
+
+            $("#AgreeCheck").on('click', function () {
+                let item = $(this).prop("checked");
+                if (item === true) {
+                    // 提示
+                    Swal.fire({
+                        title: "同意保留版权",
+                        html: "保留原作者版权是本项目 MIT 协议所规定的，这是对作者的一种尊重，让作者有继续开发的动力。<hr/>此项目在 GitHub 上开放源代码，所有历史版本及当前版本源代码均公开可查。",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "我同意",
+                        footer: '<a href="https://github.com/yuantuo666/baiduwp-php" target="_blank">GitHub 上的源代码仓库</a>'
+                    }).then(function (e) {
+                        if (e.isConfirmed) {
+                            $("#AgreeCheck").prop("checked", true);
+                        } else {
+                            $("#AgreeCheck").prop("checked", false);
+                        }
+                    });
+                }
+            });
+
+
+            function CheckForm() {
+                Swal.fire("正在升级，请稍等……");
+                Swal.showLoading();
+                let USING_DB = $("input[name='USING_DB']:checked").val();
+                let ADMIN_PASSWORDLength = $("input[name='ADMIN_PASSWORD']").val().length;
+
+                if (ADMIN_PASSWORDLength < 6) {
+                    // 密码过短
+                    Swal.fire("密码过短", "请检查你设置的密码，为保证站点安全，管理员密码必须为6位或6位以上。", "warning");
+                    return 0;
+                }
+                let AgreeCheck = $("#AgreeCheck").prop("checked");
+                if (AgreeCheck === false) {
+                    Swal.fire("请同意保留版权信息", "请同意保留版权信息，再点击提交。", "warning");
+                    return 0;
+                }
+                let DisclaimerCheck = $("#DisclaimerCheck").prop("checked");
+                if (DisclaimerCheck === false) {
+                    Swal.fire("请同意免责声明", "请同意免责声明，再点击提交。", "warning");
+                    return 0;
+                }
+                let ADMIN_PASSWORD = $("input[name='ADMIN_PASSWORD']").val();
+
+                postAPI('upgrade', `ADMIN_PASSWORD=${ADMIN_PASSWORD}`).then(function (response) {
+                    if (response.success) {
+                        const data = response.data;
+                        if (data.error === 0) {
+                            // 升级成功
+                            Swal.fire("升级成功", "请前往 /admin 查看站点设置。", "success").then(function (e) {
+                                window.location.href = "/admin";
+                            });
+                        } else {
+                            // 升级失败
+                            Swal.fire("升级失败", "请检查你的设置，重新提交。<br />详细信息：" + data.msg, "error");
+                        }
+                    }
+                }).catch(function (reason) {
+                    Swal.fire("升级过程中出现异常", "请检查你的设置，重新提交。<br />详细信息：" + reason.message, "error");
+                });
+            }
+        </script>
+    </div>
+</div>
+
+<?php include_once root_path("view") . "footer.html"; ?>

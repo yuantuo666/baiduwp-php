@@ -21,6 +21,13 @@ class System extends BaseController
                 'msg' => '未安装',
             ]);
         }
+        // 检查安装版本和代码版本是否一致
+        if (config('baiduwp.program_version') != Index::$version) {
+            return json([
+                'error' => 1919810,
+                'msg' => '安装版本和代码版本不一致',
+            ]);
+        }
 
         $account = false;
         $count = false;

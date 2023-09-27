@@ -6,7 +6,7 @@
 // 本文件由程序自动生成，请勿随意修改，以免失效！
 return array (
   'site_name' => 'PanDownload',
-  'program_version' => '4.0.0',
+  'program_version' => '4.0.1',
   'password' => '',
   'admin_password' => env('ADMIN_PASSWORD'),
   'db' => env('DB', false),

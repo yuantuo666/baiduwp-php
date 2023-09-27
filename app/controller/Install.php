@@ -3,6 +3,7 @@
 namespace app\controller;
 
 use app\BaseController;
+use app\controller\admin\Setting;
 use app\Request;
 use Exception;
 use think\facade\Config;
@@ -14,6 +15,32 @@ class Install extends BaseController
     {
         return view('admin/install', [
             'site_name' => 'baiduwp-php 安装向导',
+            'program_version' => config('baiduwp.program_version', ''),
+        ]);
+    }
+    public function upgrade(Request $request)
+    {
+        if ($request->isPost()) {
+            if ($request->post('ADMIN_PASSWORD', '') !== config('baiduwp.admin_password', '')) {
+                return json([
+                    'error' => -1,
+                    'msg' => '管理员密码错误',
+                ]);
+            }
+
+            // TODO: 数据库升级的 migration
+
+            Setting::updateConfig([
+                'program_version' => Index::$version,
+            ], true);
+            return json([
+                'error' => 0,
+                'msg' => 'success',
+            ]);
+        }
+
+        return view('admin/upgrade', [
+            'site_name' => 'baiduwp-php 升级向导',
             'program_version' => config('baiduwp.program_version', ''),
         ]);
     }

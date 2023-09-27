@@ -7,7 +7,7 @@ use app\Request;
 
 class Setting extends BaseController
 {
-    public $setting = [
+    public static $setting = [
         'site_name' => ['网站名称', 'text', '将会显示在网站标题处'],
         'program_version' => ['程序版本', 'readonly', ''],
         'footer' => ['页脚信息', 'textarea', '将会显示在网站底部，支持HTML代码'],
@@ -29,7 +29,7 @@ class Setting extends BaseController
     public function list(Request $request)
     {
         $data = [];
-        foreach ($this->setting as $key => $value) {
+        foreach (self::$setting as $key => $value) {
             $data[] = [
                 'key' => $key,
                 'name' => $value[0],
@@ -47,26 +47,34 @@ class Setting extends BaseController
     public function update(Request $request)
     {
         $data = $request->post();
+        self::updateConfig($data);
+        return json([
+            'error' => 0,
+            'msg' => '保存成功',
+        ]);
+    }
+    public static function updateConfig($data, $force = false)
+    {
         $config = config('baiduwp');
         foreach ($data as $key => $value) {
-            if (array_key_exists($key, $this->setting)) {
-                if ($this->setting[$key][1] == 'number') {
+            if (array_key_exists($key, self::$setting)) {
+                if (self::$setting[$key][1] == 'number') {
                     $value = (int)$value;
                 }
-                if ($this->setting[$key][1] == 'radio') {
+                if (self::$setting[$key][1] == 'radio') {
                     $value = $value === 'true' ? true : false;
                 }
-                if ($this->setting[$key][1] == 'text' || $this->setting[$key][1] == 'textarea') {
+                if (self::$setting[$key][1] == 'text' || self::$setting[$key][1] == 'textarea') {
                     $value = trim($value);
                 }
-                if ($this->setting[$key][1] == 'readonly') {
-                    continue;
+                if (self::$setting[$key][1] == 'readonly') {
+                    if (!$force) continue;
                 }
                 $config[$key] = $value;
             }
         }
         $config = var_export($config, true);
-        
+
         // 写入配置文件
         $config = <<<PHP
 <?php
@@ -78,10 +86,5 @@ class Setting extends BaseController
 return {$config};
 PHP;
         file_put_contents('../config/baiduwp.php', $config);
-
-        return json([
-            'error' => 0,
-            'msg' => '保存成功',
-        ]);
     }
 }

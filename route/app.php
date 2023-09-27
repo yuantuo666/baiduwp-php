@@ -33,6 +33,11 @@ Route::group('install', function () {
     Route::post('test_db_connect', 'Install/testDbConnect');
     Route::post('install', 'Install/install');
 })->middleware(\app\middleware\CheckInstall::class);
+Route::group('install', function () {
+    Route::get('upgrade', 'Install/upgrade');
+    Route::post('upgrade', 'Install/upgrade');
+});
+
 
 Route::group('admin', function () {
     Route::get('/', 'admin.Index/index');
@@ -50,7 +55,7 @@ Route::group('admin', function () {
         Route::post('add', 'admin.Account/add');
         Route::post('reset/:id', 'admin.Account/reset');
     })->middleware(\app\middleware\CheckDb::class);
-    Route::group('ip', function (){
+    Route::group('ip', function () {
         Route::get('list/:page', 'admin.Ip/list');
         Route::post('delete/:id', 'admin.Ip/delete');
         Route::post('add', 'admin.Ip/add');
