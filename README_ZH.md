@@ -24,7 +24,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ~~[**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)~~ Outdated
 
 ## 宝塔面板 / 虚拟主机安装
-[AFF] 市面上虚拟主机参数参差不齐，经测试 [雨云](https://www.rainyun.cc/?ref=MjQyNDk=) 可完美运行本程序(香港EP二代 入门版, 7元/月)。
+[AFF] 市面上虚拟主机参数参差不齐，经测试 [雨云](https://www.rainyun.com/?ref=MjQyNDk=) 可完美运行本程序(香港EP二代 入门版, 7元/月)。
 
 ### 虚拟主机 EasyPanel 面板安装
 1. 进入 [Releases](https://github.com/yuantuo666/baiduwp-php/releases) 下载项目文件 `baiduwp-php-v?.?.?.zip`
