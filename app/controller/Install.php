@@ -143,9 +143,9 @@ EOF;
         }
 
         Setting::updateConfig([
+            'db' => $USING_DB == 'true' ? true : false,
             'program_version' => Index::$version,
             'admin_password' => $ADMIN_PASSWORD,
-            'db' => $USING_DB == 'true',
         ], true);
 
         return json([

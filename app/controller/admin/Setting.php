@@ -15,7 +15,7 @@ class Setting extends BaseController
         'admin_password' => ['管理员密码', 'text', '后台管理密码，若为空，则无法进入后台管理，否则输入正确密码才能进入后台管理'],
         'password' => ['首页密码', 'text', '首页解析使用的密码，留空则无密码'],
 
-        // 'db' => ['是否启用数据库', 'radio', '若启用，则会将解析记录保存到数据库中，否则将不会被保存，如不启用数据库，也无法使用后台管理、限制次数和流量等功能。'],
+        'db' => ['是否启用数据库', 'readonly', '若启用，则会将解析记录保存到数据库中，否则将不会被保存，如不启用数据库，也无法使用后台管理、限制次数和流量等功能。'],
         'link_expired_time' => ['链接有效期', 'number', '链接有效期，单位为小时'],
         'times' => ['解析次数', 'number', '解析次数，单IP每日限制解析次数'],
         'flow' => ['解析流量', 'number', '解析流量，单IP每日限制解析流量，单位为GB'],
@@ -88,6 +88,8 @@ class Setting extends BaseController
                 }
                 if (self::$setting[$key][1] == 'readonly') {
                     if (!$force) continue;
+                    if ($value === 'true') $value = true;
+                    if ($value === 'false') $value = false;
                 }
                 $config[$key] = $value;
             }
