@@ -118,28 +118,31 @@ function Getpw() {
 function SubmitLink() {
 	let link = $("[name='surl']").val();
 
+	let surl = null;
+
 	let uk = link.match(/uk=(\d+)/),
 		shareid = link.match(/shareid=(\d+)/);
 	if (uk != null && shareid != null) {
-		Swal.fire("Tip", "暂不支持老版本分享链接，请保存到网盘后重新分享", "info");
-		return false;
-	}
-
-	let surl = link.match(/surl=([A-Za-z0-9-_]+)/);
-	if (surl == null) {
-		surl = link.match(/1[A-Za-z0-9-_]+/);
-		if (surl != null) {
-			surl = surl[0];
-		}
+		let tmp = uk[1] + "&" + shareid[1];
+		surl = '2' + window.btoa(tmp) // base64 encode
 	} else {
-		surl = "1" + surl[1];
+		surl = link.match(/surl=([A-Za-z0-9-_]+)/);
+		if (surl == null) {
+			surl = link.match(/1[A-Za-z0-9-_]+/);
+			if (surl != null) {
+				surl = surl[0];
+			}
+		} else {
+			surl = "1" + surl[1];
+		}
+
+		if (surl == null || surl === "") {
+			$("[name='surl']").focus();
+			Swal.fire("Tip", "未检测到有效百度网盘分享链接，请检查输入的链接", "info");
+			return false;
+		}
 	}
 
-	if (surl == null || surl === "") {
-		$("[name='surl']").focus();
-		Swal.fire("Tip", "未检测到有效百度网盘分享链接，请检查输入的链接", "info");
-		return false;
-	}
 	let pw = $("[name='pwd']").val();
 	if (pw.length !== 0 && pw.length !== 4) {
 		$("[name='pwd']").focus();
@@ -570,7 +573,7 @@ function CopyDownloadLink() {
 			icon: "success"
 		});
 	}
-	
+
 	// In unsecure site will not work, add check
 	if (navigator.clipboard && window.isSecureContext) {
 		navigator.clipboard.writeText($("input#downloadlink").val()).then(function () {

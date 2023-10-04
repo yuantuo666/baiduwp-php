@@ -18,6 +18,12 @@ class Parse
 	{
 		// construct url
 		$params = "";
+		if (substr($surl, 0, 1) == "2") {
+			$surl_2 = substr($surl, 1);
+			$surl_2 = base64_decode($surl_2);
+			[$uk, $share_id] = explode("&", $surl_2);
+			$surl = "";
+		}
 		if ($surl) $params .= "&surl=$surl";
 		if ($share_id) $params .= "&shareid=$share_id";
 		if ($uk) $params .= "&uk=$uk";
@@ -343,7 +349,15 @@ class Parse
 		$Url = 'https://pan.baidu.com/share/wxlist?channel=weixin&version=2.2.2&clienttype=25&web=1';
 		$Root = ($IsRoot) ? "1" : "0";
 		$Dir = urlencode($Dir);
-		$Data = "shorturl=$Shorturl&dir=$Dir&root=$Root&pwd=$Password&page=$Page&num=1000&order=time";
+		if (substr($Shorturl, 0, 1) == "2") {
+			$Shorturl = substr($Shorturl, 1);
+			$Shorturl = base64_decode($Shorturl);
+			[$uk, $share_id] = explode("&", $Shorturl);
+			$params = "&uk=$uk&shareid=$share_id";
+		} else {
+			$params = "&shorturl=$Shorturl";
+		}
+		$Data = "$params&dir=$Dir&root=$Root&pwd=$Password&page=$Page&num=1000&order=time";
 		$BDUSS = Tool::getSubstr(config('baiduwp.cookie'), 'BDUSS=', ';');
 		$header = ["User-Agent: netdisk", "Cookie: BDUSS=$BDUSS", "Referer: https://pan.baidu.com/disk/home"];
 		return json_decode(Req::POST($Url, $Data, $header), true);
