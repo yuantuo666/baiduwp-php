@@ -15,9 +15,7 @@ RUN php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.ph
 WORKDIR /app
 
 # Clone the repository
-RUN git clone https://github.com/yuantuo666/baiduwp-php.git /tmp/baiduwp-php && \
-    cp -r /tmp/baiduwp-php/* /app/ && \
-    rm -rf /tmp/baiduwp-php
+COPY ./ /app
 
 RUN composer install
 
