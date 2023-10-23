@@ -3,7 +3,7 @@
 <nav>
     <ol class="breadcrumb my-4">
         <li class="breadcrumb-item"><a href="./">baiduwp-php</a></li>
-        <li class="breadcrumb-item"><a href="/install">安装程序</a></li>
+        <li class="breadcrumb-item"><a href="./install">安装程序</a></li>
     </ol>
 </nav>
 <div class="alert alert-primary" role="alert">
@@ -53,7 +53,7 @@
                     <small class="form-text">为保证安全，需要至少6位以上。</small>
                 </div>
             </div>
-            <p>其他站点设置已移动到管理员设置页面，请安装后前往 /admin 查看。</p>
+            <p>其他站点设置已移动到管理员设置页面，请安装后前往 admin 查看。</p>
             <hr />
             <h5 class="card-title">MySQL数据库设置</h5>
             <div class="form-group row">
@@ -133,7 +133,7 @@
             <script>
                 async function postAPI(method, body) { // 获取 API 数据
                     try {
-                        const response = await fetch(`/install/${method}`, { // fetch API
+                        const response = await fetch(`${ROOT_PATH}/install/${method}`, { // fetch API
                             credentials: 'same-origin', // 发送验证信息 (cookies)
                             method: 'POST',
                             headers: {
@@ -297,8 +297,8 @@
                             const data = response.data;
                             if (data.error === 0) {
                                 // 安装成功
-                                Swal.fire("安装成功", "请前往 /admin 查看站点设置。", "success").then(function(e) {
-                                    window.location.href = "/admin";
+                                Swal.fire("安装成功", `请前往 ${ROOT_PATH}/admin 查看站点设置。`, "success").then(function(e) {
+                                    window.location.href = `${ROOT_PATH}/admin`;
                                 });
                             } else {
                                 // 安装失败

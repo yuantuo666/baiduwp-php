@@ -45,7 +45,7 @@
                     <li class="nav-item"><a class="nav-link" href="https://github.com/yuantuo666/baiduwp-php"
                             target="_blank">Github</a></li>
                     <li class="nav-item" style="flex-grow: 1;"></li>
-                    <li class="nav-item"><a class="nav-link" href="/admin" target="_blank">管理后台</a></li>
+                    <li class="nav-item"><a class="nav-link" href="./admin" target="_blank">管理后台</a></li>
                 </ul>
             </div>
         </div>
@@ -118,7 +118,7 @@
                                     title: '未安装',
                                     text: '即将前往安装页面。'
                                 }).then(function () {
-                                    window.location.href = '/install';
+                                    window.location.href = `${ROOT_PATH}/install`;
                                 });
                             }
                             if (data.error === 1919810) {
@@ -128,7 +128,7 @@
                                     title: '安装版本和代码版本不一致',
                                     text: '需要安装更新，即将前往安装更新页面。'
                                 }).then(function () {
-                                    window.location.href = '/install/upgrade';
+                                    window.location.href = `${ROOT_PATH}/install/upgrade`;
                                 });
                             }
                             if (data.error === 0) {

@@ -2,8 +2,8 @@
 <!-- 升级 -->
 <nav>
     <ol class="breadcrumb my-4">
-        <li class="breadcrumb-item"><a href="./">baiduwp-php</a></li>
-        <li class="breadcrumb-item"><a href="/install/upgrade">升级程序</a></li>
+        <li class="breadcrumb-item"><a href="../">baiduwp-php</a></li>
+        <li class="breadcrumb-item"><a href="./upgrade">升级程序</a></li>
     </ol>
 </nav>
 <div class="alert alert-primary" role="alert">
@@ -64,7 +64,7 @@
         <script>
             async function postAPI(method, body) { // 获取 API 数据
                 try {
-                    const response = await fetch(`/install/${method}`, { // fetch API
+                    const response = await fetch(`${ROOT_PATH}/install/${method}`, { // fetch API
                         credentials: 'same-origin', // 发送验证信息 (cookies)
                         method: 'POST',
                         headers: {
@@ -142,8 +142,8 @@
                         const data = response.data;
                         if (data.error === 0) {
                             // 升级成功
-                            Swal.fire("升级成功", "请前往 /admin 查看站点设置。", "success").then(function (e) {
-                                window.location.href = "/admin";
+                            Swal.fire("升级成功", `请前往 ${ROOT_PATH}/admin 查看站点设置。`, "success").then(function (e) {
+                                window.location.href = `${ROOT_PATH}/admin`;
                             });
                         } else {
                             // 升级失败
