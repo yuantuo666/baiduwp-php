@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+  Options +FollowSymlinks -MultiViews
+  RewriteEngine On
+  RewriteBase /
+
+  RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
+  RewriteRule ^(.*)$ - [E=SUBPATH:$1,E=CWD:%2]
+  
+  RewriteCond %{DOCUMENT_ROOT}%{ENV:CWD}public/%{ENV:SUBPATH} -f
+  RewriteRule ^(.*)$ %{ENV:CWD}public/$1 [L]
+
+  RewriteRule ^(.*)$ %{ENV:CWD}public/index.php/$1 [QSA,PT,L]
+</IfModule>
