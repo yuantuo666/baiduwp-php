@@ -16,7 +16,7 @@
                 function submitForm() {
                     Swal.fire("正在登录，请稍等");
                     Swal.showLoading();
-                    fetch("/admin/login", {
+                    fetch(`${ROOT_PATH}/admin/login`, {
                         method: "POST",
                         credentials: "same-origin",
                         body: `password=${$("input[name='setting_password']").val()}`,
@@ -36,7 +36,7 @@
                     }).then(data => {
                         if (data.error === 0) {
                             Swal.fire(data.msg, data.detail, 'success');
-                            window.location.href = "/admin";
+                            window.location.href = `${ROOT_PATH}/admin`;
                         } else {
                             Swal.fire(data.msg, data.detail, 'error');
                         }

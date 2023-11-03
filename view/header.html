@@ -7,8 +7,8 @@
 	<meta name="author" content="Yuan_Tuo"/>
 	<meta name="version" content="<?= $program_version ?>"/>
 	<title><?= $site_name ?> - Settings</title>
-	<link rel="icon" href="favicon.ico"/>
-	<link rel="stylesheet" href="../static/index.css?v=<?= $program_version ?>"/>
+	<link rel="icon" href="<?php echo substr_count(think\facade\Request::pathinfo(), '/') == 0 ? '.' : '..'; ?>/favicon.ico"/>
+	<link rel="stylesheet" href="<?php echo substr_count(think\facade\Request::pathinfo(), '/') == 0 ? '.' : '..'; ?>/static/index.css?v=<?= $program_version ?>"/>
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.8.1/css/all.min.css"/>
 	<link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/css/bootstrap.min.css"/>
 	<link rel="stylesheet" disabled id="Swal2-Dark"
@@ -19,9 +19,11 @@
 	<script src="https://cdn.staticfile.org/bootstrap/5.3.0-alpha2/js/bootstrap.bundle.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/sweetalert2@10.14.0/dist/sweetalert2.min.js"></script>
 	<script src="https://fastly.jsdelivr.net/npm/jquery-form@4.3.0/dist/jquery.form.min.js"></script>
-	<script src="../static/color.js?v=<?= $program_version ?>"></script>
+	<script src="<?php echo substr_count(think\facade\Request::pathinfo(), '/') == 0 ? '.' : '..'; ?>/static/color.js?v=<?= $program_version ?>"></script>
 	<script>
+        const ROOT_PATH = window.location.pathname.split('/').slice(0, -<?php echo substr_count(think\facade\Request::pathinfo(), '/') + 1; ?>).join('/'); // 获取根目录
         async function getAPI(method) { // 获取 API 数据
+            method = ROOT_PATH + method;
             try {
                 const response = await fetch(method, { // fetch API
                     credentials: 'same-origin' // 发送验证信息 (cookies)
@@ -45,7 +47,7 @@
             }
         }
 	</script>
-	<script src="../static/ready.js?v=<?= $program_version ?>"></script>
+	<script src="<?php echo substr_count(think\facade\Request::pathinfo(), '/') == 0 ? '.' : '..'; ?>/static/ready.js?v=<?= $program_version ?>"></script>
 </head>
 
 <body>

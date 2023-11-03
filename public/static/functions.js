@@ -7,6 +7,7 @@
  * @link https://github.com/yuantuo666/baiduwp-php
  *
  */
+const ROOT_PATH = window.location.pathname.slice(0,-1); // 获取网站根目录
 addEventListener('DOMContentLoaded', function () {
 	window.downloadpage = new bootstrap.Modal('#downloadpage', {
 		keyboard: false,
@@ -242,6 +243,7 @@ function makeQRCode(element, text, size = 512, correctLevel = QRCode.CorrectLeve
 }
 
 async function getAPI(method) { // 获取 API 数据
+	method = ROOT_PATH + method;
 	try {
 		const response = await fetch(method, { // fetch API
 			headers: new Headers({
@@ -306,7 +308,7 @@ async function OpenRoot(surl, pwd, password = "") {
 			pwd,
 			password
 		}
-		await fetch(`/parse/list`, { // fetch API
+		await fetch(`${ROOT_PATH}/parse/list`, { // fetch API
 			credentials: 'same-origin',
 			method: 'POST',
 			body: http_build_query(data),
@@ -352,7 +354,7 @@ async function OpenDir(path) {
 			dir: path,
 			...files.dirdata
 		}
-		await fetch(`/parse/list`, { // fetch API
+		await fetch(`${ROOT_PATH}/parse/list`, { // fetch API
 			credentials: 'same-origin',
 			method: 'POST',
 			body: http_build_query(data),
@@ -460,7 +462,7 @@ async function Download(index = 0) {
 	}
 
 	try {
-		await fetch(`/parse/link`, { // fetch API
+		await fetch(`${ROOT_PATH}/parse/link`, { // fetch API
 			credentials: 'same-origin',
 			method: 'POST',
 			body: http_build_query(data),

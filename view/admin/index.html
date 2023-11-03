@@ -2,7 +2,7 @@
 <div class="col-md-12 col-sm-12 col-12">
     <nav>
         <ol class="breadcrumb my-4">
-            <li class="breadcrumb-item"><a href="/">baiduwp-php</a></li>
+            <li class="breadcrumb-item"><a href="./">baiduwp-php</a></li>
             <li class="breadcrumb-item"><a href="javascript:navigate('index')">后台管理</a></li>
             <li class="breadcrumb-item" id="current_path">概览</li>
         </ol>
@@ -59,7 +59,7 @@
                     }
                     const initAccountInfo = () => {
                         // 获取本地账号相关信息
-                        $.get(`/admin/account_info`, function (data, status) {
+                        $.get(`${ROOT_PATH}/admin/account_info`, function (data, status) {
                             if (data.error === 0) {
                                 $("#normal_msg").html(getAccountMsg(data.data.local_account));
                                 $("#svip_msg").html(getAccountMsg(data.data.svip_account));
@@ -129,7 +129,7 @@
                     }
 
                     const initIndexInfo = () => {
-                        fetch('/admin/info',
+                        fetch(`${ROOT_PATH}/admin/info`,
                             {
                                 headers: {
                                     'Accept': 'application/json',
@@ -206,7 +206,7 @@
                         if (result.isConfirmed) {
                             Swal.fire("正在清空，请稍等");
                             Swal.showLoading();
-                            $.post("/admin/record/clear_all", function (data, status) {
+                            $.post(`${ROOT_PATH}/admin/record/clear_all`, function (data, status) {
                                 if (status === "success") {
                                     if (data.error === 0) {
                                         Swal.fire("清空成功！", "所有解析数据已被清空。");
@@ -257,7 +257,7 @@
                 function resetAccount(id) {
                     Swal.fire("正在设置，请稍等");
                     Swal.showLoading();
-                    $.post(`/admin/account/reset/${id}`, function (data, status) {
+                    $.post(`${ROOT_PATH}/admin/account/reset/${id}`, function (data, status) {
                         if (status === "success") {
                             Swal.fire(data.msg);
                             // 对应行的数据，需要更新
@@ -555,7 +555,7 @@
         if (isNaN(newPage)) {
             newPage = 1;
         }
-        fetch(`/admin/${path}/list/${newPage}`, {
+        fetch(`${ROOT_PATH}/admin/${path}/list/${newPage}`, {
             headers: {
                 'Accept': 'application/json',
             }
@@ -586,7 +586,7 @@
         if (!isValidPath(path)) return
         Swal.fire("正在添加，请稍等");
         Swal.showLoading();
-        fetch(`/admin/${path}/add`, {
+        fetch(`${ROOT_PATH}/admin/${path}/add`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -612,7 +612,7 @@
         if (!isValidPath(path)) return
         Swal.fire("正在更新，请稍等");
         Swal.showLoading();
-        fetch(`/admin/${path}/update`, {
+        fetch(`${ROOT_PATH}/admin/${path}/update`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -649,7 +649,7 @@
             if (result.isConfirmed) {
                 Swal.fire("正在删除，请稍等");
                 Swal.showLoading();
-                fetch(`/admin/${path}/delete/${id}`, {
+                fetch(`${ROOT_PATH}/admin/${path}/delete/${id}`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
