@@ -159,7 +159,7 @@ EOF;
             "CREATE TABLE IF NOT EXISTS `records` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `time` DATETIME NOT NULL,
-                `size` int NOT NULL,
+                `size` bigint NOT NULL,
                 `name` varchar(255) NOT NULL,
                 `link` TEXT NOT NULL,
                 `md5` varchar(255) NOT NULL,
