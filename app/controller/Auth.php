@@ -12,21 +12,20 @@ class Auth extends BaseController
      */
     public function status()
     {
-        session_start();
         $password = config('baiduwp.password');
         if (empty($password)) {
             return json([
                 'status' => 0,
                 'msg' => '无需密码',
             ]);
-		}
-		if (session('Password') === $password) {
-			return json([
+        }
+        if (session('Password') === $password) {
+            return json([
                 'status' => 2,
                 'msg' => '已登录',
             ]);
-		}
-		return json([
+        }
+        return json([
             'status' => 1,
             'msg' => '未登录'
         ]);
@@ -49,5 +48,4 @@ class Auth extends BaseController
         }
         return false;
     }
-
 }
