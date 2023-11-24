@@ -1,54 +1,70 @@
-name: Build Docker Image
+name: Build Docker Image & Pack Source Code
 
 on:
-  workflow_dispatch:
   push:
-    # 每次 push tag 时进行构建，不需要每次 push 都构建。使用通配符匹配每次 tag 的提交，记得 tag 名一定要以 v 开头
-    tags:
-      - v*
+    branches:
+      - 'build:*'
+      # e.g. build:4.0.0
 
 env:
-  # 设置 docker 镜像名
   IMAGE_NAME: baiduwp-php
 
 jobs:
-  # Push image to GitHub Packages.
-  # See also https://docs.docker.com/docker-hub/builds/
-  push:
+  build_and_upload:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-        # 构建镜像，指定镜像名
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
-        # 登录到 dockerhub，使用 GitHub secrets 传入账号密码，密码被加密存储在 GitHub 服务器
-      - name: Log into registry
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Parse version from branch name
+        run: echo "VERSION=$(echo $GITHUB_REF | sed -n 's/refs\/heads\/build:\(.*\)/\1/p')" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}
+
+      - name: Log into Docker Hub
         run: echo "${{ secrets.DOCKER_ACCESS_TOKEN }}" | docker login -u yuantuo666 --password-stdin
 
-      - name: Push image
+      - name: Push Docker image
         run: |
-          # 拼接镜像 id，这个镜像 id 就是在使用 docker 镜像时 pull 后面的名字。
           IMAGE_ID=yuantuo666/$IMAGE_NAME
-
-          # 将所有的大写字母转为小写
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
-          # 从 GitHub.ref 中取出版本
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # 从 tag 名字中替换 v 字符
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-
+          VERSION=${{ env.VERSION }}
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-          # 设置镜像 id 和版本号
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          # 进行 push
           docker push $IMAGE_ID:$VERSION
-          # push 到 latest
           [ "$VERSION" != "latest" ] && docker tag $IMAGE_NAME $IMAGE_ID:latest
           [ "$VERSION" != "latest" ] && docker push $IMAGE_ID:latest
-          
+
+      - name: Run Docker image
+        run: docker run -itd --name baiduwp-php ${{ env.IMAGE_NAME }}
+
+      - name: Pack source code
+        run: docker exec baiduwp-php zip -r /tmp/baiduwp-php.zip /app
+
+      - name: Copy source code
+        run: docker cp baiduwp-php:/tmp/baiduwp-php.zip ./baiduwp-php-v${{ env.VERSION }}.zip
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+          draft: true
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./baiduwp-php-v${{ env.VERSION }}.zip
+          asset_name: baiduwp-php-v${{ env.VERSION }}.zip
+          asset_content_type: application/x-zip-compressed
