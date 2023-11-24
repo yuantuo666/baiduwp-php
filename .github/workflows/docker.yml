@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+# git tag -a v1.0.0
+# git push origin v1.0.0
+
 env:
   IMAGE_NAME: baiduwp-php
 
@@ -44,7 +47,7 @@ jobs:
         run: docker exec baiduwp-php apt-get update && docker exec baiduwp-php apt-get install -y zip
 
       - name: Pack source code
-        run: docker exec baiduwp-php zip -r /tmp/baiduwp-php.zip /app
+        run: docker exec baiduwp-php zip -r /tmp/baiduwp-php.zip /app/*
 
       - name: Copy source code
         run: docker cp baiduwp-php:/tmp/baiduwp-php.zip ./baiduwp-php-v${{ env.VERSION }}.zip
