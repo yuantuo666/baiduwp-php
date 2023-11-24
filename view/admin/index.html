@@ -64,7 +64,7 @@
                                 $("#normal_msg").html(getAccountMsg(data.data.local_account));
                                 $("#svip_msg").html(getAccountMsg(data.data.svip_account));
                             }
-                        });
+                        }, "json");
                     }
                 </script>
             </div>
@@ -267,7 +267,7 @@
                         } else {
                             Swal.fire("请求错误，请检查网络是否正常");
                         }
-                    });
+                    }, "json");
                 }
             </script>
             <br><br><br>

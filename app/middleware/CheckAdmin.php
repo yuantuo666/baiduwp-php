@@ -15,8 +15,8 @@ class CheckAdmin
 
         // 检查是否登录
         if (!session('admin')) {
-            // 判断是否是ajax请求
-            if ($request->isAjax()) {
+            // 判断是否是 json 请求
+            if ($request->isJson()) {
                 return json(['error' => 403, 'msg' => '请刷新当前页面登录']);
             }
             return redirect('/admin/login');
