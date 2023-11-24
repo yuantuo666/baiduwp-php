@@ -31,6 +31,15 @@ The essence is to use the premium account (SVIP account) to get the download lin
 - Author: Yuan_Tuo
 - Site: https://imwcr.cn/
 - Email: yuantuo666@gmail.com
+- Telegram: https://t.me/yuantuo666
+
+
+## Related Works
+Following are some related works with this project. If you want to apply to add new project here, please draft new issue with brief introduction. 
+- [alist-org/alist](https://github.com/alist-org/alist) 🗂️A file list/WebDAV program that supports multiple storages, powered by Gin and Solidjs. / 一个支持多存储的文件列表/WebDAV程序，使用 Gin 和 Solidjs。
+- [codehub666/94list](https://github.com/codehub666/94list) 百度网盘分享链接分析渲染列表辅助下载开源程序
+- [z-mio/baiduwp-bot](https://github.com/z-mio/baiduwp-bot) 一个基于baiduwp-php API的百度网盘解析bot
+- [monkeyWie/gopeed-extension-baiduwp](https://github.com/monkeyWie/gopeed-extension-baiduwp) Gopeed 百度网盘下载扩展。
 
 
 ## 🔔Thanks

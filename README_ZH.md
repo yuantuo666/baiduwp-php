@@ -3,16 +3,27 @@
 [ENGLISH](README.md) | [中文](README_ZH.md)
 
 PanDownload 网页复刻版，PHP 语言版<br/>
-本项目仅供学习参考，严禁商业用途<br/>
+
+## ⚠️ 重要声明
+本项目是 [baiduwp](htttps://github.com/TkzcM/baiduwp) 的 PHP 语言实现，使用 PHP 语言重写了原项目的功能。项目中所涉及的接口均来自 [百度官方](https://pan.baidu.com/union)。需要配置您自己的百度网盘账号后才可以使用。
+
+本工具无任何破解功能，所有代码开源，仅供学习参考，请遵守相关法律法规，不得将本项目用于商业用途，使用本项目造成的一切后果与项目开发者无关。
+
+相关法律案例如下：
+1. 中国裁判文书网《林蔚群提供侵入、非法控制计算机信息系统程序、工具罪一审刑事判决书》
+2. 中国裁判文书网《北京度友科技有限公司等与罗庆等不正当竞争纠纷一审民事判决书》
 
 ## 🔎 实现原理
-通过curl获取网盘文件信息，处理后显示在网页中。通过api接口以及SVIP账号的Cookie(BDUSS)获取高速下载链接。<br/>
-本质就是用会员账号获取下载地址并发送给访客。
+首先，网站访客输入分享链接地址，本工具会连接百度服务器获取分享链接中的文件信息，处理后展示在网页中。在访客选定需要下载的文件后，本工具会通过百度网盘的 API 接口获取下载链接并显示给访客。
 
-<h2> 重要声明：本项目是 <a href="https://github.com/TkzcM/baiduwp">baiduwp</a> 的 PHP 语言实现；项目中所涉及的接口均来自<a href="https://pan.baidu.com/union">百度官方</a>，不涉及任何违法行为，本工具需要使用自己的百度网盘SVIP账号才能获取下载链接，代码全部开源，仅供学习参考；请不要将此项目用于商业用途，否则可能带来严重的后果。<br />
- 1. 中国裁判文书网《林蔚群提供侵入、非法控制计算机信息系统程序、工具罪一审刑事判决书》<br />
- 2. 中国裁判文书网《北京度友科技有限公司等与罗庆等不正当竞争纠纷一审民事判决书》
-</h2>
+本质就是模拟用户操作，获取下载地址后发送给网站访客。本工具仅显示下载链接，不提供实际的下载服务。
+
+如您的帐号未开通百度网盘的 SVIP 服务，则只能获取到限速的下载链接，使用第三方工具下载时的下载速度和使用网盘客户端一致。
+
+不论是否开通百度网盘 SVIP，使用本项目可能都导致您的 IP 或账号等被百度限速，甚至封禁。
+
+
+## 📝 介绍
 
 ![浅色首页](https://s2.loli.net/2023/04/04/yegBh8HXaNCqixb.png)
 ![深色首页](https://s2.loli.net/2023/04/04/Ff1ub4MJxVsHYhZ.png)
@@ -125,13 +136,22 @@ wget http://<HOST>/app.tar
 ## 💡 联系作者
 - 项目作者：Yuan_Tuo
 - 作者首页：https://imwcr.cn/
-- 作者邮箱：yuantuo666@gmail.com (不答复百度网盘相关问题)
+- 作者邮箱：yuantuo666@gmail.com
+- Telegram：https://t.me/yuantuo666 (推荐)
 - 合作者：LC @lc6464
   - [个人网站](https://lcwebsite.cn/ "LC的网站")
   - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
 
 如果遇到问题请先 **仔细阅读此文档** 、查看[以前的议题](https://github.com/yuantuo666/baiduwp-php/issues)<br />
 如果还是无法解决，请在 [Issues](https://github.com/yuantuo666/baiduwp-php/issues) 中按模板提出问题，不符合规范的议题可能被直接关闭。
+
+## 相关作品
+下面是一些与本项目相关的作品，如果你想申请添加新项目，请提起新的议题。
+- [alist-org/alist](https://github.com/alist-org/alist) 🗂️A file list/WebDAV program that supports multiple storages, powered by Gin and Solidjs. / 一个支持多存储的文件列表/WebDAV程序，使用 Gin 和 Solidjs。
+- [codehub666/94list](https://github.com/codehub666/94list) 百度网盘分享链接分析渲染列表辅助下载开源程序
+- [z-mio/baiduwp-bot](https://github.com/z-mio/baiduwp-bot) 一个基于baiduwp-php API的百度网盘解析bot
+- [monkeyWie/gopeed-extension-baiduwp](https://github.com/monkeyWie/gopeed-extension-baiduwp) Gopeed 百度网盘下载扩展。
+
 
 ## 📃 License
 [MIT](LICENSE)
