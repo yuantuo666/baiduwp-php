@@ -268,13 +268,15 @@ class Parse
 
 			$query = Db::connect()->table("account")->where('status', 0);
 			if (config('baiduwp.random_account')) {
-				$query = $query->order('last_used_at', 'desc');
+				$query = $query->order('last_used_at', 'asc');
 			} else {
 				$query = $query->order('created_at', 'asc');
 			}
 			$data = $query->find();
 			if ($data) {
 				list($ID, $cookie) = [$data['id'], $data['cookie']];
+				// 更新最后使用时间
+				Db::connect()->table('account')->where('id', $ID)->update(['last_used_at' => date('Y-m-d H:i:s', time())]);
 			}
 		}
 
