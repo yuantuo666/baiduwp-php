@@ -40,6 +40,9 @@ jobs:
       - name: Run Docker image
         run: docker run -itd --name baiduwp-php ${{ env.IMAGE_NAME }}
 
+      - name: Install zip
+        run: docker exec baiduwp-php apt-get update && docker exec baiduwp-php apt-get install -y zip
+
       - name: Pack source code
         run: docker exec baiduwp-php zip -r /tmp/baiduwp-php.zip /app
 
