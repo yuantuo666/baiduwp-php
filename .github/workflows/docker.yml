@@ -2,9 +2,8 @@ name: Build Docker Image & Pack Source Code
 
 on:
   push:
-    branches:
-      - 'build:*'
-      # e.g. build:4.0.0
+    tags:
+      - 'v*'
 
 env:
   IMAGE_NAME: baiduwp-php
@@ -17,8 +16,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Parse version from branch name
-        run: echo "VERSION=$(echo $GITHUB_REF | sed -n 's/refs\/heads\/build:\(.*\)/\1/p')" >> $GITHUB_ENV
+      - name: Parse version from tag name
+        run: echo "VERSION=$(echo $GITHUB_REF | sed -n 's/refs\/tags\/v\(.*\)/\1/p')" >> $GITHUB_ENV
 
       - name: Build Docker image
         run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}
@@ -54,7 +53,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ env.VERSION }}
-          release_name: Release ${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
           draft: true
           prerelease: false
 
