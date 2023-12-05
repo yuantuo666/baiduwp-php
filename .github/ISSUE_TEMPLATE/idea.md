@@ -3,7 +3,7 @@ name: 提交建议
 about: 向我们提交一个建议。
 title: "【建议】"
 labels: enhancement
-assignees: yuantuo666, lc6464
+assignees: yuantuo666
 
 ---
 
