@@ -149,6 +149,7 @@ wget http://<HOST>/app.tar
 下面是一些与本项目相关的作品，如果你想申请添加新项目，请提起新的议题。
 - [alist-org/alist](https://github.com/alist-org/alist) 🗂️A file list/WebDAV program that supports multiple storages, powered by Gin and Solidjs. / 一个支持多存储的文件列表/WebDAV程序，使用 Gin 和 Solidjs。
 - [codehub666/94list](https://github.com/codehub666/94list) 百度网盘分享链接分析渲染列表辅助下载开源程序
+- [huankong233/94list-laravel](https://github.com/huankong233/94list-laravel) 94list使用laravel重构
 - [z-mio/baiduwp-bot](https://github.com/z-mio/baiduwp-bot) 一个基于baiduwp-php API的百度网盘解析bot
 - [monkeyWie/gopeed-extension-baiduwp](https://github.com/monkeyWie/gopeed-extension-baiduwp) Gopeed 百度网盘下载扩展。
 
