@@ -5,7 +5,7 @@
 PanDownload 网页复刻版，PHP 语言版<br/>
 
 ## ⚠️ 重要声明
-本项目是 [baiduwp](htttps://github.com/TkzcM/baiduwp) 的 PHP 语言实现，使用 PHP 语言重写了原项目的功能。项目中所涉及的接口均来自 [百度官方](https://pan.baidu.com/union)。需要配置您自己的百度网盘账号后才可以使用。
+本项目是 [baiduwp](htttps://github.com/TkzcM/baiduwp) 的 PHP 语言实现，使用 PHP 语言重写了原项目的功能。项目使用百度公开 API 接口获取下载链接。需要配置您自己的百度网盘账号后才可以使用。
 
 本工具无任何破解功能，所有代码开源，仅供学习参考，请遵守相关法律法规，不得将本项目用于商业用途，使用本项目造成的一切后果与项目开发者无关。
 
@@ -14,7 +14,7 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 2. 中国裁判文书网《北京度友科技有限公司等与罗庆等不正当竞争纠纷一审民事判决书》
 
 ## 🔎 实现原理
-首先，网站访客输入分享链接地址，本工具会连接百度服务器获取分享链接中的文件信息，处理后展示在网页中。在访客选定需要下载的文件后，本工具会通过百度网盘的 API 接口获取下载链接并显示给访客。
+首先，网站访客输入分享链接地址，本工具会连接百度服务器获取分享链接中的文件信息，处理后展示在网页中。在访客选定需要下载的文件后，本工具会通过百度网盘的公开 API 接口获取下载链接并显示给访客。
 
 本质就是模拟用户操作，获取下载地址后发送给网站访客。本工具仅显示下载链接，不提供实际的下载服务。
 
@@ -32,17 +32,17 @@ PanDownload 网页复刻版，PHP 语言版<br/>
 ![后台页面](https://s2.loli.net/2023/04/04/dzvxNqO82WrM4lQ.png)
 
 # 🔧 安装及设置
-~~[**点此查看安装、配置、使用视频教程**](https://www.bilibili.com/video/BV1N5411A77n)~~ Outdated
 
 ## 宝塔面板 / 虚拟主机安装
 [AFF] 市面上虚拟主机参数参差不齐，经测试 [雨云](https://www.rainyun.com/?ref=MjQyNDk=) 可完美运行本程序(香港EP二代 入门版, 7元/月)。
 
 ### 虚拟主机 EasyPanel 面板安装
 1. 进入 [Releases](https://github.com/yuantuo666/baiduwp-php/releases) 下载项目文件 `baiduwp-php-v?.?.?.zip`
-2. 上传到 EasyPanel 面板 `wwwroot` 目录并解压
-3. 在配置域名页面中，绑定域名到 `/wwwroot/public` 目录下
-4. 进入网站 `http://<网站域名>/install`，按照页面提示进行安装
-5. 进入 `http://<网站域名>/admin` 的系统设置页面中设置 普通 和 SVIP账号 的 Cookie。
+2. 将压缩包上传到 EasyPanel 面板 `/` 根目录并解压
+3. 删除默认的 `/wwwroot` 目录，并将解压的文件夹改名为 `/wwwroot`
+4. 确认存在 `/wwwroot/public/index.php` 入口文件后，在配置域名页面中，绑定域名到 `/wwwroot/public` 目录下
+5. 进入网站 `http://<网站域名>/install`，按照页面提示进行安装（如无法进入，可能是伪静态配置错误，默认可在 `/wwwroot/public/.htaccess` 中设置）
+6. 进入 `http://<网站域名>/admin` 的系统设置页面中设置 普通 和 SVIP账号 的 Cookie。
 
 ### 宝塔面板安装
 1. 进入 [Releases](https://github.com/yuantuo666/baiduwp-php/releases) 下载项目文件 `baiduwp-php-v?.?.?.zip`
@@ -129,19 +129,10 @@ wget http://<HOST>/app.tar
 - [API 文档](docs/API.md)
   - 自 `3.0.0` 版本开始，本项目支持 API 接口。核心功能如获取文件列表、下载地址等均可通过 API 完成，具体请查看 [API 文档](docs/API.md)。
 
-## 📝 TODO
-- [ ] 多语言完善
-- [x] 逐步重构代码
+## 📝 项目计划
+因内外多种因素，本项目将不会增加新功能，仅维护现存的 BUG。若接口失效，本项目将停止更新。
 
-## 💡 联系作者
-- 项目作者：Yuan_Tuo
-- 作者首页：https://imwcr.cn/
-- 作者邮箱：yuantuo666@gmail.com
-- Telegram：https://t.me/yuantuo666 (推荐)
-- 合作者：LC @lc6464
-  - [个人网站](https://lcwebsite.cn/ "LC的网站")
-  - [联系](https://lcwebsite.cn/web/contact.aspx "联系 LC")
-
+## 💡 寻求帮助
 如果遇到问题请先 **仔细阅读此文档** 、查看[以前的议题](https://github.com/yuantuo666/baiduwp-php/issues)<br />
 如果还是无法解决，请在 [Issues](https://github.com/yuantuo666/baiduwp-php/issues) 中按模板提出问题，不符合规范的议题可能被直接关闭。
 
@@ -152,7 +143,6 @@ wget http://<HOST>/app.tar
 - [huankong233/94list-laravel](https://github.com/huankong233/94list-laravel) 94list使用laravel重构
 - [z-mio/baiduwp-bot](https://github.com/z-mio/baiduwp-bot) 一个基于baiduwp-php API的百度网盘解析bot
 - [monkeyWie/gopeed-extension-baiduwp](https://github.com/monkeyWie/gopeed-extension-baiduwp) Gopeed 百度网盘下载扩展。
-
 
 ## 📃 License
 [MIT](LICENSE)

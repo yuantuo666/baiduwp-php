@@ -16,20 +16,11 @@ The essence is to use the premium account (SVIP account) to get the download lin
 
 
 ## 🖥️ Demo
-### Demo Site
-- [Click here go to Demo](https://imwcr.cn/api/bdwp/)<br/>
-
-### Video tutorial
-- [[YouTube] How to download files from pan.baidu.com without login](https://www.youtube.com/watch?v=8u8jx3Owuc8)
-
-### Screenshot
 ![浅色及英文模式](https://s2.loli.net/2023/02/04/cs1EtFXpHDPS2AB.png)
 ![文件列表](https://s2.loli.net/2023/02/04/hL2pDEyHQFb6BKR.png)
 ![解析详情](https://s2.loli.net/2023/02/04/GZBsmz6xgShjuA2.png)
 
 ## 💡Contact
-- Author: Yuan_Tuo
-- Site: https://imwcr.cn/
 - Email: yuantuo666@gmail.com
 - Telegram: https://t.me/yuantuo666
 
