@@ -227,7 +227,7 @@ class Parse
 			return array("error" => 0, "filedata" => $FileData, "directlink" => $dlink, "user_agent" => "LogStatistic", "message" => $message);
 		}
 
-		list($ID, $cookie) = ["-1", config('baiduwp.cookie')];
+		list($ID, $cookie) = ["-1", config('baiduwp.svip_cookie') ? config('baiduwp.svip_cookie') : config('baiduwp.cookie')];
 
 		if (config('baiduwp.db')) {
 			$link_expired_time = config('baiduwp.link_expired_time') ?? 8;
